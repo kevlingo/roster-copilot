@@ -279,7 +279,7 @@ export default function DraftPage({ params }: PageProps) {
           <div className="card-body">
             <h2 className="card-title">AI Copilot Suggestion</h2>
             <p>Based on your team needs and draft position, consider drafting Justin Jefferson (WR, MIN).</p>
-            <p className="text-sm">Jefferson has a high ceiling and floor as the primary target in Minnesota's offense.</p>
+            <p className="text-sm">Jefferson has a high ceiling and floor as the primary target in Minnesota&apos;s offense.</p>
             <div className="card-actions justify-end">
               <button 
                 className="btn btn-outline"

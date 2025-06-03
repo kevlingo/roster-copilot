@@ -138,7 +138,7 @@ export default function DigestPage() {
           <h2 className="card-title">Week 5 Overview</h2>
           <p>Your team is projected to score 112.3 points this week, facing Fantasy Kings (projected 117.8 points).</p>
           <p className="mt-2">
-            <span className="font-medium">Key Focus Areas:</span> QB decision between Mahomes and Allen, monitoring Prescott's injury status, and finding a replacement for Chase who is on bye.
+            <span className="font-medium">Key Focus Areas:</span> QB decision between Mahomes and Allen, monitoring Prescott&apos;s injury status, and finding a replacement for Chase who is on bye.
           </p>
         </div>
       </div>

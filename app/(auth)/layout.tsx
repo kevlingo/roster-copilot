@@ -1,5 +1,5 @@
 import React from 'react';
-import Link from 'next/link';
+//import Link from 'next/link';
 import { Brain } from 'lucide-react';
 
 export default function AuthLayout({

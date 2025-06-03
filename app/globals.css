@@ -3,6 +3,9 @@
 @tailwind utilities;
 
 @layer base {
+:root {
+    --header-height: 64px;
+  }
   html {
     @apply scroll-smooth;
   }

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Brain, GraduationCap, BarChart2, Zap, Clock } from 'lucide-react';
+import { /*Brain*/ GraduationCap, BarChart2, Zap, Clock } from 'lucide-react';
 
 // Mock user data
 interface UserProfile {

@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState/*, useEffect*/ } from 'react';
+// import { useRouter } from 'next/navigation'; // Removed unused import
 
 // Questionnaire structure
 interface Question {
@@ -97,23 +97,21 @@ const questionnaireByArchetype: Record<string, Question[]> = {
 };
 
 export default function OnboardingPage() {
-  const router = useRouter();
-  const [step, setStep] = useState(1);
-  const [selectedArchetype, setSelectedArchetype] = useState<string | null>(null);
-  const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [isLoading, setIsLoading] = useState(false);
-  
+  // const router = useRouter(); // Removed unused variable
+  const [step/*, setStep*/] = useState(1);
+  const [selectedArchetype/*, setSelectedArchetype*/] = useState<string | null>(null);
+  //const [answers, setAnswers] = useState<Record<string, string>>({});
   // Questions based on selected archetype
   const questions = selectedArchetype ? questionnaireByArchetype[selectedArchetype] : [];
   
   // Handle questionnaire answer
-  const handleAnswer = (questionId: string, value: string) => {
+/*   const handleAnswer = (questionId: string, value: string) => {
     setAnswers(prev => ({ ...prev, [questionId]: value }));
-  };
+  }; */
   
   // Submit onboarding data
-  const handleCompleteOnboarding = async () => {
-    setIsLoading(true);
+/*   const handleCompleteOnboarding = async () => {
+    // setIsLoading(true); // setIsLoading was removed as isLoading was unused
     
     try {
       // TODO: Call API to /api/users/me with { selectedArchetype, onboardingAnswers: answers }
@@ -125,28 +123,28 @@ export default function OnboardingPage() {
     } catch (error) {
       console.error('Onboarding submission failed:', error);
       // Handle error
-      setIsLoading(false);
+      // setIsLoading(false); // setIsLoading was removed as isLoading was unused
     }
-  };
+  }; */
   
   // Check if current question is answered
-  const isCurrentQuestionAnswered = () => {
+/*   const isCurrentQuestionAnswered = () => {
     if (step === 1) return selectedArchetype !== null;
     if (step > 1 && step - 2 < questions.length) {
       const currentQuestion = questions[step - 2];
       return !!answers[currentQuestion.id];
     }
     return true;
-  };
+  }; */
   
   // Navigate to next question or complete
-  const handleNext = () => {
+/*   const handleNext = () => {
     if (step < questions.length + 1) {
       setStep(step + 1);
     } else {
       handleCompleteOnboarding();
     }
-  };
+  }; */
   
   // Progress percentage
   const calculateProgress = () => {

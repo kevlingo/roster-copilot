@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+//import { useRouter } from 'next/navigation';
 import DraftPlayerCard from '@/src/components/draft/DraftPlayerCard';
 import PlayerRosterCard from '@/src/components/roster/PlayerRosterCard';
 
@@ -50,7 +50,7 @@ interface PageProps {
 
 export default function WaiversPage({ params }: PageProps) {
   const { leagueId } = params;
-  const router = useRouter();
+  //const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [availablePlayers, setAvailablePlayers] = useState<NFLPlayer[]>([]);
   const [roster, setRoster] = useState<RosterPlayer[]>([]);
@@ -283,7 +283,7 @@ export default function WaiversPage({ params }: PageProps) {
       <div className="card bg-primary text-primary-content">
         <div className="card-body">
           <h2 className="card-title">AI Copilot Suggestion</h2>
-          <p>Consider adding Kenneth Walker (RB, SEA) and dropping Ja'Marr Chase (WR, CIN).</p>
+          <p>Consider adding Kenneth Walker (RB, SEA) and dropping Ja&apos;Marr Chase (WR, CIN).</p>
           <p className="text-sm">Walker has a favorable schedule coming up, while Chase is on bye this week and you have good WR depth.</p>
           <div className="card-actions justify-end">
             <button 

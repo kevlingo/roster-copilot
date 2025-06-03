@@ -20,8 +20,8 @@ This document outlines the UI/UX design specifications and frontend architecture
     3.  The AI processes the message.
     4.  The AI's response appears as a new light blue chat bubble in the overlay.
     5.  The chat history scrolls within its designated overlay area if messages exceed the visible limit (3-4 bubbles).
-    6.  User can click the 'X' icon on the overlay to hide the chat bubbles. The textbox might remain or also be minimized/hidden (TBD based on further refinement, default: bubbles hide, textbox remains).
-    7.  User can click a settings cog icon to access options like 'Clear History'.
+    6.  User can click the 'X' (Hide Chat) icon, now located within the `ChatInput` component area, to hide the chat bubbles. The textbox itself (along with these controls) will remain visible.
+    7.  User can click a settings (cog) icon, also located within the `ChatInput` component area, to access options like 'Clear History'.
 
 ### 2.2. Wireframes (Descriptive)
 
@@ -41,24 +41,24 @@ This document outlines the UI/UX design specifications and frontend architecture
 |   | User: Latest message   | (Light Grey Bubble)    |
 |   +------------------------+                        |
 |                    +------------------------+       |
-|                    | AI: Latest response    | [X]cog| (Light Blue Bubble)
+|                    | AI: Latest response    |       | (Light Blue Bubble)
 |                    +------------------------+       |
 |                                (Scrollbar if needed) |
 |                                                     |
 |                                                     |
 | Page Content (Visible, interactive)                 |
 +-----------------------------------------------------+
-| [ Chat Input Textbox (Neutral Color)        ] [Send]| Fixed Bottom
+| [ Chat Input Textbox (Neutral Color) ] [Send][X][cog]| Fixed Bottom
 +-----------------------------------------------------+
 ```
 
 *   **Key Elements:**
     *   **Page Content:** Background, fully interactive.
     *   **Chat Bubbles Overlay:** Positioned typically on one side (e.g., bottom-right or bottom-left corner, above the textbox area), showing 3-4 messages.
-    *   **'X' Icon:** Clearly visible on the chat bubble overlay area, likely top-right of the overlay.
-    *   **Settings Cog Icon:** Adjacent to the 'X' or within the overlay area, for 'Clear History'.
     *   **Chat Input Textbox:** Fixed at the screen bottom, spanning a comfortable width.
     *   **Send Button/Icon:** Adjacent to the textbox.
+    *   **Hide Chat ('X') Icon:** Located within the `ChatInput` area, to the right of the Send button.
+    *   **Settings Cog Icon:** Located within the `ChatInput` area, to the right of the Hide Chat button.
 
 **Scenario 2: Chat Hidden**
 
@@ -104,10 +104,21 @@ This document outlines the UI/UX design specifications and frontend architecture
     *   Background: Neutral, inviting color (e.g., light grey).
     *   Border: Subtle border or slightly darker background to differentiate from page.
     *   Placeholder Text: e.g., "Type your message..."
+    *   Includes 'Send', 'Hide Chat' (X), and 'Chat Settings' (cog) icon buttons, arranged to the right of the text input area.
+    *   **Icon Styling:** Icons should be clear, visually harmonious (e.g., similar size and stroke weight, using established icon color like Medium grey `#6B7280`).
+    *   **Icon Spacing:** A small, consistent margin (e.g., 4-8px, Tailwind `space-x-1` or `space-x-2`) should be maintained between the text input and the first icon (Send), and between each subsequent icon.
+    *   **Icon Order:** Send, Hide Chat, Chat Settings (from left to right, after the text input).
 *   **Interaction:**
     *   Always focused or easily focusable.
     *   Handles text input.
     *   Submission via "Enter" key (configurable: Enter to send, Shift+Enter for new line) and/or a "Send" icon button.
+    *   **Focus After Send:** After a user successfully sends a message, focus should automatically return to the text input area. This is a standard UX pattern that allows for rapid follow-up messages.
+    *   'Hide Chat' (X) button: Hides the `ChatBubbleOverlay`.
+    *   'Chat Settings' (cog) button: Opens a popover for settings like "Clear History".
+*   **Responsiveness:**
+    *   On narrower screens, the text input area will shrink proportionally to accommodate the fixed width of the icon buttons.
+    *   Icon buttons must maintain adequate tap target sizes (e.g., minimum 24x24px interactive area, even if the visual icon is smaller) for usability on touch devices. Tailwind classes like `p-2` on the button can help achieve this.
+    *   The overall height of the `ChatInput` component should remain consistent.
 *   **States:**
     *   Default
     *   Focused
@@ -117,16 +128,31 @@ This document outlines the UI/UX design specifications and frontend architecture
 #### 2.4.2. Chat History Bubbles Overlay (`ChatBubbleOverlay`)
 
 *   **Appearance:**
-    *   Overlays a portion of the page (e.g., bottom-right or bottom-left quadrant).
-    *   Displays the latest 3-4 messages. Older messages are accessible via scroll within this overlay.
-    *   Transparent or semi-transparent background for the overlay container *itself* is not recommended as it can make bubbles harder to read. Bubbles themselves are opaque. The *area* taken by bubbles should allow underlying content to be seen around it.
+    *   **Positioning:** Overlays a portion of the page (e.g., typically fixed to the right side of the viewport).
+    *   **Height:** The overlay's height should be `calc(100vh - var(--header-height))`.
+        *   **Guidance:** This will make the overlay extend from below the header to the bottom of the viewport. A CSS variable (e.g., `--header-height`) representing the application header's height must be defined and accessible. The Tailwind CSS class would be `h-[calc(100vh-var(--header-height))]`.
+        *   **Note on `ChatInput`:** Since the `ChatInput` component is fixed at the bottom, the `ChatBubbleOverlay` will visually extend behind it. To ensure all chat messages are viewable and not obscured by the `ChatInput`, the scrollable content area within `ChatBubbleOverlay` should have a `padding-bottom` equal to the height of the `ChatInput` component.
+    *   **Width:** The width should be `w-96` (which is `24rem` or `384px`).
+        *   **Tailwind CSS:** Use `w-96`.
+    *   **Content Display:** Displays the latest messages. Older messages are accessible via scroll within this overlay.
+    *   **Background & Transparency:** The overlay container itself should generally not have a background that obscures page content unnecessarily, especially if it's just a positioning wrapper. Chat bubbles themselves are opaque. The design goal is that underlying page content remains visible around the chat interface elements.
 *   **Bubbles (`ChatMessageBubble`):**
-    *   **User Bubble:** Light grey background, text aligned left (or right, depending on standard chat conventions adopted). Rounded corners.
-    *   **AI Bubble:** Light blue background, text aligned right (or left). Rounded corners.
+    *   **User Bubble:** Light grey background. Aligns to the **right** side of the chat overlay. Rounded corners. (Content within the bubble itself typically remains left-aligned for readability).
+    *   **AI Bubble:** Light blue background. Aligns to the **left** side of the chat overlay. Rounded corners. (Content within the bubble itself typically remains left-aligned for readability).
     *   **Content:** Message text. Timestamps optional, subtle.
-    *   **Spacing:** Adequate padding within bubbles, and margin between bubbles.
+    *   **Sizing:** Bubbles should have a defined `max-width` (e.g., `max-w-2xl` or `max-w-xl` using Tailwind CSS) to prevent them from stretching too wide within the `48rem` overlay. This ensures better readability.
+    *   **Spacing & Alignment:**
+        *   **Vertical Spacing:** To control the vertical gap between consecutive messages, each `ChatMessageBubble` should have a bottom margin. Given `flex-direction: column-reverse` in `ChatBubbleOverlay`, Tailwind's `mb-2` (0.5rem) is a good starting point. This creates a small, consistent space above each new message, improving the visual flow. The value (`mb-1`, `mb-2`, `mb-3`) can be adjusted based on visual testing.
+        *   **Horizontal Alignment:** To clearly distinguish sender, the standard alignment for messages within the chat overlay is:
+            *   AI-sent messages: Align to the **left**.
+            *   User-sent messages: Align to the **right**.
+            *   This styling is applied directly to the root element of the `ChatMessageBubble` component.
+        *   **Tailwind CSS Implementation:** Assuming the parent container of bubbles in `ChatBubbleOverlay` is a flex column (e.g., using `flex flex-col` or `flex flex-col-reverse` for stacking messages), the following classes are conditionally applied to `ChatMessageBubble`:
+            *   AI Messages: `self-start` (aligns the bubble to the **left** start of the flex container).
+            *   User Messages: `self-end` (aligns the bubble to the **right** end of the flex container).
+        *   This visual differentiation is crucial for readability. Text *within* each bubble typically remains left-aligned for optimal readability, regardless of the bubble's placement.
 *   **Interaction:**
-    *   Vertical scrolling within the overlay if content exceeds visible height.
+    *   Vertical scrolling within the overlay if content exceeds visible height. New messages appear at the bottom, and the view automatically scrolls to show the latest messages. This "scroll from bottom" behavior remains a core requirement and is fully compatible with the updated left/right alignment of messages.
     *   Text selection within bubbles should be possible.
     *   Links within chat messages should be clickable.
 *   **States:**
@@ -134,16 +160,30 @@ This document outlines the UI/UX design specifications and frontend architecture
     *   Hidden (triggered by 'X' control)
     *   Scrolling
 
-#### 2.4.3. Hide Control ('X' Icon) (`HideChatButton`)
+#### 2.4.3. Toggle Chat Visibility Control (`HideChatButton`)
 
-*   **Appearance:**
-    *   Standard 'X' (close) icon.
-    *   Positioned on the `ChatBubbleOverlay` (e.g., top-right corner of the overlay area).
-    *   Sufficiently large for easy tapping/clicking.
-    *   Contrasting color for visibility.
+*   **Purpose:** Allows the user to show or hide the `ChatBubbleOverlay`.
+*   **Appearance (Dynamic based on `isChatVisible` state):**
+    *   **When chat is visible (`isChatVisible={true}`):**
+        *   Displays an `EyeOff` icon (from `lucide-react`) to indicate the action of hiding the chat.
+    *   **When chat is hidden (`isChatVisible={false}`):**
+        *   Displays an `Eye` icon (from `lucide-react`) to indicate the action of showing the chat.
+    *   Positioned within the `ChatInput` component, to the right of the 'Send' button.
+    *   Icon should be visually consistent with the 'Send' and 'Settings' icons in terms of size and stroke weight.
+    *   Sufficiently large interactive area for easy tapping/clicking (e.g., by applying padding like `p-2` to the button).
+    *   Contrasting color for visibility against the `ChatInput` background.
 *   **Interaction:**
-    *   On click/tap: Hides the `ChatBubbleOverlay`. The `ChatInput` may remain or also hide/minimize. If `ChatInput` also hides, a "Show Chat" affordance must appear.
-*   **States:**
+    *   On click/tap: Toggles the visibility of the `ChatBubbleOverlay`. The `ChatInput` (containing this button) remains visible.
+*   **Tooltip / `aria-label` (Dynamic based on `isChatVisible` state):**
+    *   **When chat is visible (`isChatVisible={true}`):**
+        *   Tooltip: "Hide chat history"
+        *   `aria-label`: "Hide chat history"
+    *   **When chat is hidden (`isChatVisible={false}`):**
+        *   Tooltip: "Show chat history"
+        *   `aria-label`: "Show chat history"
+*   **Accessibility:**
+    *   `aria-pressed`: Set to `"true"` when the chat overlay is visible (button is "pressed" to show), and `"false"` when hidden. This clearly communicates the toggle state.
+*   **States (for the button itself):**
     *   Default
     *   Hover/Focus
 
@@ -151,7 +191,9 @@ This document outlines the UI/UX design specifications and frontend architecture
 
 *   **Appearance:**
     *   Standard settings (cog) icon.
-    *   Positioned near the 'X' icon or within the `ChatInput` area for less frequent access.
+    *   Positioned within the `ChatInput` component, to the right of the 'Hide Chat' (X) button.
+    *   Icon should be visually consistent with the 'Send' and 'Hide Chat' icons.
+    *   Sufficiently large interactive area for easy tapping/clicking.
 *   **Interaction:**
     *   On click/tap: Opens a small dropdown/popover.
     *   Popover contains:
@@ -170,7 +212,7 @@ This document outlines the UI/UX design specifications and frontend architecture
 *   **Style:** Clean, modern, and universally understandable. Material Icons, Heroicons, or Feather Icons are good sources.
 *   **Icons Needed:**
     *   Send (e.g., paper plane)
-    *   Close/Hide (X)
+    *   Toggle Chat Visibility (e.g., `Eye` / `EyeOff` from `lucide-react`)
     *   Settings (cog)
     *   Scroll indicators (if custom, otherwise browser default)
     *   (Optional) Launcher icon if entire chat hides (e.g., chat bubble icon)
@@ -196,6 +238,7 @@ This document outlines the UI/UX design specifications and frontend architecture
     *   Use `aria-live="polite"` or `aria-live="assertive"` for the chat message area so screen readers announce new messages.
     *   Proper roles for chat elements (e.g., `log`, `form`, `button`).
     *   `aria-label` for icon-only buttons.
+    *   `aria-pressed` for toggle buttons (like the Toggle Chat Visibility button) to indicate their current state.
 *   **Color Contrast:** Ensure sufficient contrast between text and background colors in bubbles, input field, and controls.
 *   **Text Resizing:** Interface should remain usable when text is zoomed.
 *   **Motion:** Minimize unnecessary animations. If animations are used, provide an option to reduce motion.
@@ -212,22 +255,45 @@ Given the project uses Next.js, React, TypeScript, and Tailwind CSS, the archite
     *   Handles communication with the AI service.
     *   Located in `src/components/ai-chat/PersistentChatInterface.tsx`.
 *   **`ChatInput` (Presentational/Controlled Component):**
-    *   Renders the textbox and send button.
+    *   Renders the textbox, 'Send' button, 'HideChatButton', and 'ChatSettings' button/icon.
     *   Receives current input value and `onChange`/`onSubmit` handlers from `PersistentChatInterface`.
+    *   Receives handlers for hide chat and open settings from `PersistentChatInterface`.
     *   Located in `src/components/ai-chat/ChatInput.tsx`.
 *   **`ChatBubbleOverlay` (Presentational Component):**
-    *   Renders the list of chat messages and controls (Hide, Settings).
-    *   Receives messages array, visibility status, and control handlers from `PersistentChatInterface`.
-    *   Manages internal scrolling.
+    *   Renders the list of chat messages, with new messages appearing at the bottom.
+    *   Receives messages array, visibility status from `PersistentChatInterface`.
+    *   Manages internal scrolling. The scroll view should automatically be positioned at the bottom to show the latest messages.
+        *   **Implementation Guidance for Scrolling:**
+            *   The container holding the messages (within `ChatBubbleOverlay`) should use `display: flex` and `flex-direction: column-reverse`. This will visually stack messages from bottom to top, with the most recent message at the visual bottom. The underlying HTML order of messages will be oldest to newest.
+            *   The scrollable container itself should then be styled with `overflow-y: auto`.
+            *   To ensure the scroll view automatically shows the latest messages (which are now at the "top" of the reversed flex container, visually at the bottom), the scrollable container typically has its `scrollTop` effectively at `0` when using `column-reverse` to show the "end" of the content. New items added to the DOM should maintain this scroll position.
+            *   If manual scroll adjustment is needed (e.g., on initial load or specific interactions), JavaScript can be used:
+                *   Use a `useEffect` hook in React that triggers when the `messages` array changes.
+                *   Inside the effect, get a ref to the scrollable messages container.
+                *   Set `scrollableContainerRef.current.scrollTop = 0;` (as with `column-reverse`, the visual bottom corresponds to the start of the scrollable content). Test thoroughly, as browser behavior can sometimes vary with flex-reverse and scrolling.
+            *   **Content Boundary:** Ensure the scrollable message area is properly constrained within the overlay's dimensions. This includes respecting the overall height calculated (`calc(100vh - var(--header-height))`) and the bottom padding allocated for the `ChatInput` component, thereby preventing messages from being visually obscured by the header or input area.
     *   Located in `src/components/ai-chat/ChatBubbleOverlay.tsx`.
 *   **`ChatMessageBubble` (Presentational Component):**
     *   Renders a single chat message (user or AI).
     *   Receives message content, sender type, timestamp.
-    *   Styled differently based on sender.
+    *   **Styling and Alignment:**
+        *   Styled differently based on sender (e.g., background color as specified in section 2.3 Visual Design Language).
+        *   **Alignment within Overlay:** The standard alignment is:
+            *   AI-sent messages: Align to the **left** of the chat overlay.
+            *   User-sent messages: Align to the **right** of the chat overlay.
+            *   **Tailwind CSS for Alignment:** This is achieved by conditionally applying classes to the root element of the `ChatMessageBubble`. Assuming the parent container in `ChatBubbleOverlay` (which uses `flex flex-col-reverse`) is a flex column, use:
+                *   `self-start` for AI-sent messages (aligns the bubble to the **left** start).
+                *   `self-end` for User-sent messages (aligns the bubble to the **right** end).
+            *   Text *within* each bubble typically remains left-aligned for readability.
+        *   **Implementation Guidance for Message Width:**
+            *   Individual message bubbles should have a `max-width` to prevent them from becoming uncomfortably wide within the `w-96` (`24rem`) `ChatBubbleOverlay`.
+            *   A recommended starting value is `max-w-2xl` (Tailwind CSS, equivalent to `42rem` or `672px`). This provides good readability while leaving some visual margin within the overlay. Alternatives like `max-w-xl` (`36rem` or `576px`) could be considered for an even narrower appearance.
+            *   The final `max-width` should be determined after visual testing and applied to the root element of the `ChatMessageBubble` component.
     *   Located in `src/components/ai-chat/ChatMessageBubble.tsx`.
 *   **`HideChatButton` (Presentational Component):**
-    *   Renders the 'X' icon.
-    *   Receives `onClick` handler.
+    *   Renders a dynamic icon (`Eye` or `EyeOff`) to toggle chat visibility.
+    *   Receives `onClick` handler and an `isChatVisible: boolean` prop to determine its state and appearance.
+    *   Manages its `aria-label`, `aria-pressed` state, and tooltip dynamically based on `isChatVisible`.
     *   Located in `src/components/ai-chat/buttons/HideChatButton.tsx`.
 *   **`ChatSettings` (Presentational Component with local state for popover):**
     *   Renders the cog icon.

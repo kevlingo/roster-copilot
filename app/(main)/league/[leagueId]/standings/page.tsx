@@ -134,7 +134,7 @@ export default function StandingsPage({ params }: PageProps) {
       <div className="card bg-primary text-primary-content">
         <div className="card-body">
           <h2 className="card-title">AI Copilot Analysis</h2>
-          <p>Your team is currently in playoff position at 3rd place, but there's only a 1-game lead over the 5th place team.</p>
+          <p>Your team is currently in playoff position at 3rd place, but there&apos;s only a 1-game lead over the 5th place team.</p>
           <p className="text-sm mt-2">Your team has scored the 2nd most points in the league, which is a good sign. Teams that score a lot of points tend to win more games in the long run.</p>
         </div>
       </div>
