@@ -49,11 +49,13 @@ afterEach(() => {
   consoleErrorSpy.mockRestore();
 });
 
-const mockSuccessHandler: ApiRouteHandler = async (_req) => { // Renamed req to _req as it's not used
-  return mockNextResponseJson({ message: 'Success' }, { status: 200 }) as any; // Use the mock
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const mockSuccessHandler: ApiRouteHandler = async () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return mockNextResponseJson({ message: 'Success' }, { status: 200 }) as any;
 };
 
-const mockErrorHandler: ApiRouteHandler = async (_req) => { // Renamed req to _req
+const mockErrorHandler: ApiRouteHandler = async () => {
   throw new Error('Test error from handler');
 };
 
@@ -68,14 +70,14 @@ interface MockableNextRequest {
   };
   url: string;
   ip?: string;
-  json?: () => Promise<any>;
+  json?: () => Promise<unknown>;
   text?: () => Promise<string>;
   // Add other properties/methods if your handlers/wrappers use them
 }
 
 interface MockableNextResponse {
   status: number;
-  json: () => Promise<any>;
+  json: () => Promise<unknown>;
   // Add other properties/methods if your handlers/wrappers use them
 }
 
@@ -101,7 +103,7 @@ const createMockRequest = (
 };
 
 // Mock NextResponse.json()
-const mockNextResponseJson = (body: any, init?: { status?: number }): MockableNextResponse => {
+const mockNextResponseJson = (body: unknown, init?: { status?: number }): MockableNextResponse => {
   return {
     status: init?.status || 200,
     json: async () => body,
@@ -113,11 +115,14 @@ describe('API Route Handler Wrappers', () => {
   describe('withErrorHandling', () => {
     it('should return handler response on success', async () => {
       const req = createMockRequest();
-      const mockSuccessHandlerWithMockResponse: ApiRouteHandler = async (_req) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const mockSuccessHandlerWithMockResponse: ApiRouteHandler = async () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return mockNextResponseJson({ message: 'Success' }, { status: 200 }) as any;
       };
       const wrappedHandler = withErrorHandling(mockSuccessHandlerWithMockResponse);
-      const response = await wrappedHandler(req as any); // Cast to any for the mock
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const response = await wrappedHandler(req as any);
       const body = await response.json();
 
       expect(response.status).toBe(200);
@@ -128,7 +133,8 @@ describe('API Route Handler Wrappers', () => {
     it('should catch errors, log them, and return 500 response', async () => {
       const req = createMockRequest('/api/error-test');
       const wrappedHandler = withErrorHandling(mockErrorHandler);
-      const response = await wrappedHandler(req as any); // Cast to any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const response = await wrappedHandler(req as any);
       const body = await response.json();
 
       expect(response.status).toBe(500);
@@ -147,12 +153,13 @@ describe('API Route Handler Wrappers', () => {
 
     it('should handle non-Error objects thrown', async () => {
         const req = createMockRequest();
-        const nonErrorHandler: ApiRouteHandler = async (_req) => {
+        const nonErrorHandler: ApiRouteHandler = async () => {
             // eslint-disable-next-line no-throw-literal
             throw 'Just a string error';
         };
         const wrappedHandler = withErrorHandling(nonErrorHandler);
-        const response = await wrappedHandler(req as any); // Cast to any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const response = await wrappedHandler(req as any);
         const body = await response.json();
 
         expect(response.status).toBe(500);
@@ -170,11 +177,14 @@ describe('API Route Handler Wrappers', () => {
   describe('withRequestLogging', () => {
     it('should log request and response details on success', async () => {
       const req = createMockRequest('/api/log-test', 'POST', {'user-agent': 'TestAgent/1.0'}, '123.0.0.1');
-      const mockSuccessHandlerWithMockResponse: ApiRouteHandler = async (_req) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const mockSuccessHandlerWithMockResponse: ApiRouteHandler = async () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return mockNextResponseJson({ message: 'Success' }, { status: 200 }) as any;
       };
       const wrappedHandler = withRequestLogging(mockSuccessHandlerWithMockResponse);
-      const response = await wrappedHandler(req as any); // Cast to any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const response = await wrappedHandler(req as any);
 
       expect(response.status).toBe(200);
       expect(consoleLogSpy).toHaveBeenCalledTimes(2);
@@ -206,7 +216,8 @@ describe('API Route Handler Wrappers', () => {
         const req = createMockRequest('/api/log-error', 'GET', {'user-agent': 'ErrorAgent/1.0'}, '127.0.0.1');
         const wrappedHandler = withRequestLogging(mockErrorHandler);
 
-        await expect(wrappedHandler(req as any)).rejects.toThrow('Test error from handler'); // Cast to any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await expect(wrappedHandler(req as any)).rejects.toThrow('Test error from handler');
 
         expect(consoleLogSpy).toHaveBeenCalledTimes(1); // Only request log
         expect(consoleLogSpy).toHaveBeenCalledWith(
@@ -237,11 +248,14 @@ describe('API Route Handler Wrappers', () => {
   describe('withAuth (Stub)', () => {
     it('should call the handler and log auth stub message', async () => {
       const req = createMockRequest();
-      const mockSuccessHandlerWithMockResponse: ApiRouteHandler = async (_req) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const mockSuccessHandlerWithMockResponse: ApiRouteHandler = async () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return mockNextResponseJson({ message: 'Success' }, { status: 200 }) as any;
       };
       const wrappedHandler = withAuth(mockSuccessHandlerWithMockResponse);
-      const response = await wrappedHandler(req as any); // Cast to any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const response = await wrappedHandler(req as any);
 
       expect(response.status).toBe(200);
       expect(consoleLogSpy).toHaveBeenCalledWith('[Auth Stub] Placeholder authentication check passed.');
@@ -265,13 +279,16 @@ describe('API Route Handler Wrappers', () => {
         order.push('wrapper2_end');
         return res;
       };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const baseHandler: ApiRouteHandler = async () => {
         order.push('handler');
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return mockNextResponseJson({ message: 'composed' }) as any;
       };
 
       const composed = composeWrappers(wrapper1, wrapper2)(baseHandler);
-      await composed(req as any); // Cast to any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await composed(req as any);
 
       expect(order).toEqual([
         'wrapper1_start',
@@ -290,7 +307,8 @@ describe('API Route Handler Wrappers', () => {
             withAuth
         )(mockSuccessHandler); // Use the global mockSuccessHandler which now uses mockNextResponseJson
 
-        const response = await composedHandler(req as any); // Cast to any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const response = await composedHandler(req as any);
         const body = await response.json();
 
         expect(response.status).toBe(200);
@@ -319,7 +337,8 @@ describe('API Route Handler Wrappers', () => {
             withAuth
         )(mockErrorHandler);
 
-        const response = await composedHandler(req as any); // Cast to any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const response = await composedHandler(req as any);
         const body = await response.json();
 
         expect(response.status).toBe(500);

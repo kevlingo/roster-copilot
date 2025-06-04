@@ -25,3 +25,11 @@
 - **Rationale:** To diagnose if `process.cwd()` or DB path resolution is incorrect when Next.js dev server is run by Playwright's `webServer`, and to capture more specific SQLite errors during the E2E test execution that fails at signup.
 - **Expected Outcome:** Console logs from the Next.js server (started by Playwright) should reveal the actual CWD, DB path, and any specific errors encountered by SQLite, helping pinpoint why `createUserProfile` fails.
 - **Status:** Reverted (2025-06-03). Logging helped identify issues; now removed.
+
+## Story 1.1: E2E Test Debug - DB Connection for Email Verification API
+
+- **File Path:** [`app/api/auth/verify-email/[token]/route.ts`](app/api/auth/verify-email/[token]/route.ts:1)
+- **Change Description (Attempt 1 - DB Init):** Added `await initializeDatabase();` at the beginning of the `verifyEmailHandler` function.
+- **Rationale:** The E2E test for email verification failed because the `/api/auth/verify-email/[token]` route encountered a "Database not connected" error. This was likely due to the database instance not being initialized or available for this specific request when run under Playwright's webServer. Adding `initializeDatabase()` ensures the DB connection is established before DAL operations.
+- **Expected Outcome:** The E2E test for user registration and email verification should pass, as the verify-email endpoint will now correctly connect to the database.
+- **Status:** Resolved (2025-06-04). E2E test passed after adding `initializeDatabase()` to `verifyEmailHandler`.

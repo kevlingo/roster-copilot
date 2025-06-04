@@ -10,6 +10,7 @@ import {
   updateUserEmailVerificationStatus,
   findUserByEmail, // Or findUserById if token stores userId directly
 } from '@/lib/dal/user.dal';
+import { initializeDatabase } from '@/lib/dal/db'; // Import initializeDatabase
 import { EmailVerificationToken_PoC, UserProfile } from '@/lib/models/user.models';
 
 // Placeholder for session creation/login logic (Story 1.2)
@@ -19,6 +20,8 @@ async function verifyEmailHandler(
   req: NextRequest,
   context?: { params?: { token?: string | string[] } }, // Corrected type for context/params
 ): Promise<NextResponse> {
+  await initializeDatabase(); // Ensure DB is initialized
+
   if (req.method !== 'GET') {
     return NextResponse.json({ error: 'Method Not Allowed' }, { status: 405 });
   }

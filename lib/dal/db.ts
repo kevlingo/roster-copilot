@@ -1,5 +1,6 @@
 import sqlite3 from 'sqlite3';
 import path from 'path';
+import fs from 'fs'; // Changed from require to import
 
 // Default path to the SQLite database file
 const DEFAULT_DB_PATH = path.resolve(process.cwd(), 'data', 'roster_copilot_poc.db');
@@ -15,7 +16,7 @@ export function connectDb(dbPath: string = DEFAULT_DB_PATH): Promise<sqlite3.Dat
     }
     // Ensure directory exists
     const dir = path.dirname(dbPath);
-    require('fs').mkdirSync(dir, { recursive: true });
+    fs.mkdirSync(dir, { recursive: true }); // Changed from require to fs
 
 
     db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
@@ -81,7 +82,7 @@ function ensureDbConnected(): sqlite3.Database {
  * @param params Parameters for the SQL query.
  * @returns A promise that resolves with an array of rows or rejects with an error.
  */
-export function all<T = any>(sql: string, params: any[] = []): Promise<T[]> {
+export function all<T = unknown>(sql: string, params: unknown[] = []): Promise<T[]> {
   const currentDb = ensureDbConnected();
   return new Promise((resolve, reject) => {
     currentDb.all(sql, params, (err, rows: T[]) => {
@@ -101,7 +102,7 @@ export function all<T = any>(sql: string, params: any[] = []): Promise<T[]> {
  * @param params Parameters for the SQL query.
  * @returns A promise that resolves with a single row or undefined, or rejects with an error.
  */
-export function get<T = any>(sql: string, params: any[] = []): Promise<T | undefined> {
+export function get<T = unknown>(sql: string, params: unknown[] = []): Promise<T | undefined> {
   const currentDb = ensureDbConnected();
   return new Promise((resolve, reject) => {
     currentDb.get(sql, params, (err, row: T | undefined) => {
@@ -121,7 +122,7 @@ export function get<T = any>(sql: string, params: any[] = []): Promise<T | undef
  * @param params Parameters for the SQL query.
  * @returns A promise that resolves with an object containing lastID and changes, or rejects with an error.
  */
-export function run(sql: string, params: any[] = []): Promise<{ lastID: number; changes: number }> {
+export function run(sql: string, params: unknown[] = []): Promise<{ lastID: number; changes: number }> {
   const currentDb = ensureDbConnected();
   return new Promise((resolve, reject) => {
     // `this` context within the callback refers to the statement object

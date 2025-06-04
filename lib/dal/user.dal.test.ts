@@ -7,7 +7,8 @@ import {
   updateUserEmailVerificationStatus,
   markTokenAsUsed,
 } from './user.dal';
-import { UserProfile, EmailVerificationToken_PoC } from '@/lib/models/user.models';
+// EmailVerificationToken_PoC was unused
+import { UserProfile } from '@/lib/models/user.models';
 
 // Declare mock functions with 'let'
 let mockDbGet: jest.Mock;
@@ -19,10 +20,10 @@ let mockInitializeDatabase: jest.Mock;
 // The arrow functions ensure that the mocks are called with the correct 'this' context and arguments
 // when the DAL functions (e.g., findUserByUsername) invoke the mocked db functions.
 jest.mock('./db', () => ({
-  get: (...args: any[]) => mockDbGet(...args),
-  run: (...args: any[]) => mockDbRun(...args),
-  all: (...args: any[]) => mockDbAll(...args),
-  initializeDatabase: (...args: any[]) => mockInitializeDatabase(...args),
+  get: (...args: unknown[]) => mockDbGet(...args),
+  run: (...args: unknown[]) => mockDbRun(...args),
+  all: (...args: unknown[]) => mockDbAll(...args),
+  initializeDatabase: (...args: unknown[]) => mockInitializeDatabase(...args),
 }));
 
 // Mock uuid
@@ -84,7 +85,7 @@ describe('User DAL', () => {
       mockDbRun.mockResolvedValue({ lastID: 1, changes: 1 });
       
       const mockDateInstance = new OriginalDate(expectedDate);
-      const spy = jest.spyOn(global, 'Date').mockImplementation(() => mockDateInstance as any);
+      const spy = jest.spyOn(global, 'Date').mockImplementation(() => mockDateInstance as unknown as Date);
 
       const newUser = await createUserProfile(userData);
 
@@ -110,7 +111,7 @@ describe('User DAL', () => {
       const OriginalDate = global.Date; // Store original Date
       const expectedDate = new OriginalDate().toISOString(); // Use original Date for expected value
       const mockDateInstance = new OriginalDate(expectedDate);
-      const spy = jest.spyOn(global, 'Date').mockImplementation(() => mockDateInstance as any);
+      const spy = jest.spyOn(global, 'Date').mockImplementation(() => mockDateInstance as unknown as Date);
       
       await createEmailVerificationToken(tokenData);
       expect(mockDbRun).toHaveBeenCalledWith(
@@ -144,7 +145,7 @@ describe('User DAL', () => {
       const OriginalDate = global.Date; // Store original Date
       const expectedDate = new OriginalDate().toISOString(); // Use original Date for expected value
       const mockDateInstance = new OriginalDate(expectedDate);
-      const spy = jest.spyOn(global, 'Date').mockImplementation(() => mockDateInstance as any);
+      const spy = jest.spyOn(global, 'Date').mockImplementation(() => mockDateInstance as unknown as Date);
 
       await updateUserEmailVerificationStatus(userId, true);
       expect(mockDbRun).toHaveBeenCalledWith(
@@ -158,7 +159,7 @@ describe('User DAL', () => {
         const OriginalDate = global.Date; // Store original Date
         const expectedDate = new OriginalDate().toISOString(); // Use original Date for expected value
         const mockDateInstance = new OriginalDate(expectedDate);
-        const spy = jest.spyOn(global, 'Date').mockImplementation(() => mockDateInstance as any);
+        const spy = jest.spyOn(global, 'Date').mockImplementation(() => mockDateInstance as unknown as Date);
   
         await updateUserEmailVerificationStatus(userId, false);
         expect(mockDbRun).toHaveBeenCalledWith(

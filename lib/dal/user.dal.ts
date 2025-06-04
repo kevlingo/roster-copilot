@@ -1,5 +1,5 @@
 import { UserProfile, EmailVerificationToken_PoC } from '@/lib/models/user.models';
-import { get, run, all } from './db'; // Assuming db.ts is in the same directory
+import { get, run } from './db'; // Removed 'all' as it's unused
 import { v4 as uuidv4 } from 'uuid'; // For generating userId
 
 /**
@@ -9,7 +9,8 @@ import { v4 as uuidv4 } from 'uuid'; // For generating userId
  */
 export async function findUserByUsername(username: string): Promise<UserProfile | undefined> {
   const sql = 'SELECT * FROM UserProfiles WHERE username = ?';
-  const user = await get<any>(sql, [username]); // Use 'any' to handle potential number for boolean
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const user: any = await get<any>(sql, [username]);
   if (user) {
     return { ...user, emailVerified: Boolean(user.emailVerified) };
   }
@@ -23,7 +24,8 @@ export async function findUserByUsername(username: string): Promise<UserProfile 
  */
 export async function findUserByEmail(email: string): Promise<UserProfile | undefined> {
   const sql = 'SELECT * FROM UserProfiles WHERE email = ?';
-  const user = await get<any>(sql, [email]); // Use 'any' to handle potential number for boolean
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const user: any = await get<any>(sql, [email]);
   if (user) {
     return { ...user, emailVerified: Boolean(user.emailVerified) };
   }
@@ -105,7 +107,8 @@ export async function findVerificationToken(
   token: string,
 ): Promise<EmailVerificationToken_PoC | undefined> {
   const sql = 'SELECT * FROM EmailVerificationTokens_PoC WHERE token = ?';
-  const result = await get<any>(sql, [token]); // Use 'any' temporarily if DB returns 0/1 for boolean
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const result: any = await get<any>(sql, [token]);
   if (result) {
     return { ...result, used: Boolean(result.used) }; // Ensure 'used' is boolean
   }

@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { SignUpDto } from '@/lib/dtos/auth.dto'; // Assuming this DTO can be used on frontend too
 
@@ -13,7 +12,7 @@ const PASSWORD_REGEX = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-])
 type Inputs = SignUpDto & { terms: boolean }; // Add terms field for form
 
 export default function SignupPage() {
-  const router = useRouter();
+  // const router = useRouter(); // router was unused
   const [isLoading, setIsLoading] = useState(false);
   // For general API errors or success messages not tied to a specific field
   const [formMessage, setFormMessage] = useState<{ type: 'error' | 'success'; message: string } | null>(null);

@@ -18,7 +18,7 @@ This document lists all user stories from the `docs/stories/` directory.
 
 4.  **User Account Creation with Email Verification**
     *   Path: [`docs/stories/1.1.story.md`](docs/stories/1.1.story.md)
-    *   Status: InProgress
+    *   Status: Done
     *   Type: Full Stack
 
 5.  **User Login**

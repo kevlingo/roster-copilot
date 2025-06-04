@@ -1,4 +1,5 @@
-import { Resend } from 'resend';
+// Resend was unused
+// import { Resend } from 'resend';
 
 // Define the mock functions first
 const mockResendEmailSend = jest.fn();
@@ -149,7 +150,7 @@ describe('NotificationService', () => {
         };
 
         // Access the private method using bracket notation for testing
-        const result = (serviceInstance as any).processTemplate(template, templateData);
+        const result = (serviceInstance as unknown as { processTemplate: (template: string, data: unknown) => string }).processTemplate(template, templateData);
 
         const expected = 'Hello testUser, verify here: http://localhost:3000/api/auth/verify-email/token123. Valid until 2024. Support: http://localhost:3000/support Privacy: http://localhost:3000/privacy Terms: http://localhost:3000/terms';
         expect(result).toBe(expected);
@@ -166,7 +167,7 @@ describe('NotificationService', () => {
           termsOfServiceUrl: '',
         };
 
-        const result = (serviceInstance as any).processTemplate(template, templateData);
+        const result = (serviceInstance as unknown as { processTemplate: (template: string, data: unknown) => string }).processTemplate(template, templateData);
         expect(result).toBe('Hello John, John is your name!');
       });
     });
@@ -177,7 +178,7 @@ describe('NotificationService', () => {
         const token = 'verificationToken123';
         const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
-        const result = (serviceInstance as any).createVerificationTemplateData(username, token);
+        const result = (serviceInstance as unknown as { createVerificationTemplateData: (username: string, token: string) => unknown }).createVerificationTemplateData(username, token);
 
         expect(result).toEqual({
           username: 'testUser',
@@ -193,7 +194,7 @@ describe('NotificationService', () => {
         const originalBaseUrl = process.env.NEXT_PUBLIC_BASE_URL;
         delete process.env.NEXT_PUBLIC_BASE_URL;
 
-        const result = (serviceInstance as any).createVerificationTemplateData('user', 'token');
+        const result = (serviceInstance as unknown as { createVerificationTemplateData: (username: string, token: string) => { verificationUrl: string, supportUrl: string } }).createVerificationTemplateData('user', 'token');
 
         expect(result.verificationUrl).toBe('/api/auth/verify-email/token');
         expect(result.supportUrl).toBe('/support');
@@ -210,7 +211,7 @@ describe('NotificationService', () => {
 
     beforeEach(() => {
       sendEmailSpy = jest.spyOn(serviceInstance, 'sendEmail').mockResolvedValue(true);
-      readTemplateSpy = jest.spyOn(serviceInstance as any, 'readTemplate');
+      readTemplateSpy = jest.spyOn(serviceInstance as unknown as { readTemplate: (templatePath: string) => Promise<string> }, 'readTemplate');
     });
 
     afterEach(() => {
