@@ -45,7 +45,7 @@ describe('ChatBubbleOverlay', () => {
     });
     const logContainer = screen.getByRole('log');
     const messagesEndSentinel = screen.getByTestId('messages-end-sentinel');
-    expect(logContainer.firstChild).toBe(messagesEndSentinel); // Crucial for flex-col-reverse
+    expect(logContainer.lastChild).toBe(messagesEndSentinel); // Sentinel is the last child
     expect(logContainer.children.length).toBe(mockMessages.length + 1); // +1 for the messagesEndRef div
     // Assert that HideChatButton and ChatSettings are NOT present
     expect(screen.queryByLabelText('Hide chat messages')).not.toBeInTheDocument();

@@ -3,7 +3,6 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import HideChatButton from './HideChatButton';
-import { Eye, EyeOff } from 'lucide-react'; // Import icons for assertion if needed
 
 describe('HideChatButton', () => {
   it('renders correctly with EyeOff icon and "Hide chat history" label when chat is visible', () => {

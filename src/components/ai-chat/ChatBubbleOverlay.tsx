@@ -15,13 +15,8 @@ const ChatBubbleOverlay: React.FC<ChatBubbleOverlayProps> = ({
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
-    if (isVisible && messagesEndRef.current && messagesContainerRef.current) {
-      const scrollableContainer = messagesContainerRef.current;
-      requestAnimationFrame(() => {
-        if (messagesContainerRef.current) { // Re-check ref
-          scrollableContainer.scrollTop = scrollableContainer.scrollHeight - scrollableContainer.clientHeight;
-        }
-      });
+    if (isVisible && messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'auto' });
     }
   }, [messages, isVisible]);
 

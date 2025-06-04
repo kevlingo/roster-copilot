@@ -206,8 +206,6 @@ describe('PersistentChatInterface', () => {
     const textarea = screen.getByTestId('chat-input-textarea');
     const sendButton = screen.getByTestId('chat-input-submit');
 
-    // Mock focus
-    const focusMock = jest.fn();
     // The ref in the actual component is `chatInputRef`, which is passed to the mocked ChatInput.
     // The mocked ChatInput applies this ref to its own textarea.
     // We need to simulate this by attaching a spy to the actual textarea's focus method.

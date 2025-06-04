@@ -3,29 +3,41 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "node -e \"try { require('fs').rmSync('./data/roster_copilot_poc.db', { force: true, recursive: false }); console.log('Old data/roster_copilot_poc.db deleted.'); } catch (e) { if (e.code !== 'ENOENT') throw e; console.log('data/roster_copilot_poc.db not found, skipping delete.'); }\" && next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "test:e2e": "playwright test",
+    "db:seed": "tsx ./scripts/database/seed-db.ts"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
+    "bcrypt": "^6.0.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.2",
     "lucide-react": "^0.344.0",
     "next": "^14.1.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.57.0",
+    "resend": "^4.5.1",
+    "sqlite3": "5.1.7",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@faker-js/faker": "^9.8.0",
+    "@playwright/test": "^1.52.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
+    "@types/bcrypt": "^5.0.2",
     "@types/jest": "^29.5.14",
     "@types/node": "^20.11.5",
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
+    "@types/sqlite3": "3.1.11",
     "@types/uuid": "^10.0.0",
     "autoprefixer": "^10.4.18",
     "daisyui": "^4.7.2",
@@ -36,6 +48,7 @@
     "postcss": "^8.4.35",
     "tailwindcss": "^3.4.1",
     "ts-node": "^10.9.2",
+    "tsx": "4.19.4",
     "typescript": "^5.5.3"
   }
 }
