@@ -138,3 +138,51 @@ export async function markTokenAsUsed(token: string): Promise<void> {
   const sql = 'UPDATE EmailVerificationTokens_PoC SET used = 1 WHERE token = ?';
   await run(sql, [token]);
 }
+
+/**
+ * Finds a user by their userId.
+ * @param userId The userId to search for.
+ * @returns A promise that resolves with the UserProfile or undefined if not found.
+ */
+export async function findUserById(userId: string): Promise<UserProfile | undefined> {
+  const sql = 'SELECT * FROM UserProfiles WHERE userId = ?';
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const user: any = await get<any>(sql, [userId]);
+  if (user) {
+    return { ...user, emailVerified: Boolean(user.emailVerified) };
+  }
+  return undefined;
+}
+
+/**
+ * Updates a user's username.
+ * @param userId The ID of the user to update.
+ * @param username The new username.
+ * @returns A promise that resolves when the user is updated.
+ */
+export async function updateUserUsername(userId: string, username: string): Promise<void> {
+  const sql = 'UPDATE UserProfiles SET username = ?, updatedAt = ? WHERE userId = ?';
+  await run(sql, [username, new Date().toISOString(), userId]);
+}
+
+/**
+ * Updates a user's email address and sets emailVerified to false.
+ * @param userId The ID of the user to update.
+ * @param email The new email address.
+ * @returns A promise that resolves when the user is updated.
+ */
+export async function updateUserEmail(userId: string, email: string): Promise<void> {
+  const sql = 'UPDATE UserProfiles SET email = ?, emailVerified = 0, updatedAt = ? WHERE userId = ?';
+  await run(sql, [email, new Date().toISOString(), userId]);
+}
+
+/**
+ * Updates a user's password hash.
+ * @param userId The ID of the user to update.
+ * @param passwordHash The new password hash.
+ * @returns A promise that resolves when the user is updated.
+ */
+export async function updateUserPassword(userId: string, passwordHash: string): Promise<void> {
+  const sql = 'UPDATE UserProfiles SET passwordHash = ?, updatedAt = ? WHERE userId = ?';
+  await run(sql, [passwordHash, new Date().toISOString(), userId]);
+}

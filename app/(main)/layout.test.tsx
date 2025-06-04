@@ -93,7 +93,8 @@ describe('MainLayout Logout Functionality', () => {
       </MainLayout>
     );
 
-    expect(screen.getByTestId('username')).toHaveTextContent('testuser');
+    const usernameElements = screen.getAllByTestId('username');
+    expect(usernameElements[0]).toHaveTextContent('testuser');
   });
 
   it('should display fallback username when user is not logged in', () => {
@@ -108,7 +109,8 @@ describe('MainLayout Logout Functionality', () => {
       </MainLayout>
     );
 
-    expect(screen.getByTestId('username')).toHaveTextContent('Fantasy User');
+    const usernameElements = screen.getAllByTestId('username');
+    expect(usernameElements[0]).toHaveTextContent('Fantasy User');
   });
 
   it('should handle successful logout', async () => {
@@ -118,8 +120,8 @@ describe('MainLayout Logout Functionality', () => {
       </MainLayout>
     );
 
-    const logoutButton = screen.getByTestId('logout-button');
-    fireEvent.click(logoutButton);
+    const logoutButtons = screen.getAllByTestId('logout-button');
+    fireEvent.click(logoutButtons[0]);
 
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith('/api/auth/logout', {
@@ -146,8 +148,8 @@ describe('MainLayout Logout Functionality', () => {
       </MainLayout>
     );
 
-    const logoutButton = screen.getByTestId('logout-button');
-    fireEvent.click(logoutButton);
+    const logoutButtons = screen.getAllByTestId('logout-button');
+    fireEvent.click(logoutButtons[0]);
 
     await waitFor(() => {
       expect(mockLogout).toHaveBeenCalled();
@@ -164,8 +166,8 @@ describe('MainLayout Logout Functionality', () => {
       </MainLayout>
     );
 
-    const logoutButton = screen.getByTestId('logout-button');
-    fireEvent.click(logoutButton);
+    const logoutButtons = screen.getAllByTestId('logout-button');
+    fireEvent.click(logoutButtons[0]);
 
     await waitFor(() => {
       expect(mockLogout).toHaveBeenCalled();

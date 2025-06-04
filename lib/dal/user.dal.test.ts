@@ -6,6 +6,10 @@ import {
   findVerificationToken,
   updateUserEmailVerificationStatus,
   markTokenAsUsed,
+  findUserById,
+  updateUserUsername,
+  updateUserEmail,
+  updateUserPassword,
 } from './user.dal';
 // EmailVerificationToken_PoC was unused
 import { UserProfile } from '@/lib/models/user.models';
@@ -178,6 +182,78 @@ describe('User DAL', () => {
         'UPDATE EmailVerificationTokens_PoC SET used = 1 WHERE token = ?',
         [token],
       );
+    });
+  });
+
+  describe('findUserById', () => {
+    it('should call mockDbGet with correct SQL and params', async () => {
+      const userId = 'user-123';
+      await findUserById(userId);
+      expect(mockDbGet).toHaveBeenCalledWith(
+        'SELECT * FROM UserProfiles WHERE userId = ?',
+        [userId],
+      );
+    });
+
+    it('should return user profile if found and convert emailVerified to boolean', async () => {
+      const mockUser = { userId: '1', username: 'testuser', email: 'test@test.com', passwordHash: 'hash', emailVerified: 1, selectedArchetype: null, createdAt: '', updatedAt: '' };
+      mockDbGet.mockResolvedValue(mockUser);
+      const user = await findUserById('1');
+      expect(user).toEqual({ ...mockUser, emailVerified: true });
+    });
+  });
+
+  describe('updateUserUsername', () => {
+    it('should call mockDbRun with correct SQL and params', async () => {
+      const userId = 'user-123';
+      const username = 'newusername';
+      const OriginalDate = global.Date;
+      const expectedDate = new OriginalDate().toISOString();
+      const mockDateInstance = new OriginalDate(expectedDate);
+      const spy = jest.spyOn(global, 'Date').mockImplementation(() => mockDateInstance as unknown as Date);
+
+      await updateUserUsername(userId, username);
+      expect(mockDbRun).toHaveBeenCalledWith(
+        'UPDATE UserProfiles SET username = ?, updatedAt = ? WHERE userId = ?',
+        [username, expectedDate, userId],
+      );
+      spy.mockRestore();
+    });
+  });
+
+  describe('updateUserEmail', () => {
+    it('should call mockDbRun with correct SQL and params and set emailVerified to false', async () => {
+      const userId = 'user-123';
+      const email = 'newemail@example.com';
+      const OriginalDate = global.Date;
+      const expectedDate = new OriginalDate().toISOString();
+      const mockDateInstance = new OriginalDate(expectedDate);
+      const spy = jest.spyOn(global, 'Date').mockImplementation(() => mockDateInstance as unknown as Date);
+
+      await updateUserEmail(userId, email);
+      expect(mockDbRun).toHaveBeenCalledWith(
+        'UPDATE UserProfiles SET email = ?, emailVerified = 0, updatedAt = ? WHERE userId = ?',
+        [email, expectedDate, userId],
+      );
+      spy.mockRestore();
+    });
+  });
+
+  describe('updateUserPassword', () => {
+    it('should call mockDbRun with correct SQL and params', async () => {
+      const userId = 'user-123';
+      const passwordHash = 'newhash123';
+      const OriginalDate = global.Date;
+      const expectedDate = new OriginalDate().toISOString();
+      const mockDateInstance = new OriginalDate(expectedDate);
+      const spy = jest.spyOn(global, 'Date').mockImplementation(() => mockDateInstance as unknown as Date);
+
+      await updateUserPassword(userId, passwordHash);
+      expect(mockDbRun).toHaveBeenCalledWith(
+        'UPDATE UserProfiles SET passwordHash = ?, updatedAt = ? WHERE userId = ?',
+        [passwordHash, expectedDate, userId],
+      );
+      spy.mockRestore();
     });
   });
 });

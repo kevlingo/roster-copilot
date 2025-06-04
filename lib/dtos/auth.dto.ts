@@ -51,3 +51,38 @@ export class LoginDto {
   @IsNotEmpty()
   password!: string;
 }
+
+export class UpdateProfileDto {
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(3)
+  @MaxLength(50)
+  username!: string;
+
+  @IsEmail()
+  @IsNotEmpty()
+  @MaxLength(255)
+  email!: string;
+}
+
+export class ChangePasswordDto {
+  @IsString()
+  @IsNotEmpty()
+  currentPassword!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(8, {
+    message:
+      'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character.',
+  })
+  @Matches(PASSWORD_REGEX, {
+    message:
+      'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.',
+  })
+  newPassword!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  confirmPassword!: string;
+}
