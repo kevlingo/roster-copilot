@@ -192,7 +192,34 @@ export async function initializeDatabase(dbPath?: string): Promise<void> {
     );
   `;
 
-  // TODO: Add other tables like NFLPlayers, NFLGames, Leagues_PoC, FantasyTeams_PoC later if needed by other stories.
+  const createLeaguesTable = `
+    CREATE TABLE IF NOT EXISTS Leagues_PoC (
+      leagueId TEXT PRIMARY KEY,
+      leagueName TEXT NOT NULL,
+      commissionerUserId TEXT NOT NULL,
+      numberOfTeams INTEGER NOT NULL CHECK (numberOfTeams IN (8, 10, 12)),
+      scoringType TEXT NOT NULL CHECK (scoringType IN ('Standard', 'PPR')),
+      draftStatus TEXT NOT NULL DEFAULT 'Scheduled' CHECK (draftStatus IN ('Scheduled', 'InProgress', 'Completed')),
+      currentSeasonWeek INTEGER NOT NULL DEFAULT 1,
+      participatingTeamIds TEXT, -- JSON string array
+      rosterSettings TEXT, -- JSON string object
+      createdAt TEXT NOT NULL,
+      FOREIGN KEY (commissionerUserId) REFERENCES UserProfiles(userId) ON DELETE CASCADE
+    );
+  `;
+
+  const createFantasyTeamsTable = `
+    CREATE TABLE IF NOT EXISTS FantasyTeams_PoC (
+      teamId TEXT PRIMARY KEY,
+      leagueId TEXT NOT NULL,
+      userId TEXT NOT NULL,
+      teamName TEXT NOT NULL,
+      playerIds_onRoster TEXT, -- JSON string array
+      createdAt TEXT NOT NULL,
+      FOREIGN KEY (leagueId) REFERENCES Leagues_PoC(leagueId) ON DELETE CASCADE,
+      FOREIGN KEY (userId) REFERENCES UserProfiles(userId) ON DELETE CASCADE
+    );
+  `;
 
   try {
     await run(createUserProfilesTable);
@@ -201,7 +228,10 @@ export async function initializeDatabase(dbPath?: string): Promise<void> {
     console.log('[SQLite] EmailVerificationTokens_PoC table checked/created.');
     await run(createResetTokensTable);
     console.log('[SQLite] ResetTokens_PoC table checked/created.');
-    // Add other table creations here
+    await run(createLeaguesTable);
+    console.log('[SQLite] Leagues_PoC table checked/created.');
+    await run(createFantasyTeamsTable);
+    console.log('[SQLite] FantasyTeams_PoC table checked/created.');
   } catch (error) {
     console.error('[SQLite Schema Initialization Error]', error);
     // Potentially throw error to halt app startup if schema is critical
