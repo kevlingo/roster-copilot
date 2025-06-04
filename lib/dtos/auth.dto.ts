@@ -40,3 +40,14 @@ export class SignUpDto {
   @IsNotEmpty()
   passwordConfirmation!: string;
 }
+
+export class LoginDto {
+  @IsEmail()
+  @IsNotEmpty()
+  @MaxLength(255)
+  email!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  password!: string;
+}

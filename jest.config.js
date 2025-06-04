@@ -13,6 +13,7 @@ const customJestConfig = {
     // Handle module aliases (if you have them in tsconfig.json)
     '^@/components/(.*)$': '<rootDir>/src/components/$1',
     '^@/app/(.*)$': '<rootDir>/app/$1',
+    '^@/lib/(.*)$': '<rootDir>/lib/$1', // Added mapping for @/lib
   },
   testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/', '<rootDir>/e2e/'],
 };

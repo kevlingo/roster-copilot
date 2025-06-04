@@ -1,63 +1,69 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import { useRouter } from 'next/navigation';
+import { useAuthStore } from '@/lib/store/auth.store';
 
-// Define a type for the login form inputs
-interface LoginInputs {
-  email: string;
-  password: string;
-  rememberMe?: boolean;
-}
+// TODO: Import icons if needed (e.g., for input fields or button)
+// For example: import { AlertTriangle, CheckCircle } from 'lucide-react';
+// For example: import { AlertTriangle, CheckCircle } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const loginToStore = useAuthStore((state) => state.login);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  // For general API errors or success/info messages
-  const [formMessage, setFormMessage] = useState<{ type: 'error' | 'success' | 'info'; message: string } | null>(null);
 
-  const {
-    register,
-    handleSubmit,
-    setValue, // To pre-fill email
-    formState: { errors },
-  } = useForm<LoginInputs>({ mode: 'onTouched' });
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    
+    
+    setError(null);
 
-  useEffect(() => {
-    const verified = searchParams.get('verified');
-    const emailFromQuery = searchParams.get('email');
-
-    if (verified === 'true') {
-      setFormMessage({ type: 'success', message: 'Email verified successfully! Please log in.' });
+    // Subtask 2.4: Client-side validation
+    
+    if (!email.trim()) {
+      
+      setError('Email address is required.');
+      setIsLoading(false); // Ensure loading is false if validation fails
+      return;
     }
-    if (emailFromQuery) {
-      setValue('email', emailFromQuery); // Pre-fill email from query param
+    
+    if (!password.trim()) {
+      
+      setError('Password is required.');
+      setIsLoading(false); // Ensure loading is false if validation fails
+      return;
     }
-  }, [searchParams, setValue]);
 
-  const onSubmit: SubmitHandler<LoginInputs> = async (data) => {
     setIsLoading(true);
-    setFormMessage(null); // Clear previous messages
 
     try {
-      // TODO: Call API to /api/auth/login with { email, password }
-      // For the PoC, we'll simulate a successful login after a delay
-      console.log('Login attempt with:', data);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // TODO: Based on API response, handle actual login success/failure
-      // If successful:
-      // router.push('/dashboard'); // Or onboarding if not completed
-      
-      // For PoC, simulate redirect
-       router.push('/onboarding'); // Default to onboarding as per original PoC logic
-    } catch (error) {
-      console.error('Login failed:', error);
-      // This error message will come from the actual API call in the future
-      setFormMessage({ type: 'error', message: 'Invalid email or password. Please try again.' });
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.message || 'Login failed. Please try again.');
+      } else {
+        // Login successful
+        
+        loginToStore(data.user, data.token); // Subtask 2.6
+        // Subtask 2.7: Redirect to dashboard
+        router.push('/dashboard');
+      }
+    } catch (networkError) {
+      console.error('Login API call failed:', networkError);
+      setError('Login failed due to a network error. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -65,81 +71,89 @@ export default function LoginPage() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-semibold text-center">Log In</h2>
+      <div className="text-center">
+        <h2 className="text-xl font-semibold">Login to your Account</h2>
+      </div>
 
-      {formMessage && (
-        <div className={`alert ${
-          formMessage.type === 'error' ? 'alert-error' : 
-          formMessage.type === 'success' ? 'alert-success' : 'alert-info'
-        } text-sm`}>
-          {formMessage.message}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label htmlFor="email" className="label">
+            <span className="label-text">Email Address</span>
+          </label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            className="input input-bordered w-full"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            disabled={isLoading}
+        />
+        {error === 'Email address is required.' && (
+          <p data-testid="email-error" className="text-error text-xs mt-1">{error}</p>
+        )}
+      </div>
+
+      <div>
+        <div className="flex items-center justify-between">
+          <label htmlFor="password" className="label">
+            <span className="label-text">Password</span>
+          </label>
+          <div className="text-sm">
+            {/* TODO: Subtask 2.9: Implement "Forgot Password?" link (pointing to Story 1.5 route) */}
+            <Link href="/forgot-password" legacyBehavior>
+              <a className="link link-primary hover:link-secondary">
+                Forgot password?
+              </a>
+            </Link>
+          </div>
+        </div>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          autoComplete="current-password"
+          className="input input-bordered w-full"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          disabled={isLoading}
+        />
+        {error === 'Password is required.' && (
+          <p data-testid="password-error" className="text-error text-xs mt-1">{error}</p>
+        )}
+      </div>
+
+      {/* Display other errors (e.g., API errors) in a general alert */}
+      {error && error !== 'Email address is required.' && error !== 'Password is required.' && (
+        <div role="alert" className="alert alert-error text-sm" data-testid="login-error-alert">
+          {/* TODO: Icon for error message */}
+          <span>{error}</span>
         </div>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text">Email</span>
-          </label>
-          <input
-            type="email"
-            placeholder="your@email.com"
-            className={`input input-bordered w-full ${errors.email ? 'input-error' : ''}`}
-            {...register('email', {
-              required: 'Email is required',
-              pattern: {
-                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                message: 'Invalid email address',
-              },
-            })}
-          />
-          {errors.email && <span className="text-error text-xs mt-1">{errors.email.message}</span>}
-        </div>
-
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text">Password</span>
-          </label>
-          <input
-            type="password"
-            placeholder="••••••••"
-            className={`input input-bordered w-full ${errors.password ? 'input-error' : ''}`}
-            {...register('password', {
-              required: 'Password is required',
-            })}
-          />
-          {errors.password && <span className="text-error text-xs mt-1">{errors.password.message}</span>}
-        </div>
-
-        <div className="flex justify-between items-center">
-          <div className="form-control">
-            <label className="label cursor-pointer">
-              <input type="checkbox" className="checkbox checkbox-sm" {...register('rememberMe')} />
-              <span className="label-text ml-2">Remember me</span>
-            </label>
-          </div>
-          <a href="#" className="text-sm text-primary hover:underline"> {/* TODO: Implement forgot password */}
-            Forgot password?
-          </a>
-        </div>
-
+      <div>
         <button
-          type="submit"
-          className={`btn btn-primary w-full ${isLoading ? 'loading' : ''}`}
-          disabled={isLoading}
-        >
-          {isLoading ? 'Logging in...' : 'Log In'}
-        </button>
+            className="btn btn-primary w-full"
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <span className="loading loading-spinner"></span>
+            ) : (
+              'Login'
+            )}
+          </button>
+        </div>
       </form>
 
-      <div className="text-center">
-        <p className="text-sm">
-          Don&apos;t have an account?{' '}
-          <Link href="/signup" className="text-primary hover:underline">
-            Sign up
-          </Link>
-        </p>
-      </div>
+      <p className="mt-6 text-center text-sm">
+        Don't have an account?{' '}
+        <Link href="/signup" legacyBehavior>
+          <a className="link link-primary hover:link-secondary">
+            Sign Up
+          </a>
+        </Link>
+      </p>
     </div>
   );
 }
