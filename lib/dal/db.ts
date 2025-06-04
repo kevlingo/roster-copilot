@@ -181,14 +181,26 @@ export async function initializeDatabase(dbPath?: string): Promise<void> {
       FOREIGN KEY (userId) REFERENCES UserProfiles(userId) ON DELETE CASCADE
     );
   `;
-  
-  // TODO: Add other tables like NFLPlayers, NFLGames, Leagues_PoC, FantasyTeams_PoC, ResetTokens_PoC later if needed by other stories.
+
+  const createResetTokensTable = `
+    CREATE TABLE IF NOT EXISTS ResetTokens_PoC (
+      token TEXT PRIMARY KEY,
+      userId TEXT NOT NULL,
+      expiresAt TEXT NOT NULL,
+      used BOOLEAN NOT NULL DEFAULT 0,
+      FOREIGN KEY (userId) REFERENCES UserProfiles(userId) ON DELETE CASCADE
+    );
+  `;
+
+  // TODO: Add other tables like NFLPlayers, NFLGames, Leagues_PoC, FantasyTeams_PoC later if needed by other stories.
 
   try {
     await run(createUserProfilesTable);
     console.log('[SQLite] UserProfiles table checked/created.');
     await run(createEmailVerificationTokensTable);
     console.log('[SQLite] EmailVerificationTokens_PoC table checked/created.');
+    await run(createResetTokensTable);
+    console.log('[SQLite] ResetTokens_PoC table checked/created.');
     // Add other table creations here
   } catch (error) {
     console.error('[SQLite Schema Initialization Error]', error);

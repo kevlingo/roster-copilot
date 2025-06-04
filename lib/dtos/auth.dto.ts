@@ -86,3 +86,32 @@ export class ChangePasswordDto {
   @IsNotEmpty()
   confirmPassword!: string;
 }
+
+export class ForgotPasswordDto {
+  @IsEmail()
+  @IsNotEmpty()
+  @MaxLength(255)
+  email!: string;
+}
+
+export class ResetPasswordDto {
+  @IsString()
+  @IsNotEmpty()
+  token!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(8, {
+    message:
+      'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character.',
+  })
+  @Matches(PASSWORD_REGEX, {
+    message:
+      'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.',
+  })
+  newPassword!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  confirmNewPassword!: string;
+}

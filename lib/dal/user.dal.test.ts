@@ -10,6 +10,9 @@ import {
   updateUserUsername,
   updateUserEmail,
   updateUserPassword,
+  createResetToken,
+  findResetToken,
+  markResetTokenAsUsed,
 } from './user.dal';
 // EmailVerificationToken_PoC was unused
 import { UserProfile } from '@/lib/models/user.models';
@@ -254,6 +257,52 @@ describe('User DAL', () => {
         [passwordHash, expectedDate, userId],
       );
       spy.mockRestore();
+    });
+  });
+
+  describe('createResetToken', () => {
+    it('should call mockDbRun with correct SQL and params', async () => {
+      const tokenData = { userId: 'user-123', token: 'reset-token-123', expiresAt: new Date().toISOString() };
+
+      await createResetToken(tokenData);
+      expect(mockDbRun).toHaveBeenCalledWith(
+        expect.stringContaining('INSERT INTO ResetTokens_PoC'),
+        [tokenData.token, tokenData.userId, tokenData.expiresAt],
+      );
+    });
+  });
+
+  describe('findResetToken', () => {
+    it('should call mockDbGet and correctly parse boolean for "used"', async () => {
+      const token = 'reset-token-123';
+      const mockDbToken = { token, userId: 'user-123', expiresAt: 'date', used: 0 };
+      mockDbGet.mockResolvedValue(mockDbToken);
+
+      const foundToken = await findResetToken(token);
+      expect(mockDbGet).toHaveBeenCalledWith('SELECT * FROM ResetTokens_PoC WHERE token = ?', [token]);
+      expect(foundToken).toEqual({ ...mockDbToken, used: false });
+
+      const mockDbTokenUsed = { ...mockDbToken, used: 1 };
+      mockDbGet.mockResolvedValue(mockDbTokenUsed);
+      const foundTokenUsed = await findResetToken(token);
+      expect(foundTokenUsed).toEqual({ ...mockDbTokenUsed, used: true });
+    });
+
+    it('should return undefined if token not found', async () => {
+      mockDbGet.mockResolvedValue(undefined);
+      const foundToken = await findResetToken('nonexistent-token');
+      expect(foundToken).toBeUndefined();
+    });
+  });
+
+  describe('markResetTokenAsUsed', () => {
+    it('should call mockDbRun with correct SQL and params', async () => {
+      const token = 'reset-token-123';
+      await markResetTokenAsUsed(token);
+      expect(mockDbRun).toHaveBeenCalledWith(
+        'UPDATE ResetTokens_PoC SET used = 1 WHERE token = ?',
+        [token],
+      );
     });
   });
 });

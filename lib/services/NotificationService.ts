@@ -141,6 +141,48 @@ export class NotificationService {
       });
     }
   }
+
+  private createPasswordResetTemplateData(username: string, resetToken: string): TemplateData {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    const resetUrl = `${baseUrl}/reset-password/${resetToken}`;
+
+    return {
+      username,
+      verificationUrl: resetUrl, // Reusing the same field name for consistency
+      currentYear: new Date().getFullYear().toString(),
+      supportUrl: `${baseUrl}/support`,
+      privacyPolicyUrl: `${baseUrl}/privacy`,
+      termsOfServiceUrl: `${baseUrl}/terms`,
+    };
+  }
+
+  public async sendPasswordResetEmail(
+    userEmail: string,
+    username: string,
+    resetToken: string,
+  ): Promise<boolean> {
+    const templatePath = path.resolve(process.cwd(), 'lib', 'email-templates', 'password-reset-email.html');
+    const templateData = this.createPasswordResetTemplateData(username, resetToken);
+
+    try {
+      const template = await this.readTemplate(templatePath);
+      const emailHtml = this.processTemplate(template, templateData);
+
+      return this.sendEmail({
+        to: userEmail,
+        subject: 'Reset Your Roster Copilot Password',
+        html: emailHtml,
+      });
+    } catch (error) {
+      console.error('[NotificationService] Error reading or processing password reset email template:', error);
+      const fallbackText = `You requested a password reset for your Roster Copilot account. Click this link to reset your password: ${templateData.verificationUrl} This link will expire in 1 hour. If you didn't request this, please ignore this email.`;
+      return this.sendEmail({
+        to: userEmail,
+        subject: 'Reset Your Roster Copilot Password',
+        html: `<p>${fallbackText}</p>`,
+      });
+    }
+  }
 }
 
 export const notificationService = new NotificationService();
