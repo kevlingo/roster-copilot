@@ -1,0 +1,175 @@
+import React from 'react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { useRouter } from 'next/navigation';
+import MainLayout from './layout';
+import { useAuthStore } from '@/lib/store/auth.store';
+
+// Mock next/navigation
+jest.mock('next/navigation', () => ({
+  useRouter: jest.fn(),
+}));
+
+// Mock the auth store
+jest.mock('@/lib/store/auth.store', () => ({
+  useAuthStore: jest.fn(),
+}));
+
+// Mock the components that aren't relevant to logout testing
+jest.mock('@/components/core/Sidebar', () => {
+  return function MockSidebar() {
+    return <div data-testid="sidebar">Sidebar</div>;
+  };
+});
+
+jest.mock('@/components/core/Header', () => {
+  return function MockHeader({ username, onLogout }: { username: string; onLogout: () => void }) {
+    return (
+      <div data-testid="header">
+        <span data-testid="username">{username}</span>
+        <button data-testid="logout-button" onClick={onLogout}>
+          Logout
+        </button>
+      </div>
+    );
+  };
+});
+
+jest.mock('@/components/ai-chat/PersistentChatInterface', () => {
+  return function MockPersistentChatInterface() {
+    return <div data-testid="chat-interface">Chat Interface</div>;
+  };
+});
+
+jest.mock('@/components/ui/ToastContainer', () => {
+  return function MockToastContainer() {
+    return <div data-testid="toast-container">Toast Container</div>;
+  };
+});
+
+jest.mock('@/src/hooks/useToast', () => ({
+  useToast: () => ({
+    toasts: [],
+    removeToast: jest.fn(),
+    showSuccess: jest.fn(),
+    showError: jest.fn(),
+  }),
+}));
+
+// Mock fetch
+global.fetch = jest.fn();
+
+describe('MainLayout Logout Functionality', () => {
+  const mockPush = jest.fn();
+  const mockLogout = jest.fn();
+  const mockUseAuthStore = useAuthStore as jest.MockedFunction<typeof useAuthStore>;
+  const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    
+    mockUseRouter.mockReturnValue({
+      push: mockPush,
+    } as any);
+
+    mockUseAuthStore.mockReturnValue({
+      logout: mockLogout,
+      user: { username: 'testuser', email: 'test@example.com' },
+    } as any);
+
+    (global.fetch as jest.Mock).mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ message: 'Logout successful' }),
+    });
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('should display the username from auth store', () => {
+    render(
+      <MainLayout>
+        <div>Test Content</div>
+      </MainLayout>
+    );
+
+    expect(screen.getByTestId('username')).toHaveTextContent('testuser');
+  });
+
+  it('should display fallback username when user is not logged in', () => {
+    mockUseAuthStore.mockReturnValue({
+      logout: mockLogout,
+      user: null,
+    } as any);
+
+    render(
+      <MainLayout>
+        <div>Test Content</div>
+      </MainLayout>
+    );
+
+    expect(screen.getByTestId('username')).toHaveTextContent('Fantasy User');
+  });
+
+  it('should handle successful logout', async () => {
+    render(
+      <MainLayout>
+        <div>Test Content</div>
+      </MainLayout>
+    );
+
+    const logoutButton = screen.getByTestId('logout-button');
+    fireEvent.click(logoutButton);
+
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledWith('/api/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+    });
+
+    expect(mockLogout).toHaveBeenCalled();
+    expect(mockPush).toHaveBeenCalledWith('/login');
+  });
+
+  it('should handle logout when API call fails', async () => {
+    (global.fetch as jest.Mock).mockResolvedValue({
+      ok: false,
+      status: 500,
+    });
+
+    render(
+      <MainLayout>
+        <div>Test Content</div>
+      </MainLayout>
+    );
+
+    const logoutButton = screen.getByTestId('logout-button');
+    fireEvent.click(logoutButton);
+
+    await waitFor(() => {
+      expect(mockLogout).toHaveBeenCalled();
+      expect(mockPush).toHaveBeenCalledWith('/login');
+    });
+  });
+
+  it('should handle logout when network error occurs', async () => {
+    (global.fetch as jest.Mock).mockRejectedValue(new Error('Network error'));
+
+    render(
+      <MainLayout>
+        <div>Test Content</div>
+      </MainLayout>
+    );
+
+    const logoutButton = screen.getByTestId('logout-button');
+    fireEvent.click(logoutButton);
+
+    await waitFor(() => {
+      expect(mockLogout).toHaveBeenCalled();
+      expect(mockPush).toHaveBeenCalledWith('/login');
+    });
+  });
+});
