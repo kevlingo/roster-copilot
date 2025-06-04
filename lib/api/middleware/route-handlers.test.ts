@@ -27,6 +27,16 @@ jest.mock('next/server', () => ({
   })),
 }));
 
+// Mock jsonwebtoken
+jest.mock('jsonwebtoken', () => ({
+  verify: jest.fn((token, secret) => {
+    if (token === 'valid-test-token') {
+      return { userId: 'test-user', email: 'test@example.com', username: 'testuser' };
+    }
+    throw new Error('Invalid token');
+  }),
+}));
+
 import {
   ApiRouteHandler,
   withErrorHandling,
@@ -42,11 +52,14 @@ let consoleErrorSpy: jest.SpyInstance;
 beforeEach(() => {
   consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
   consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  // Set up environment variables for JWT
+  process.env.JWT_SECRET = 'test-secret';
 });
 
 afterEach(() => {
   consoleLogSpy.mockRestore();
   consoleErrorSpy.mockRestore();
+  delete process.env.JWT_SECRET;
 });
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -245,8 +258,24 @@ describe('API Route Handler Wrappers', () => {
     });
   });
 
-  describe('withAuth (Stub)', () => {
-    it('should call the handler and log auth stub message', async () => {
+  describe('withAuth', () => {
+    it('should call the handler with valid authorization', async () => {
+      const req = createMockRequest('/', 'GET', { authorization: 'Bearer valid-test-token' });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const mockSuccessHandlerWithMockResponse: any = async (req: any, params: any) => {
+        // Verify that user info is added to the request
+        expect(req.user).toEqual({ userId: 'test-user', email: 'test@example.com', username: 'testuser' });
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return mockNextResponseJson({ message: 'Success' }, { status: 200 }) as any;
+      };
+      const wrappedHandler = withAuth(mockSuccessHandlerWithMockResponse);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const response = await wrappedHandler(req as any);
+
+      expect(response.status).toBe(200);
+    });
+
+    it('should return 401 for missing authorization header', async () => {
       const req = createMockRequest();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const mockSuccessHandlerWithMockResponse: ApiRouteHandler = async () => {
@@ -256,9 +285,10 @@ describe('API Route Handler Wrappers', () => {
       const wrappedHandler = withAuth(mockSuccessHandlerWithMockResponse);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const response = await wrappedHandler(req as any);
+      const body = await response.json();
 
-      expect(response.status).toBe(200);
-      expect(consoleLogSpy).toHaveBeenCalledWith('[Auth Stub] Placeholder authentication check passed.');
+      expect(response.status).toBe(401);
+      expect(body).toEqual({ error: 'Unauthorized - Missing or invalid authorization header' });
     });
   });
 
@@ -300,7 +330,7 @@ describe('API Route Handler Wrappers', () => {
     });
 
     it('integration of all wrappers: success flow', async () => {
-        const req = createMockRequest('/api/full-compose-success');
+        const req = createMockRequest('/api/full-compose-success', 'GET', { authorization: 'Bearer valid-test-token' });
         const composedHandler = composeWrappers(
             withErrorHandling,
             withRequestLogging,
@@ -314,8 +344,6 @@ describe('API Route Handler Wrappers', () => {
         expect(response.status).toBe(200);
         expect(body).toEqual({ message: 'Success' });
 
-        // Auth log
-        expect(consoleLogSpy).toHaveBeenCalledWith('[Auth Stub] Placeholder authentication check passed.');
         // Request log
         expect(consoleLogSpy).toHaveBeenCalledWith(
             '[API Request]',
@@ -330,7 +358,7 @@ describe('API Route Handler Wrappers', () => {
     });
 
     it('integration of all wrappers: error flow', async () => {
-        const req = createMockRequest('/api/full-compose-error');
+        const req = createMockRequest('/api/full-compose-error', 'GET', { authorization: 'Bearer valid-test-token' });
         const composedHandler = composeWrappers(
             withErrorHandling,
             withRequestLogging,
@@ -344,8 +372,6 @@ describe('API Route Handler Wrappers', () => {
         expect(response.status).toBe(500);
         expect(body).toEqual({ error: 'Internal Server Error' });
 
-        // Auth log
-        expect(consoleLogSpy).toHaveBeenCalledWith('[Auth Stub] Placeholder authentication check passed.');
         // Request log
         expect(consoleLogSpy).toHaveBeenCalledWith(
             '[API Request]',

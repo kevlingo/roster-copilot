@@ -96,8 +96,9 @@ describe('POST /api/auth/login', () => {
   });
 
   afterEach(() => {
-    delete process.env.JWT_SECRET;
-    delete process.env.JWT_EXPIRES_IN;
+    // Restore environment variables to their original state
+    process.env.JWT_SECRET = mockJwtSecret;
+    process.env.JWT_EXPIRES_IN = mockJwtExpiresIn;
   });
 
   it('should return 405 if method is not POST', async () => {
