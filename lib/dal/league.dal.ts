@@ -5,7 +5,7 @@
 
 import { v4 as uuidv4 } from 'uuid';
 import { run, get, all } from './db';
-import { League_PoC, FantasyTeam_PoC, DEFAULT_ROSTER_SETTINGS } from '../models/league.models';
+import { League_PoC, FantasyTeam_PoC, WeeklyLineup_PoC, DEFAULT_ROSTER_SETTINGS } from '../models/league.models';
 
 /**
  * Creates a new league in the database
@@ -286,4 +286,119 @@ export async function updateLeagueParticipatingTeams(
 ): Promise<void> {
   const sql = `UPDATE Leagues_PoC SET participatingTeamIds = ? WHERE leagueId = ?`;
   await run(sql, [JSON.stringify(participatingTeamIds), leagueId]);
+}
+
+// ===== WEEKLY LINEUP DAL FUNCTIONS =====
+
+/**
+ * Creates or updates a weekly lineup for a team
+ */
+export async function saveWeeklyLineup(
+  teamId: string,
+  leagueId: string,
+  weekNumber: number,
+  starterPlayerIds: string[],
+  benchPlayerIds: string[]
+): Promise<WeeklyLineup_PoC> {
+  const now = new Date().toISOString();
+
+  // Check if lineup already exists for this team and week
+  const existingLineup = await getWeeklyLineup(teamId, weekNumber);
+
+  if (existingLineup) {
+    // Update existing lineup
+    const sql = `
+      UPDATE WeeklyLineups_PoC
+      SET starterPlayerIds = ?, benchPlayerIds = ?, updatedAt = ?
+      WHERE teamId = ? AND weekNumber = ?
+    `;
+
+    await run(sql, [
+      JSON.stringify(starterPlayerIds),
+      JSON.stringify(benchPlayerIds),
+      now,
+      teamId,
+      weekNumber
+    ]);
+
+    return {
+      ...existingLineup,
+      starterPlayerIds,
+      benchPlayerIds,
+      updatedAt: now
+    };
+  } else {
+    // Create new lineup
+    const lineupId = uuidv4();
+
+    const sql = `
+      INSERT INTO WeeklyLineups_PoC (
+        lineupId, teamId, leagueId, weekNumber, starterPlayerIds, benchPlayerIds, createdAt, updatedAt
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    await run(sql, [
+      lineupId,
+      teamId,
+      leagueId,
+      weekNumber,
+      JSON.stringify(starterPlayerIds),
+      JSON.stringify(benchPlayerIds),
+      now,
+      now
+    ]);
+
+    return {
+      lineupId,
+      teamId,
+      leagueId,
+      weekNumber,
+      starterPlayerIds,
+      benchPlayerIds,
+      createdAt: now,
+      updatedAt: now
+    };
+  }
+}
+
+/**
+ * Retrieves a weekly lineup for a team and week
+ */
+export async function getWeeklyLineup(teamId: string, weekNumber: number): Promise<WeeklyLineup_PoC | undefined> {
+  const sql = `SELECT * FROM WeeklyLineups_PoC WHERE teamId = ? AND weekNumber = ?`;
+  const row = await get<Record<string, unknown>>(sql, [teamId, weekNumber]);
+
+  if (!row) {
+    return undefined;
+  }
+
+  return {
+    lineupId: row.lineupId as string,
+    teamId: row.teamId as string,
+    leagueId: row.leagueId as string,
+    weekNumber: row.weekNumber as number,
+    starterPlayerIds: row.starterPlayerIds ? JSON.parse(row.starterPlayerIds as string) : [],
+    benchPlayerIds: row.benchPlayerIds ? JSON.parse(row.benchPlayerIds as string) : [],
+    createdAt: row.createdAt as string,
+    updatedAt: row.updatedAt as string
+  };
+}
+
+/**
+ * Gets all weekly lineups for a team
+ */
+export async function getWeeklyLineupsByTeam(teamId: string): Promise<WeeklyLineup_PoC[]> {
+  const sql = `SELECT * FROM WeeklyLineups_PoC WHERE teamId = ? ORDER BY weekNumber`;
+  const rows = await all<Record<string, unknown>>(sql, [teamId]);
+
+  return rows.map(row => ({
+    lineupId: row.lineupId as string,
+    teamId: row.teamId as string,
+    leagueId: row.leagueId as string,
+    weekNumber: row.weekNumber as number,
+    starterPlayerIds: row.starterPlayerIds ? JSON.parse(row.starterPlayerIds as string) : [],
+    benchPlayerIds: row.benchPlayerIds ? JSON.parse(row.benchPlayerIds as string) : [],
+    createdAt: row.createdAt as string,
+    updatedAt: row.updatedAt as string
+  }));
 }

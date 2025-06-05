@@ -221,6 +221,22 @@ export async function initializeDatabase(dbPath?: string): Promise<void> {
     );
   `;
 
+  const createWeeklyLineupsTable = `
+    CREATE TABLE IF NOT EXISTS WeeklyLineups_PoC (
+      lineupId TEXT PRIMARY KEY,
+      teamId TEXT NOT NULL,
+      leagueId TEXT NOT NULL,
+      weekNumber INTEGER NOT NULL,
+      starterPlayerIds TEXT, -- JSON string array
+      benchPlayerIds TEXT, -- JSON string array
+      createdAt TEXT NOT NULL,
+      updatedAt TEXT NOT NULL,
+      FOREIGN KEY (teamId) REFERENCES FantasyTeams_PoC(teamId) ON DELETE CASCADE,
+      FOREIGN KEY (leagueId) REFERENCES Leagues_PoC(leagueId) ON DELETE CASCADE,
+      UNIQUE(teamId, weekNumber) -- One lineup per team per week
+    );
+  `;
+
   const createDraftPicksTable = `
     CREATE TABLE IF NOT EXISTS DraftPicks (
       pickId TEXT PRIMARY KEY,
@@ -267,6 +283,8 @@ export async function initializeDatabase(dbPath?: string): Promise<void> {
     console.log('[SQLite] Leagues_PoC table checked/created.');
     await run(createFantasyTeamsTable);
     console.log('[SQLite] FantasyTeams_PoC table checked/created.');
+    await run(createWeeklyLineupsTable);
+    console.log('[SQLite] WeeklyLineups_PoC table checked/created.');
     await run(createDraftPicksTable);
     console.log('[SQLite] DraftPicks table checked/created.');
     await run(createDraftStatesTable);

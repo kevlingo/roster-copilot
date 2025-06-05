@@ -33,6 +33,17 @@ export interface FantasyTeam_PoC {
   createdAt: string;
 }
 
+export interface WeeklyLineup_PoC {
+  lineupId: string;
+  teamId: string;
+  leagueId: string;
+  weekNumber: number;
+  starterPlayerIds: string[]; // Array of NFLPlayer IDs in starting positions
+  benchPlayerIds: string[]; // Array of NFLPlayer IDs on bench
+  createdAt: string;
+  updatedAt: string;
+}
+
 // Default roster settings for PoC
 export const DEFAULT_ROSTER_SETTINGS = {
   QB: 1,
