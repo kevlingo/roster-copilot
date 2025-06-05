@@ -4,16 +4,11 @@ import React, { useState, useEffect } from 'react';
 import DraftPlayerCard from '@/src/components/draft/DraftPlayerCard';
 import DraftBoard from '@/src/components/draft/DraftBoard';
 import PlayerRosterCard from '@/src/components/roster/PlayerRosterCard';
+import { useDraftState } from '@/lib/hooks/useDraftState';
+import { useNFLPlayers } from '@/lib/hooks/useNFLPlayers';
+import { getErrorMessage } from '@/lib/services/draft-api.service';
 
-// Mock data interfaces
-interface NFLPlayer {
-  playerId: string;
-  fullName: string;
-  position: string;
-  nflTeamAbbreviation: string;
-  status: 'Active' | 'Injured_Out' | 'Injured_IR' | 'Bye_Week';
-  projectedPoints: number;
-}
+// Updated interfaces to match API responses
 
 interface Team {
   teamId: string;
@@ -30,43 +25,6 @@ interface DraftPick {
   position?: string;
 }
 
-// Mock data
-const mockAvailablePlayers: NFLPlayer[] = [
-  { playerId: 'p1', fullName: 'Patrick Mahomes', position: 'QB', nflTeamAbbreviation: 'KC', status: 'Active', projectedPoints: 24.7 },
-  { playerId: 'p2', fullName: 'Christian McCaffrey', position: 'RB', nflTeamAbbreviation: 'SF', status: 'Active', projectedPoints: 22.3 },
-  { playerId: 'p3', fullName: 'Justin Jefferson', position: 'WR', nflTeamAbbreviation: 'MIN', status: 'Active', projectedPoints: 19.8 },
-  { playerId: 'p4', fullName: 'Travis Kelce', position: 'TE', nflTeamAbbreviation: 'KC', status: 'Active', projectedPoints: 15.2 },
-  { playerId: 'p5', fullName: 'Saquon Barkley', position: 'RB', nflTeamAbbreviation: 'PHI', status: 'Active', projectedPoints: 18.5 },
-  { playerId: 'p6', fullName: 'Tyreek Hill', position: 'WR', nflTeamAbbreviation: 'MIA', status: 'Active', projectedPoints: 18.9 },
-  { playerId: 'p7', fullName: 'Ja\'Marr Chase', position: 'WR', nflTeamAbbreviation: 'CIN', status: 'Bye_Week', projectedPoints: 17.6 },
-  { playerId: 'p8', fullName: 'Josh Allen', position: 'QB', nflTeamAbbreviation: 'BUF', status: 'Active', projectedPoints: 23.1 },
-];
-
-const mockTeams: Team[] = [
-  { teamId: 'team1', name: 'Your Team', owner: 'You' },
-  { teamId: 'team2', name: 'Fantasy Kings', owner: 'John' },
-  { teamId: 'team3', name: 'Touchdown Titans', owner: 'Sarah' },
-  { teamId: 'team4', name: 'EndZone Eagles', owner: 'Mike' },
-];
-
-const mockDraftPicks: DraftPick[] = [
-  // Round 1
-  { pickNumber: 1, round: 1, teamId: 'team1' },
-  { pickNumber: 2, round: 1, teamId: 'team2' },
-  { pickNumber: 3, round: 1, teamId: 'team3' },
-  { pickNumber: 4, round: 1, teamId: 'team4' },
-  // Round 2 (reverse order for snake draft)
-  { pickNumber: 5, round: 2, teamId: 'team4' },
-  { pickNumber: 6, round: 2, teamId: 'team3' },
-  { pickNumber: 7, round: 2, teamId: 'team2' },
-  { pickNumber: 8, round: 2, teamId: 'team1' },
-  // Round 3
-  { pickNumber: 9, round: 3, teamId: 'team1' },
-  { pickNumber: 10, round: 3, teamId: 'team2' },
-  { pickNumber: 11, round: 3, teamId: 'team3' },
-  { pickNumber: 12, round: 3, teamId: 'team4' },
-];
-
 interface PageProps {
   params: {
     leagueId: string;
@@ -75,75 +33,117 @@ interface PageProps {
 
 export default function DraftPage({ params }: PageProps) {
   const { leagueId } = params;
-  const [isLoading, setIsLoading] = useState(true);
-  const [availablePlayers, setAvailablePlayers] = useState<NFLPlayer[]>([]);
-  const [draftPicks, setDraftPicks] = useState<DraftPick[]>([]);
-  const [teams, setTeams] = useState<Team[]>([]);
-  const [userTeam, setUserTeam] = useState<NFLPlayer[]>([]);
-  const [currentPick, setCurrentPick] = useState(1);
   const [positionFilter, setPositionFilter] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  
-  // Simulate data loading
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setAvailablePlayers(mockAvailablePlayers);
-      setDraftPicks(mockDraftPicks);
-      setTeams(mockTeams);
-      setUserTeam([]);
-      setIsLoading(false);
-    }, 1000);
-    
-    return () => clearTimeout(timer);
-  }, [leagueId]);
-  
-  // Draft a player
-  const handleDraftPlayer = (playerId: string) => {
-    // Find the player
-    const player = availablePlayers.find(p => p.playerId === playerId);
-    if (!player) return;
-    
-    // Update available players
-    setAvailablePlayers(prev => prev.filter(p => p.playerId !== playerId));
-    
-    // Update draft picks
-    setDraftPicks(prev => {
-      const updatedPicks = [...prev];
-      const currentPickIndex = updatedPicks.findIndex(p => p.pickNumber === currentPick);
-      
-      if (currentPickIndex !== -1) {
-        updatedPicks[currentPickIndex] = {
-          ...updatedPicks[currentPickIndex],
-          playerId: player.playerId,
-          playerName: player.fullName,
-          position: player.position,
-        };
-      }
-      
-      return updatedPicks;
-    });
-    
-    // If it's the user's turn, add to user team
-    const currentDraftPick = draftPicks.find(p => p.pickNumber === currentPick);
-    if (currentDraftPick?.teamId === 'team1') {
-      setUserTeam(prev => [...prev, player]);
-    }
-    
-    // Advance to next pick
-    setCurrentPick(prev => prev + 1);
-  };
-  
-  // Filter players by position and search query
-  const filteredPlayers = availablePlayers.filter(player => {
-    const matchesPosition = positionFilter === 'ALL' || player.position === positionFilter;
-    const matchesSearch = player.fullName.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesPosition && matchesSearch;
+  const [isPickingPlayer, setIsPickingPlayer] = useState(false);
+  const [pickError, setPickError] = useState<string | null>(null);
+
+  // Use draft state hook with polling
+  const {
+    draftData,
+    isLoading: isDraftLoading,
+    error: draftError,
+    isPolling,
+    makePickAction,
+    startDraftAction,
+    refreshDraftState,
+    isUserTurn,
+    canStartDraft,
+    isDraftComplete,
+    currentPickNumber,
+    currentRound
+  } = useDraftState({ leagueId });
+
+  // Use NFL players hook with available players filter
+  const {
+    filteredPlayers,
+    isLoading: isPlayersLoading,
+    error: playersError,
+    setPositionFilter: setPlayerPositionFilter,
+    setSearchFilter,
+    availablePositions,
+    playerCount,
+    getPlayerById
+  } = useNFLPlayers({
+    availablePlayerIds: draftData?.availablePlayerIds,
+    autoFetch: true
   });
-  
-  // Check if it's user's turn
-  const isUserTurn = draftPicks.find(p => p.pickNumber === currentPick)?.teamId === 'team1';
-  
-  if (isLoading) {
+
+  // Update filters when user changes selection
+  useEffect(() => {
+    setPlayerPositionFilter(positionFilter);
+  }, [positionFilter, setPlayerPositionFilter]);
+
+  useEffect(() => {
+    setSearchFilter(searchQuery);
+  }, [searchQuery, setSearchFilter]);
+
+  // Handle draft pick
+  const handleDraftPlayer = async (playerId: string) => {
+    if (!isUserTurn || isPickingPlayer) return;
+
+    setIsPickingPlayer(true);
+    setPickError(null);
+
+    try {
+      await makePickAction(playerId);
+      // Success - the hook will automatically refresh the draft state
+    } catch (error) {
+      const errorMessage = getErrorMessage(error);
+      setPickError(errorMessage);
+      console.error('Failed to make draft pick:', error);
+    } finally {
+      setIsPickingPlayer(false);
+    }
+  };
+
+  // Handle start draft
+  const handleStartDraft = async () => {
+    if (!canStartDraft) return;
+
+    try {
+      await startDraftAction();
+    } catch (error) {
+      console.error('Failed to start draft:', error);
+      // Error is handled by the hook
+    }
+  };
+
+  // Transform draft data for display
+  const transformedDraftPicks: DraftPick[] = draftData?.draftPicks?.map(pick => ({
+    pickNumber: pick.pickNumber,
+    round: pick.round,
+    teamId: pick.teamId,
+    playerId: pick.playerId,
+    playerName: pick.playerId ? getPlayerById(pick.playerId)?.fullName : undefined,
+    position: pick.playerId ? getPlayerById(pick.playerId)?.position : undefined
+  })) || [];
+
+  // Get user's team roster with proper type casting
+  const userTeam = draftData?.userTeam?.currentRoster?.map(playerId => {
+    const player = getPlayerById(playerId);
+    if (!player) return null;
+
+    // Cast status to match RosterPlayer interface
+    const status = ['Active', 'Injured_Out', 'Injured_IR', 'Bye_Week'].includes(player.status)
+      ? player.status as 'Active' | 'Injured_Out' | 'Injured_IR' | 'Bye_Week'
+      : 'Active';
+
+    return {
+      ...player,
+      status
+    };
+  }).filter(Boolean) || [];
+
+  // Create teams data for display
+  const teams: Team[] = draftData?.draftState?.draftOrder.map((teamId, index) => ({
+    teamId,
+    name: teamId === draftData?.userTeam?.teamId ? draftData.userTeam.teamName : `Team ${index + 1}`,
+    owner: teamId === draftData?.userTeam?.teamId ? 'You' : `Player ${index + 1}`
+  })) || [];
+
+  // Show loading state
+  if (isDraftLoading && !draftData) {
     return (
       <div className="page-container space-y-6">
         <h1 className="page-title">Draft Room - Loading...</h1>
@@ -152,36 +152,116 @@ export default function DraftPage({ params }: PageProps) {
     );
   }
 
+  // Show error state
+  if (draftError && !draftData) {
+    return (
+      <div className="page-container space-y-6">
+        <div className="text-center max-w-md mx-auto p-6">
+          <div className="text-red-500 text-xl mb-4">⚠️</div>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Failed to Load Draft</h2>
+          <p className="text-gray-600 mb-4">{draftError}</p>
+          <button
+            onClick={refreshDraftState}
+            className="btn btn-primary"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Show draft not started state
+  if (draftData?.draftStatus === 'Scheduled') {
+    return (
+      <div className="page-container space-y-6">
+        <div className="text-center max-w-md mx-auto p-6">
+          <h2 className="text-2xl font-semibold mb-4">Draft Not Started</h2>
+          {canStartDraft ? (
+            <div>
+              <p className="text-gray-600 mb-4">The draft is ready to begin!</p>
+              <button
+                onClick={handleStartDraft}
+                className="btn btn-success btn-lg"
+              >
+                Start Draft
+              </button>
+            </div>
+          ) : (
+            <div>
+              <p className="text-gray-600 mb-2">Waiting for the commissioner to start the draft.</p>
+              {draftData.reason && (
+                <p className="text-sm text-red-600">{draftData.reason}</p>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="page-container space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="page-title">Draft Room: {leagueId}</h1>
-        <div className="badge badge-primary p-3">
-          Pick {currentPick}
-          {isUserTurn && <span className="ml-2 font-bold">YOUR TURN!</span>}
+        <div className="flex items-center gap-4">
+          {isPolling && (
+            <div className="badge badge-success">
+              <span className="loading loading-dots loading-xs mr-1"></span>
+              Live
+            </div>
+          )}
+          <div className="badge badge-primary p-3">
+            Pick {currentPickNumber || 0} - Round {currentRound || 1}
+            {isUserTurn && <span className="ml-2 font-bold">YOUR TURN!</span>}
+          </div>
+          {isDraftComplete && (
+            <div className="badge badge-success p-3">
+              DRAFT COMPLETE!
+            </div>
+          )}
         </div>
       </div>
-      
+
+      {/* Error display */}
+      {(pickError || playersError) && (
+        <div className="alert alert-error">
+          <span>{pickError || playersError}</span>
+          <button
+            className="btn btn-sm btn-ghost"
+            onClick={() => {
+              setPickError(null);
+              refreshDraftState();
+            }}
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         {/* Draft Board */}
         <div className="lg:col-span-8 card bg-base-100 shadow">
           <div className="card-body p-4">
             <h2 className="card-title">Draft Board</h2>
             <div className="overflow-x-auto">
-              <DraftBoard 
+              <DraftBoard
                 teams={teams}
-                picks={draftPicks}
-                currentPick={currentPick}
-                userTeamId="team1"
+                picks={transformedDraftPicks}
+                currentPick={currentPickNumber || 0}
+                userTeamId={draftData?.userTeam?.teamId || ''}
               />
             </div>
           </div>
         </div>
-        
+
         {/* User's Team */}
         <div className="lg:col-span-4 card bg-base-100 shadow">
           <div className="card-body p-4">
-            <h2 className="card-title">Your Team</h2>
+            <h2 className="card-title">
+              {draftData?.userTeam?.teamName || 'Your Team'}
+              <span className="text-sm font-normal">({userTeam.length} players)</span>
+            </h2>
             <div className="overflow-y-auto max-h-64">
               {userTeam.length === 0 ? (
                 <div className="text-center py-8 text-base-content/70">
@@ -189,7 +269,7 @@ export default function DraftPage({ params }: PageProps) {
                 </div>
               ) : (
                 <div className="space-y-2">
-                  {userTeam.map(player => (
+                  {userTeam.map(player => player && (
                     <PlayerRosterCard key={player.playerId} player={player} />
                   ))}
                 </div>
@@ -198,48 +278,31 @@ export default function DraftPage({ params }: PageProps) {
           </div>
         </div>
       </div>
-      
+
       {/* Available Players */}
       <div className="card bg-base-100 shadow">
         <div className="card-body p-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <h2 className="card-title">Available Players</h2>
-            
+            <h2 className="card-title">
+              Available Players
+              <span className="text-sm font-normal">({playerCount} available)</span>
+              {isPlayersLoading && <span className="loading loading-spinner loading-sm"></span>}
+            </h2>
+
             <div className="flex flex-wrap gap-2">
               {/* Position filter */}
               <div className="join">
-                <button 
-                  className={`join-item btn btn-sm ${positionFilter === 'ALL' ? 'btn-primary' : 'btn-outline'}`}
-                  onClick={() => setPositionFilter('ALL')}
-                >
-                  ALL
-                </button>
-                <button 
-                  className={`join-item btn btn-sm ${positionFilter === 'QB' ? 'btn-primary' : 'btn-outline'}`}
-                  onClick={() => setPositionFilter('QB')}
-                >
-                  QB
-                </button>
-                <button 
-                  className={`join-item btn btn-sm ${positionFilter === 'RB' ? 'btn-primary' : 'btn-outline'}`}
-                  onClick={() => setPositionFilter('RB')}
-                >
-                  RB
-                </button>
-                <button 
-                  className={`join-item btn btn-sm ${positionFilter === 'WR' ? 'btn-primary' : 'btn-outline'}`}
-                  onClick={() => setPositionFilter('WR')}
-                >
-                  WR
-                </button>
-                <button 
-                  className={`join-item btn btn-sm ${positionFilter === 'TE' ? 'btn-primary' : 'btn-outline'}`}
-                  onClick={() => setPositionFilter('TE')}
-                >
-                  TE
-                </button>
+                {availablePositions.map(position => (
+                  <button
+                    key={position}
+                    className={`join-item btn btn-sm ${positionFilter === position ? 'btn-primary' : 'btn-outline'}`}
+                    onClick={() => setPositionFilter(position)}
+                  >
+                    {position}
+                  </button>
+                ))}
               </div>
-              
+
               {/* Search */}
               <div className="form-control">
                 <input
@@ -252,43 +315,63 @@ export default function DraftPage({ params }: PageProps) {
               </div>
             </div>
           </div>
-          
+
           <div className="divider my-2"></div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {filteredPlayers.map(player => (
               <DraftPlayerCard
                 key={player.playerId}
                 player={player}
                 onDraft={handleDraftPlayer}
+                disabled={!isUserTurn || isPickingPlayer || isDraftComplete}
+                isLoading={isPickingPlayer}
               />
             ))}
-            
-            {filteredPlayers.length === 0 && (
+
+            {filteredPlayers.length === 0 && !isPlayersLoading && (
               <div className="md:col-span-2 lg:col-span-3 text-center py-8 text-base-content/70">
                 <p>No players match your filters.</p>
+              </div>
+            )}
+
+            {isPlayersLoading && (
+              <div className="md:col-span-2 lg:col-span-3 text-center py-8">
+                <span className="loading loading-spinner loading-lg"></span>
+                <p className="mt-2 text-base-content/70">Loading players...</p>
               </div>
             )}
           </div>
         </div>
       </div>
-      
+
       {/* AI Copilot Draft Suggestions */}
-      {isUserTurn && (
+      {isUserTurn && !isDraftComplete && filteredPlayers.length > 0 && (
         <div className="card bg-primary text-primary-content">
           <div className="card-body">
             <h2 className="card-title">AI Copilot Suggestion</h2>
-            <p>Based on your team needs and draft position, consider drafting Justin Jefferson (WR, MIN).</p>
-            <p className="text-sm">Jefferson has a high ceiling and floor as the primary target in Minnesota&apos;s offense.</p>
+            <p>Based on your team needs and draft position, consider drafting {filteredPlayers[0]?.fullName} ({filteredPlayers[0]?.position}, {filteredPlayers[0]?.nflTeamAbbreviation}).</p>
+            <p className="text-sm">This player has high projected points and fits your team&apos;s current needs.</p>
             <div className="card-actions justify-end">
-              <button 
+              <button
                 className="btn btn-outline"
-                onClick={() => handleDraftPlayer('p3')}
+                onClick={() => handleDraftPlayer(filteredPlayers[0]?.playerId)}
+                disabled={isPickingPlayer}
               >
-                Draft Jefferson
+                {isPickingPlayer ? 'Drafting...' : `Draft ${filteredPlayers[0]?.fullName}`}
               </button>
-              <button className="btn">Suggest Another</button>
+              <button className="btn" disabled>Suggest Another</button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Draft Complete Message */}
+      {isDraftComplete && (
+        <div className="card bg-success text-success-content">
+          <div className="card-body text-center">
+            <h2 className="card-title justify-center">🎉 Draft Complete!</h2>
+            <p>The draft has been completed. Check your team roster and prepare for the season!</p>
           </div>
         </div>
       )}

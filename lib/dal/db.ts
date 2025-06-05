@@ -221,6 +221,41 @@ export async function initializeDatabase(dbPath?: string): Promise<void> {
     );
   `;
 
+  const createDraftPicksTable = `
+    CREATE TABLE IF NOT EXISTS DraftPicks (
+      pickId TEXT PRIMARY KEY,
+      leagueId TEXT NOT NULL,
+      pickNumber INTEGER NOT NULL,
+      round INTEGER NOT NULL,
+      teamId TEXT NOT NULL,
+      playerId TEXT,
+      pickTimestamp TEXT,
+      createdAt TEXT NOT NULL,
+      FOREIGN KEY (leagueId) REFERENCES Leagues_PoC(leagueId) ON DELETE CASCADE,
+      FOREIGN KEY (teamId) REFERENCES FantasyTeams_PoC(teamId) ON DELETE CASCADE,
+      UNIQUE(leagueId, pickNumber)
+    );
+  `;
+
+  const createDraftStatesTable = `
+    CREATE TABLE IF NOT EXISTS DraftStates (
+      leagueId TEXT PRIMARY KEY,
+      draftOrder TEXT NOT NULL, -- JSON string array of teamIds
+      currentPickNumber INTEGER NOT NULL,
+      currentRound INTEGER NOT NULL,
+      currentTeamId TEXT NOT NULL,
+      isComplete BOOLEAN NOT NULL DEFAULT 0,
+      draftStartedAt TEXT,
+      draftCompletedAt TEXT,
+      totalPicks INTEGER NOT NULL,
+      totalRounds INTEGER NOT NULL,
+      createdAt TEXT NOT NULL,
+      updatedAt TEXT NOT NULL,
+      FOREIGN KEY (leagueId) REFERENCES Leagues_PoC(leagueId) ON DELETE CASCADE,
+      FOREIGN KEY (currentTeamId) REFERENCES FantasyTeams_PoC(teamId) ON DELETE CASCADE
+    );
+  `;
+
   try {
     await run(createUserProfilesTable);
     console.log('[SQLite] UserProfiles table checked/created.');
@@ -232,6 +267,10 @@ export async function initializeDatabase(dbPath?: string): Promise<void> {
     console.log('[SQLite] Leagues_PoC table checked/created.');
     await run(createFantasyTeamsTable);
     console.log('[SQLite] FantasyTeams_PoC table checked/created.');
+    await run(createDraftPicksTable);
+    console.log('[SQLite] DraftPicks table checked/created.');
+    await run(createDraftStatesTable);
+    console.log('[SQLite] DraftStates table checked/created.');
   } catch (error) {
     console.error('[SQLite Schema Initialization Error]', error);
     // Potentially throw error to halt app startup if schema is critical

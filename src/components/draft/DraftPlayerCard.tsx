@@ -1,22 +1,23 @@
 import React from 'react';
 
-// Using the interface from Architecture.md
+// Using the interface from API responses
 interface NFLPlayer {
   playerId: string;
   fullName: string;
   position: string;
   nflTeamAbbreviation: string;
-  status: 'Active' | 'Injured_Out' | 'Injured_IR' | 'Bye_Week';
+  status: string; // API returns string, not enum
   projectedPoints: number;
-  // Other fields as needed
 }
 
 interface DraftPlayerCardProps {
   player: NFLPlayer;
   onDraft: (playerId: string) => void;
+  disabled?: boolean;
+  isLoading?: boolean;
 }
 
-const DraftPlayerCard: React.FC<DraftPlayerCardProps> = ({ player, onDraft }) => {
+const DraftPlayerCard: React.FC<DraftPlayerCardProps> = ({ player, onDraft, disabled = false, isLoading = false }) => {
   // Render status with appropriate color/badge
   const renderStatus = () => {
     switch (player.status) {
@@ -27,9 +28,10 @@ const DraftPlayerCard: React.FC<DraftPlayerCardProps> = ({ player, onDraft }) =>
       case 'Injured_IR':
         return <span className="badge badge-sm badge-error">IR</span>;
       case 'Bye_Week':
+      case 'Bye Week':
         return <span className="badge badge-sm badge-warning">BYE</span>;
       default:
-        return null;
+        return <span className="badge badge-sm badge-neutral">{player.status}</span>;
     }
   };
 
@@ -56,11 +58,19 @@ const DraftPlayerCard: React.FC<DraftPlayerCardProps> = ({ player, onDraft }) =>
         </div>
         
         <div className="card-actions justify-end mt-2">
-          <button 
-            className="btn btn-primary btn-sm" 
+          <button
+            className={`btn btn-sm ${disabled ? 'btn-disabled' : 'btn-primary'}`}
             onClick={() => onDraft(player.playerId)}
+            disabled={disabled || isLoading}
           >
-            Draft
+            {isLoading ? (
+              <>
+                <span className="loading loading-spinner loading-xs"></span>
+                Drafting...
+              </>
+            ) : (
+              'Draft'
+            )}
           </button>
         </div>
       </div>

@@ -213,6 +213,62 @@ export async function getFantasyTeamsByLeagueId(leagueId: string): Promise<Fanta
 }
 
 /**
+ * Updates the draft status of a league
+ */
+export async function updateLeagueDraftStatus(
+  leagueId: string,
+  draftStatus: "Scheduled" | "InProgress" | "Completed"
+): Promise<void> {
+  const sql = `UPDATE Leagues_PoC SET draftStatus = ? WHERE leagueId = ?`;
+  await run(sql, [draftStatus, leagueId]);
+}
+
+/**
+ * Gets a fantasy team by user ID and league ID
+ */
+export async function getFantasyTeamByUserAndLeague(
+  userId: string,
+  leagueId: string
+): Promise<FantasyTeam_PoC | undefined> {
+  const sql = `SELECT * FROM FantasyTeams_PoC WHERE userId = ? AND leagueId = ?`;
+  const row = await get<Record<string, unknown>>(sql, [userId, leagueId]);
+
+  if (!row) {
+    return undefined;
+  }
+
+  return {
+    teamId: row.teamId as string,
+    leagueId: row.leagueId as string,
+    userId: row.userId as string,
+    teamName: row.teamName as string,
+    playerIds_onRoster: row.playerIds_onRoster ? JSON.parse(row.playerIds_onRoster as string) : [],
+    createdAt: row.createdAt as string
+  };
+}
+
+/**
+ * Adds a player to a team's roster
+ */
+export async function addPlayerToTeamRoster(teamId: string, playerId: string): Promise<void> {
+  // Get current roster
+  const team = await getFantasyTeamById(teamId);
+  if (!team) {
+    throw new Error(`Team not found: ${teamId}`);
+  }
+
+  // Add player to roster if not already there
+  const updatedRoster = [...team.playerIds_onRoster];
+  if (!updatedRoster.includes(playerId)) {
+    updatedRoster.push(playerId);
+  }
+
+  // Update team roster
+  const sql = `UPDATE FantasyTeams_PoC SET playerIds_onRoster = ? WHERE teamId = ?`;
+  await run(sql, [JSON.stringify(updatedRoster), teamId]);
+}
+
+/**
  * Checks if a user already has a team in a specific league
  */
 export async function userHasTeamInLeague(userId: string, leagueId: string): Promise<boolean> {
