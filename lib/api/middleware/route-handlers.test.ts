@@ -29,7 +29,7 @@ jest.mock('next/server', () => ({
 
 // Mock jsonwebtoken
 jest.mock('jsonwebtoken', () => ({
-  verify: jest.fn((token, secret) => {
+  verify: jest.fn((token) => {
     if (token === 'valid-test-token') {
       return { userId: 'test-user', email: 'test@example.com', username: 'testuser' };
     }
@@ -262,7 +262,7 @@ describe('API Route Handler Wrappers', () => {
     it('should call the handler with valid authorization', async () => {
       const req = createMockRequest('/', 'GET', { authorization: 'Bearer valid-test-token' });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const mockSuccessHandlerWithMockResponse: any = async (req: any, params: any) => {
+      const mockSuccessHandlerWithMockResponse: any = async (req: any) => {
         // Verify that user info is added to the request
         expect(req.user).toEqual({ userId: 'test-user', email: 'test@example.com', username: 'testuser' });
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

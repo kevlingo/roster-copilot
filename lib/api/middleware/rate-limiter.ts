@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { ApiRouteHandler } from './route-handlers';
 
 // Simple in-memory store for rate limiting

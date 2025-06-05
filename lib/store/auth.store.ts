@@ -12,7 +12,7 @@ export interface AuthState { // Added export
 }
 
 // Create the store with persistence for better UX
-export const useAuthStore = create<AuthState>((set, get) => ({
+export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   token: null,
   isAuthenticated: false,

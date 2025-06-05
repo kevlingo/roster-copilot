@@ -64,7 +64,7 @@ export default function ResetPasswordPage({ params }: ResetPasswordPageProps) {
         if (result.errors) {
           // Handle validation errors
           const errorMessages = result.errors
-            .map((err: any) => Object.values(err.constraints || {}).join(', '))
+            .map((err: { constraints?: Record<string, string> }) => Object.values(err.constraints || {}).join(', '))
             .join(', ');
           setError(errorMessages);
         } else {
@@ -88,7 +88,7 @@ export default function ResetPasswordPage({ params }: ResetPasswordPageProps) {
           </h2>
           
           <p className="text-sm text-base-content/70 mb-6 text-center">
-            Enter your new password below. Make sure it's strong and secure.
+            Enter your new password below. Make sure it&apos;s strong and secure.
           </p>
 
           {message && (

@@ -6,11 +6,11 @@ import crypto from 'crypto';
 
 import { UpdateProfileDto, ChangePasswordDto } from '@/lib/dtos/auth.dto';
 import {
-  composeWrappers,
   withErrorHandling,
   withRequestLogging,
   withAuth,
   AuthenticatedRequest,
+  AuthenticatedApiRouteHandler,
 } from '@/lib/api/middleware/route-handlers';
 import { initializeDatabase } from '@/lib/dal/db';
 import {
@@ -27,7 +27,7 @@ import { notificationService } from '@/lib/services/NotificationService';
 /**
  * GET /api/users/me - Get current user profile
  */
-async function getUserProfileHandler(req: AuthenticatedRequest): Promise<NextResponse> {
+const getUserProfileHandler: AuthenticatedApiRouteHandler = async (req: AuthenticatedRequest): Promise<NextResponse> => {
   await initializeDatabase();
 
   const user = await findUserById(req.user.userId);
@@ -37,15 +37,16 @@ async function getUserProfileHandler(req: AuthenticatedRequest): Promise<NextRes
   }
 
   // Remove sensitive information before sending to client
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { passwordHash: _, ...userProfile } = user;
   
   return NextResponse.json({ user: userProfile });
-}
+};
 
 /**
  * PUT /api/users/me - Update user profile (username, email, or password)
  */
-async function updateUserProfileHandler(req: AuthenticatedRequest): Promise<NextResponse> {
+const updateUserProfileHandler: AuthenticatedApiRouteHandler = async (req: AuthenticatedRequest): Promise<NextResponse> => {
   await initializeDatabase();
 
   let body;
@@ -65,7 +66,7 @@ async function updateUserProfileHandler(req: AuthenticatedRequest): Promise<Next
     // Handle profile update (username/email)
     return handleProfileUpdate(req, body);
   }
-}
+};
 
 /**
  * Handle profile update (username and/or email)
@@ -127,7 +128,7 @@ async function handleProfileUpdate(req: AuthenticatedRequest, body: { username: 
         expiresAt,
       });
 
-      await notificationService.sendEmailVerification(email, token);
+      await notificationService.sendVerificationEmail(email, username, token);
       
       console.log(`[Profile Update] Email verification sent to ${email} for user ${req.user.userId}`);
     } catch (emailError) {
@@ -193,14 +194,14 @@ async function handlePasswordChange(req: AuthenticatedRequest, body: { currentPa
 }
 
 // Export the handlers with middleware applied
-export const GET = composeWrappers(
-  withRequestLogging,
-  withErrorHandling,
-  withAuth,
-)(getUserProfileHandler);
+export const GET = withRequestLogging(
+  withErrorHandling(
+    withAuth(getUserProfileHandler)
+  )
+);
 
-export const PUT = composeWrappers(
-  withRequestLogging,
-  withErrorHandling,
-  withAuth,
-)(updateUserProfileHandler);
+export const PUT = withRequestLogging(
+  withErrorHandling(
+    withAuth(updateUserProfileHandler)
+  )
+);

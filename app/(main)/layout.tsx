@@ -16,7 +16,7 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const { toasts, removeToast, showSuccess, showError } = useToast();
+  const { toasts, removeToast, showSuccess } = useToast();
   const { logout: logoutFromStore, user } = useAuthStore();
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
 

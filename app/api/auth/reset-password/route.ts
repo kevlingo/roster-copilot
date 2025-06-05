@@ -17,7 +17,7 @@ import {
   updateUserPassword,
   findUserById,
 } from '@/lib/dal/user.dal';
-import { notificationService } from '@/lib/services/NotificationService';
+// import { notificationService } from '@/lib/services/NotificationService';
 
 async function resetPasswordHandler(req: NextRequest): Promise<NextResponse> {
   await initializeDatabase(); // Ensure DB is initialized before handling request

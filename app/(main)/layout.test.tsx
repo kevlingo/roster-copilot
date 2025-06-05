@@ -69,7 +69,7 @@ describe('MainLayout Logout Functionality', () => {
     
     mockUseRouter.mockReturnValue({
       push: mockPush,
-    } as any);
+    } as ReturnType<typeof useRouter>);
 
     mockUseAuthStore.mockReturnValue({
       logout: mockLogout,
@@ -78,7 +78,7 @@ describe('MainLayout Logout Functionality', () => {
       token: 'test-token',
       login: jest.fn(),
       restoreAuth: jest.fn(),
-    } as any);
+    });
 
     (global.fetch as jest.Mock).mockResolvedValue({
       ok: true,
@@ -109,7 +109,7 @@ describe('MainLayout Logout Functionality', () => {
       token: null,
       login: jest.fn(),
       restoreAuth: jest.fn(),
-    } as any);
+    });
 
     render(
       <MainLayout>

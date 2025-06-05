@@ -13,7 +13,7 @@ jest.mock('next/server', () => {
     headers: Headers;
     nextUrl: URL;
     method: string;
-    body?: any;
+    body?: unknown;
     ip?: string;
 
     constructor(input: string | URL | RequestInfo, init?: RequestInit) {
@@ -22,7 +22,7 @@ jest.mock('next/server', () => {
       this.headers = new Headers(init?.headers);
       this.method = init?.method || 'GET';
       this.body = init?.body;
-      this.ip = (init as any)?.ip || '127.0.0.1';
+      this.ip = (init as RequestInit & { ip?: string })?.ip || '127.0.0.1';
     }
 
     async json() {
@@ -56,7 +56,7 @@ const mockLeagueDAL = leagueDAL as jest.Mocked<typeof leagueDAL>;
 const mockSessionAuth = sessionAuth as jest.Mocked<typeof sessionAuth>;
 
 // Import NextRequest after mocking
-const { NextRequest } = require('next/server');
+import { NextRequest } from 'next/server';
 
 describe('POST /api/leagues/[leagueId]/join', () => {
   const mockUser = {

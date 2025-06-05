@@ -43,7 +43,7 @@ describe('LoginPage', () => {
     (global.fetch as jest.Mock).mockClear();
     mockLoginAction.mockClear();
 
-    mockedUseAuthStore.mockImplementation((selector: (state: AuthState) => any) => {
+    mockedUseAuthStore.mockImplementation((selector: (state: AuthState) => unknown) => {
       const state: AuthState = {
         user: null,
         token: null,

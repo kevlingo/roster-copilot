@@ -41,7 +41,7 @@ export default function ForgotPasswordPage() {
         if (result.errors) {
           // Handle validation errors
           const errorMessages = result.errors
-            .map((err: any) => Object.values(err.constraints || {}).join(', '))
+            .map((err: { constraints?: Record<string, string> }) => Object.values(err.constraints || {}).join(', '))
             .join(', ');
           setError(errorMessages);
         } else {
@@ -65,7 +65,7 @@ export default function ForgotPasswordPage() {
           </h2>
           
           <p className="text-sm text-base-content/70 mb-6 text-center">
-            Enter your email address and we'll send you a link to reset your password.
+            Enter your email address and we&apos;ll send you a link to reset your password.
           </p>
 
           {message && (

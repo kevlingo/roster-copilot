@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { CheckCircle, AlertTriangle, X } from 'lucide-react';
 
 export interface ToastProps {
@@ -18,6 +18,12 @@ const Toast: React.FC<ToastProps> = ({
 }) => {
   const [isVisible, setIsVisible] = useState(false);
 
+  const handleClose = useCallback(() => {
+    setIsVisible(false);
+    // Wait for animation to complete before removing
+    setTimeout(() => onClose(id), 300);
+  }, [id, onClose]);
+
   useEffect(() => {
     // Trigger animation
     setIsVisible(true);
@@ -28,13 +34,7 @@ const Toast: React.FC<ToastProps> = ({
     }, duration);
 
     return () => clearTimeout(timer);
-  }, [duration]);
-
-  const handleClose = () => {
-    setIsVisible(false);
-    // Wait for animation to complete before removing
-    setTimeout(() => onClose(id), 300);
-  };
+  }, [duration, handleClose]);
 
   const getAlertClass = () => {
     switch (type) {

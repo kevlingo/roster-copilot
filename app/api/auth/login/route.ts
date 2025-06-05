@@ -24,7 +24,7 @@ async function loginHandler(req: NextRequest): Promise<NextResponse> {
   let body;
   try {
     body = await req.json();
-  } catch (error) {
+  } catch {
     return NextResponse.json({ message: 'Invalid JSON body' }, { status: 400 });
   }
 
@@ -85,7 +85,8 @@ async function loginHandler(req: NextRequest): Promise<NextResponse> {
   );
 
   // Return user info (without passwordHash) and token
-  const { passwordHash, ...userWithoutPassword } = user;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { passwordHash: _, ...userWithoutPassword } = user;
 
   return NextResponse.json({
     message: 'Login successful',
