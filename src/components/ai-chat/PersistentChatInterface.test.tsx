@@ -9,6 +9,12 @@ import { MessageObject } from '../../types/chat'; // Correct top-level import
 let idCounter = 0;
 jest.mock('uuid', () => ({ v4: () => `test-uuid-${idCounter++}` }));
 
+// Mock AI notification hook
+jest.mock('../../hooks/useAINotification', () => ({
+  setGlobalNotificationHandler: jest.fn(),
+  createAINotificationMessage: jest.fn(),
+}));
+
 // Define MockChatBubbleOverlayProps at the top level
 interface MockChatBubbleOverlayProps {
   messages: MessageObject[];

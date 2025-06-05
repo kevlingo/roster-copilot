@@ -5,8 +5,7 @@ import { useRouter } from 'next/navigation';
 import Sidebar from '@/src/components/core/Sidebar';
 import Header from '@/src/components/core/Header';
 import PersistentChatInterface from '@/src/components/ai-chat/PersistentChatInterface';
-import ToastContainer from '@/src/components/ui/ToastContainer';
-import { useToast } from '@/src/hooks/useToast';
+import { useAINotification } from '@/src/hooks/useAINotification';
 import { useAuthStore } from '@/lib/store/auth.store';
 import AuthGuard from '@/src/components/auth/AuthGuard';
 
@@ -16,7 +15,7 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const { toasts, removeToast, showSuccess } = useToast();
+  const { showSuccess } = useAINotification();
   const { logout: logoutFromStore, user } = useAuthStore();
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
@@ -136,9 +135,6 @@ export default function MainLayout({
       </div>
 
       <PersistentChatInterface />
-
-      {/* Toast notifications */}
-      <ToastContainer toasts={toasts} onRemoveToast={removeToast} />
       </div>
     </AuthGuard>
   );

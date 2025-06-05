@@ -40,18 +40,11 @@ jest.mock('@/components/ai-chat/PersistentChatInterface', () => {
   };
 });
 
-jest.mock('@/components/ui/ToastContainer', () => {
-  return function MockToastContainer() {
-    return <div data-testid="toast-container">Toast Container</div>;
-  };
-});
-
-jest.mock('@/src/hooks/useToast', () => ({
-  useToast: () => ({
-    toasts: [],
-    removeToast: jest.fn(),
+jest.mock('@/src/hooks/useAINotification', () => ({
+  useAINotification: () => ({
     showSuccess: jest.fn(),
     showError: jest.fn(),
+    showInfo: jest.fn(),
   }),
 }));
 
