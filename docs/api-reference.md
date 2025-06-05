@@ -30,11 +30,75 @@
 * **Purpose:** To provide the Frontend UI with necessary data, process user actions, and serve AI-driven insights from the AI Copilot Service.
 * **Base URL(s):** `/api/...`
 * **Authentication/Authorization:** Basic session management for PoC; protected routes for user-specific data.
-* **Key Endpoints (Conceptual for PoC):**
-    * **Authentication (`/api/auth/`):** `signup` (POST), `login` (POST), `logout` (POST), `session` (GET), `verify-email/[token]` (GET), `forgot-password` (POST), `reset-password` (POST).
-    * **User Profile (`/api/users/me`):** `GET` (fetch profile), `PUT` (update profile - including archetype, onboarding answers).
-    * **AI Copilot - Onboarding & Profile (`/api/copilot/`):** `onboarding-profile` (POST/GET - potentially covered by general user profile update), `update-preference` (POST).
-    * **AI Copilot - Draft Assistance (`/api/copilot/`):** `draft-advice` (POST with draft state, returns advice).
-    * **AI Copilot - In-Season Guidance (`/api/copilot/`):** `weekly-digest` (GET), `critical-alert-check` (GET), `on-demand-query` (POST).
-    * **Core Fantasy League Data (`/api/league/`, `/api/team/` - simplified for PoC):** `leagues` (POST for create, GET for list user is in), `leagues/{leagueId}/details` (GET), `leagues/{leagueId}/join` (POST), `leagues/{leagueId}/my-team/roster` (GET), `leagues/{leagueId}/my-team/lineup` (POST), `leagues/{leagueId}/available-players` (GET), `leagues/{leagueId}/my-team/roster/add` (POST), `leagues/{leagueId}/my-team/roster/drop` (POST), `leagues/{leagueId}/scores` (GET), `leagues/{leagueId}/standings` (GET), `leagues/{leagueId}/schedule` (GET).
-    * **Players (`/api/players/`):** `players/{playerId}` (GET), `players?search=...` (GET).
+* **Key Endpoints (Implemented):**
+
+#### ✅ Authentication Endpoints (`/api/auth/`)
+* **`POST /api/auth/signup`** - User registration with email verification
+  - Request: `{ username, email, password, passwordConfirmation }`
+  - Response: `{ message: "Verification email sent" }`
+  - Features: Username/email uniqueness, password validation, bcrypt hashing
+* **`GET /api/auth/verify-email/[token]`** - Email verification
+  - Response: Redirects to login with success/error message
+  - Features: Token validation, account activation
+* **`POST /api/auth/login`** - User authentication
+  - Request: `{ email, password }`
+  - Response: `{ user: {...}, token: "jwt_token" }`
+  - Features: Rate limiting, email verification check, JWT generation
+* **`POST /api/auth/logout`** - User logout
+  - Response: `{ message: "Logged out successfully" }`
+  - Features: Client-side token clearing
+* **`POST /api/auth/forgot-password`** - Password reset request
+  - Request: `{ email }`
+  - Response: `{ message: "Reset email sent" }`
+  - Features: Secure token generation, email delivery
+* **`POST /api/auth/reset-password`** - Password reset completion
+  - Request: `{ token, newPassword }`
+  - Response: `{ message: "Password reset successful" }`
+  - Features: Token validation, password hashing
+
+#### ✅ User Profile Endpoints (`/api/users/`)
+* **`GET /api/users/me`** - Fetch current user profile
+  - Response: `{ userId, username, email, emailVerified, createdAt }`
+  - Features: JWT authentication required
+* **`PUT /api/users/me`** - Update user profile
+  - Request: `{ username?, email? }`
+  - Response: `{ user: {...} }`
+  - Features: Validation, uniqueness checks
+
+#### ✅ League & Team Endpoints (`/api/leagues/`)
+* **`GET /api/leagues/[leagueId]/my-team/roster`** - Get team roster
+  - Response: `{ team: {...}, players: [...], rosterSettings: {...} }`
+  - Features: Authentication, authorization, position grouping
+* **`POST /api/leagues/[leagueId]/join`** - Join an existing league
+  - Request: `{ }` (leagueId from URL parameter)
+  - Response: `{ league: {...}, team: {...} }`
+  - Features: League validation, capacity checking, draft status validation, duplicate prevention
+
+#### ✅ Draft Endpoints (`/api/leagues/[leagueId]/draft/`)
+* **`GET /api/leagues/[leagueId]/draft`** - Get current draft state
+  - Response: `{ draftState: {...}, currentPick: {...}, availablePlayers: [...], userTeam: {...} }`
+  - Features: Real-time draft state, snake order calculation, user context
+* **`POST /api/leagues/[leagueId]/draft`** - Start draft (commissioner only)
+  - Response: `{ draftState: {...} }`
+  - Features: Draft initialization, snake order generation, commissioner validation
+* **`POST /api/leagues/[leagueId]/draft/pick`** - Make a draft pick
+  - Request: `{ playerId: string }`
+  - Response: `{ success: true, pick: {...}, nextPick: {...} }`
+  - Features: Turn validation, player availability, roster updates, pick advancement
+
+#### ✅ Player Endpoints (`/api/players/`)
+* **`GET /api/players`** - Get NFL players with filtering
+  - Query params: `position`, `search`, `available` (for draft context)
+  - Response: `{ players: [...] }`
+  - Features: Position filtering, search by name, availability status
+* **`POST /api/players/batch`** - Get multiple players by IDs
+  - Request: `{ playerIds: string[] }`
+  - Response: `{ players: [...] }`
+  - Features: Batch player retrieval for roster display
+
+#### 🚧 Planned Endpoints (Future Implementation)
+* **AI Copilot - Onboarding & Profile (`/api/copilot/`):** `onboarding-profile`, `update-preference`
+* **AI Copilot - Draft Assistance (`/api/copilot/`):** `draft-advice`
+* **AI Copilot - In-Season Guidance (`/api/copilot/`):** `weekly-digest`, `critical-alert-check`, `on-demand-query`
+* **League Management (`/api/leagues/`):** `leagues` (POST/GET), `leagues/{id}/details`, `leagues/{id}/join`
+* **Player Management (`/api/players/`):** `players/{id}`, `players?search=...`
