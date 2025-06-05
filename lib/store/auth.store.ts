@@ -8,25 +8,57 @@ export interface AuthState { // Added export
   isAuthenticated: boolean;
   login: (user: UserProfile, token: string) => void;
   logout: () => void;
-  // TODO: Add action for loading token/user from persistent storage if needed in future (e.g., for session restoration)
+  restoreAuth: () => void; // Added function to restore auth from sessionStorage
 }
 
-// Create the store
-export const useAuthStore = create<AuthState>((set) => ({
+// Create the store with persistence for better UX
+export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   token: null,
   isAuthenticated: false,
   login: (user, token) => {
-    // For PoC, token is stored in memory.
-    // In a real app, consider HttpOnly cookies or more secure storage.
-    // As per Frontend-Architecture.md: "Storing in memory via a state management solution like Zustand... is preferred over localStorage."
+    // Store in memory and sessionStorage for persistence across page refreshes
+    // sessionStorage is cleared when the tab is closed, providing reasonable security
     set({ user, token, isAuthenticated: true });
+
+    // Store in sessionStorage for persistence (better UX than losing auth on refresh)
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('auth_token', token);
+      sessionStorage.setItem('auth_user', JSON.stringify(user));
+    }
+
     console.log('User logged in, token set in Zustand store:', token);
   },
   logout: () => {
     set({ user: null, token: null, isAuthenticated: false });
-    // TODO: Call API to invalidate session on backend if applicable
+
+    // Clear sessionStorage
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('auth_token');
+      sessionStorage.removeItem('auth_user');
+    }
+
     console.log('User logged out, token removed from Zustand store.');
+  },
+  restoreAuth: () => {
+    // Restore authentication state from sessionStorage on app initialization
+    if (typeof window !== 'undefined') {
+      const token = sessionStorage.getItem('auth_token');
+      const userStr = sessionStorage.getItem('auth_user');
+
+      if (token && userStr) {
+        try {
+          const user = JSON.parse(userStr) as UserProfile;
+          set({ user, token, isAuthenticated: true });
+          console.log('Auth state restored from sessionStorage');
+        } catch (error) {
+          console.error('Failed to restore auth state:', error);
+          // Clear invalid data
+          sessionStorage.removeItem('auth_token');
+          sessionStorage.removeItem('auth_user');
+        }
+      }
+    }
   },
 }));
 

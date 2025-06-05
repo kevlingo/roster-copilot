@@ -8,6 +8,7 @@ import PersistentChatInterface from '@/src/components/ai-chat/PersistentChatInte
 import ToastContainer from '@/src/components/ui/ToastContainer';
 import { useToast } from '@/src/hooks/useToast';
 import { useAuthStore } from '@/lib/store/auth.store';
+import AuthGuard from '@/src/components/auth/AuthGuard';
 
 export default function MainLayout({
   children,
@@ -84,11 +85,12 @@ export default function MainLayout({
   
 
   return (
-    <div className="flex h-screen">
-      {/* Sidebar - hidden on mobile */}
-      <div className="hidden md:block">
-        <Sidebar currentLeagueId={currentLeagueId} />
-      </div>
+    <AuthGuard>
+      <div className="flex h-screen">
+        {/* Sidebar - hidden on mobile */}
+        <div className="hidden md:block">
+          <Sidebar currentLeagueId={currentLeagueId} />
+        </div>
       
       {/* Mobile drawer */}
       <div className="drawer md:hidden">
@@ -132,6 +134,7 @@ export default function MainLayout({
 
       {/* Toast notifications */}
       <ToastContainer toasts={toasts} onRemoveToast={removeToast} />
-    </div>
+      </div>
+    </AuthGuard>
   );
 }

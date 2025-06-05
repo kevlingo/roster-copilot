@@ -29,3 +29,18 @@ export interface CreateLeagueResponseDto {
   };
   createdAt: string;
 }
+
+export interface JoinLeagueResponseDto {
+  message: string;
+  league: {
+    leagueId: string;
+    leagueName: string;
+    numberOfTeams: number;
+    currentTeamCount: number;
+  };
+  team: {
+    teamId: string;
+    teamName: string;
+    userId: string;
+  };
+}

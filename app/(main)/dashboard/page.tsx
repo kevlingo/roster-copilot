@@ -75,12 +75,20 @@ export default function DashboardPage() {
     <div className="page-container space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="page-title">Dashboard</h1>
-        <Link
-          href="/league/create"
-          className="btn btn-primary"
-        >
-          + Create League
-        </Link>
+        <div className="flex gap-2">
+          <Link
+            href="/league/join"
+            className="btn btn-outline"
+          >
+            Join League
+          </Link>
+          <Link
+            href="/league/create"
+            className="btn btn-primary"
+          >
+            + Create League
+          </Link>
+        </div>
       </div>
 
       {/* League Cards */}

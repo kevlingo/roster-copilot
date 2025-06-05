@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "node -e \"try { require('fs').rmSync('./data/roster_copilot_poc.db', { force: true, recursive: false }); console.log('Old data/roster_copilot_poc.db deleted.'); } catch (e) { if (e.code !== 'ENOENT') throw e; console.log('data/roster_copilot_poc.db not found, skipping delete.'); }\" && next dev",
+    "dev:seeded": "node -e \"try { require('fs').rmSync('./data/roster_copilot_poc.db', { force: true, recursive: false }); console.log('Old data/roster_copilot_poc.db deleted.'); } catch (e) { if (e.code !== 'ENOENT') throw e; console.log('data/roster_copilot_poc.db not found, skipping delete.'); }\" && tsx ./scripts/database/seed-db.ts && next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",

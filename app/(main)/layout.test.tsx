@@ -74,6 +74,10 @@ describe('MainLayout Logout Functionality', () => {
     mockUseAuthStore.mockReturnValue({
       logout: mockLogout,
       user: { username: 'testuser', email: 'test@example.com' },
+      isAuthenticated: true,
+      token: 'test-token',
+      login: jest.fn(),
+      restoreAuth: jest.fn(),
     } as any);
 
     (global.fetch as jest.Mock).mockResolvedValue({
@@ -97,10 +101,14 @@ describe('MainLayout Logout Functionality', () => {
     expect(usernameElements[0]).toHaveTextContent('testuser');
   });
 
-  it('should display fallback username when user is not logged in', () => {
+  it('should show authentication loading when user is not logged in', () => {
     mockUseAuthStore.mockReturnValue({
       logout: mockLogout,
       user: null,
+      isAuthenticated: false,
+      token: null,
+      login: jest.fn(),
+      restoreAuth: jest.fn(),
     } as any);
 
     render(
@@ -109,8 +117,9 @@ describe('MainLayout Logout Functionality', () => {
       </MainLayout>
     );
 
-    const usernameElements = screen.getAllByTestId('username');
-    expect(usernameElements[0]).toHaveTextContent('Fantasy User');
+    // Should show authentication loading screen instead of main content
+    expect(screen.getByText('Checking authentication...')).toBeInTheDocument();
+    expect(screen.queryByTestId('username')).not.toBeInTheDocument();
   });
 
   it('should handle successful logout', async () => {

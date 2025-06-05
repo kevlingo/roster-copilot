@@ -8,9 +8,9 @@ import {
 } from 'class-validator';
 
 // Password complexity: min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special char
-// Regex from: https://ihateregex.io/expr/password
+// Updated regex to include underscore and other common special characters
 const PASSWORD_REGEX =
-  /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
+  /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*\-_+=<>{}[\]|\\:";'.,/~`]).{8,}$/;
 
 export class SignUpDto {
   @IsString()

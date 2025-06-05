@@ -17,7 +17,7 @@ interface ResetPasswordPageProps {
 }
 
 // Password complexity regex - same as in auth.dto.ts
-const PASSWORD_REGEX = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
+const PASSWORD_REGEX = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*\-_+=<>{}[\]|\\:";'.,/~`]).{8,}$/;
 
 export default function ResetPasswordPage({ params }: ResetPasswordPageProps) {
   const router = useRouter();

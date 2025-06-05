@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useAuthStore } from '@/lib/store/auth.store';
 
 interface CreateLeagueForm {
   leagueName: string;
@@ -16,6 +17,7 @@ interface ApiError {
 
 export default function CreateLeaguePage() {
   const router = useRouter();
+  const token = useAuthStore((state) => state.token);
   const [form, setForm] = useState<CreateLeagueForm>({
     leagueName: '',
     numberOfTeams: 10,
@@ -56,7 +58,13 @@ export default function CreateLeaguePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
+    // Check authentication
+    if (!token) {
+      setError('You must be logged in to create a league');
+      return;
+    }
+
     // Client-side validation
     const validationError = validateForm();
     if (validationError) {
@@ -73,6 +81,7 @@ export default function CreateLeaguePage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
           leagueName: form.leagueName.trim(),

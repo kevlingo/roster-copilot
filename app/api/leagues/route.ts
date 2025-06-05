@@ -8,6 +8,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createLeague, isLeagueNameTaken } from '@/lib/dal/league.dal';
 import { CreateLeagueDto, CreateLeagueResponseDto } from '@/lib/dtos/league.dto';
 import { getUserFromSession } from '@/lib/auth/session';
+import { initializeDatabase } from '@/lib/dal/db';
 
 /**
  * POST /api/leagues
@@ -15,6 +16,9 @@ import { getUserFromSession } from '@/lib/auth/session';
  */
 export async function POST(request: NextRequest) {
   try {
+    // Initialize database connection
+    await initializeDatabase();
+
     // Check authentication
     const user = await getUserFromSession(request);
     if (!user) {
@@ -111,6 +115,9 @@ export async function POST(request: NextRequest) {
  */
 export async function GET(request: NextRequest) {
   try {
+    // Initialize database connection
+    await initializeDatabase();
+
     // Check authentication
     const user = await getUserFromSession(request);
     if (!user) {
