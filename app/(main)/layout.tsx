@@ -28,6 +28,7 @@ export default function MainLayout({
     const newTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(newTheme);
     document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
   };
   
   // Set initial theme based on user preference
@@ -35,13 +36,17 @@ export default function MainLayout({
     // Check for saved preference or system preference
     const savedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
+
     if (savedTheme) {
       setTheme(savedTheme as 'light' | 'dark');
       document.documentElement.setAttribute('data-theme', savedTheme);
     } else if (prefersDark) {
       setTheme('dark');
       document.documentElement.setAttribute('data-theme', 'dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      // Default to light mode if no preference is set
+      localStorage.setItem('theme', 'light');
     }
   }, []);
   
