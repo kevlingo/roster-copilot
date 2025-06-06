@@ -10,10 +10,11 @@ export interface ArchetypeData {
 }
 
 export interface ConversationState {
-  phase: 'greeting' | 'transition-to-selection' | 'archetype-selection' | 'confirmation' | 'complete';
+  phase: 'greeting' | 'mode-selection' | 'transition-to-selection' | 'archetype-selection' | 'confirmation' | 'complete';
   selectedArchetype: string | null;
   lastUserInput: string;
   attempts: number;
+  selectedMode?: 'quick' | 'full' | null;
 }
 
 // The four predefined Fantasy Manager Archetypes
@@ -59,6 +60,13 @@ To give you the best personalized advice, I'd like to understand your fantasy fo
 Knowing your archetype will help me tailor my advice perfectly to your preferences. Ready to discover your fantasy football personality?`;
   },
 
+  modeSelection: `Perfect! I can help you discover your archetype in two ways:
+
+**Quick Setup** ⚡ - Get your archetype selected in under a minute with streamlined descriptions
+**Let's Chat** 💬 - Take our time with detailed explanations and conversation
+
+Which would you prefer? Just say "Quick Setup" or "Let's Chat" (or "1" for Quick, "2" for Chat).`,
+
   archetypePresentation: `Great! Let me introduce you to the four Fantasy Manager Archetypes:
 
 **1. Eager Learner** 📚
@@ -103,8 +111,61 @@ You can always chat with me here whenever you need help with lineup decisions, w
 
   errorMessage: `I'm having a bit of trouble saving your selection right now. Don't worry though - let me try that again! Your choice is important to me, and I want to make sure it's properly saved.`,
 
-  retryMessage: `Let me try saving your archetype selection again...`
+  retryMessage: `Let me try saving your archetype selection again...`,
+
+  // Express Mode Scripts
+  expressArchetypePresentation: `Here are your four Fantasy Manager Archetypes:
+
+**1. Eager Learner** 📚 - Loves learning the "why" behind decisions
+**2. Calculated Strategist** 📊 - Prefers data-driven analysis
+**3. Bold Playmaker** 🎯 - Enjoys calculated risks and bold moves
+**4. Busy Optimizer** ⚡ - Wants quick, efficient advice
+
+Pick your number (1-4) or name!`,
+
+  expressConfirmation: (archetype: string) => `Perfect! You're a **${archetype}**.
+
+Is this correct? Say "yes" to confirm or "no" to choose differently.`,
+
+  expressTransitionToQuestionnaire: `Great! Since you're an Eager Learner, I have a few quick questions to personalize your experience. Ready?`,
+
+  expressTransitionToComplete: `Awesome! You're all set with your archetype. Let's start dominating your league! 🏆`,
+
+  modeSwitch: `No problem! Let's switch to the full conversation mode where I can give you more detailed explanations about each archetype.`
 };
+
+// Parse mode selection from user input
+export function parseModeSelection(userInput: string): 'quick' | 'full' | null {
+  const input = userInput.toLowerCase().trim();
+
+  // Quick mode indicators
+  if (input.includes('quick setup') || input.includes('quick') ||
+      input.includes('1') || input.includes('one') || input.includes('first') ||
+      input.includes('fast') || input.includes('express')) {
+    return 'quick';
+  }
+
+  // Full mode indicators
+  if (input.includes('let\'s chat') || input.includes('chat') ||
+      input.includes('2') || input.includes('two') || input.includes('second') ||
+      input.includes('full') || input.includes('detailed') || input.includes('conversation')) {
+    return 'full';
+  }
+
+  return null;
+}
+
+// Check if user wants to switch modes
+export function isRequestingModeSwitch(userInput: string): boolean {
+  const input = userInput.toLowerCase();
+  return input.includes('switch mode') ||
+         input.includes('change mode') ||
+         input.includes('different mode') ||
+         input.includes('full mode') ||
+         input.includes('detailed mode') ||
+         input.includes('let\'s chat instead') ||
+         input.includes('more details');
+}
 
 // Natural language processing for archetype selection
 export function parseArchetypeSelection(userInput: string): string | null {

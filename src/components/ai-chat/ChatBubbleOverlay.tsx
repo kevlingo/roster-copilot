@@ -18,23 +18,9 @@ const ChatBubbleOverlay: React.FC<ChatBubbleOverlayProps> = ({
 
   useLayoutEffect(() => {
     if (isVisible && messages.length > 0) {
-      // Get the last message (most recent AI response)
-      const lastMessage = messages[messages.length - 1];
-
-      // Only scroll to top of the new AI message when it's added
-      if (lastMessage.sender === 'ai') {
-        // Find the last message element and scroll it to the top of the visible area
-        const messageElements = messagesContainerRef.current?.querySelectorAll('[data-message-id]');
-        const lastMessageElement = messageElements?.[messageElements.length - 1] as HTMLElement;
-
-        if (lastMessageElement && messagesContainerRef.current) {
-          // Scroll so the top of the new AI message is visible
-          const containerRect = messagesContainerRef.current.getBoundingClientRect();
-          const messageRect = lastMessageElement.getBoundingClientRect();
-          const scrollOffset = messageRect.top - containerRect.top;
-
-          messagesContainerRef.current.scrollTop += scrollOffset;
-        }
+      // Scroll to the bottom to show the latest messages using the sentinel element
+      if (messagesEndRef.current) {
+        messagesEndRef.current.scrollIntoView({ behavior: 'auto' });
       }
     }
   }, [messages, isVisible]);

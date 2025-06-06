@@ -7,7 +7,9 @@ import {
   parseArchetypeSelection,
   getArchetypeByName,
   isRequestingMoreInfo,
-  getArchetypeDetailedExplanation
+  getArchetypeDetailedExplanation,
+  parseModeSelection,
+  isRequestingModeSwitch
 } from './archetype-onboarding';
 
 export interface ConversationResponse {
@@ -31,6 +33,7 @@ export class ConversationManager {
       selectedArchetype: null,
       lastUserInput: '',
       attempts: 0,
+      selectedMode: null,
       ...initialState
     };
     this.userName = userName;
@@ -57,13 +60,16 @@ export class ConversationManager {
 
     switch (this.state.phase) {
       case 'greeting':
-        // If empty input, show greeting. If user responds, transition to next phase
+        // If empty input, show greeting. If user responds, transition to mode selection
         if (userInput.trim() === '') {
           return this.handleGreeting();
         } else {
-          this.state.phase = 'transition-to-selection';
-          return this.handleTransitionToSelection(userInput);
+          this.state.phase = 'mode-selection';
+          return this.handleModeSelection(userInput);
         }
+
+      case 'mode-selection':
+        return this.handleModeSelection(userInput);
 
       case 'transition-to-selection':
         return this.handleTransitionToSelection(userInput);
@@ -87,6 +93,51 @@ export class ConversationManager {
     // Stay in greeting phase until user responds
     return {
       message: CONVERSATION_SCRIPTS.greeting(this.userName),
+      newState: { ...this.state },
+      messageType: 'markdown'
+    };
+  }
+
+  // Handle mode selection phase
+  private handleModeSelection(userInput: string): ConversationResponse {
+    // If no input (initial state), show mode selection
+    if (userInput.trim() === '') {
+      return {
+        message: CONVERSATION_SCRIPTS.modeSelection,
+        newState: { ...this.state },
+        messageType: 'markdown'
+      };
+    }
+
+    // Try to parse mode selection
+    const selectedMode = parseModeSelection(userInput);
+
+    if (selectedMode) {
+      this.state.selectedMode = selectedMode;
+      this.state.phase = 'transition-to-selection';
+      this.state.attempts = 0;
+
+      if (selectedMode === 'quick') {
+        // For express mode, go directly to archetype selection
+        this.state.phase = 'archetype-selection';
+        return {
+          message: CONVERSATION_SCRIPTS.expressArchetypePresentation,
+          newState: { ...this.state },
+          messageType: 'markdown'
+        };
+      } else {
+        // For full mode, use the existing transition flow
+        return {
+          message: 'Perfect! Let\'s take our time and explore each archetype in detail. Are you ready to discover your fantasy football personality?',
+          newState: { ...this.state },
+          messageType: 'markdown'
+        };
+      }
+    }
+
+    // If unclear, ask for clarification
+    return {
+      message: 'I want to make sure I understand! Would you prefer:\n\n**Quick Setup** (1) - Fast archetype selection\n**Let\'s Chat** (2) - Detailed conversation\n\nJust say "1" or "2", or "Quick" or "Chat".',
       newState: { ...this.state },
       messageType: 'markdown'
     };
@@ -148,6 +199,16 @@ export class ConversationManager {
 
   // Handle archetype selection phase
   private handleArchetypeSelection(userInput: string): ConversationResponse {
+    // Check if user wants to switch modes (only in express mode)
+    if (this.state.selectedMode === 'quick' && isRequestingModeSwitch(userInput)) {
+      this.state.selectedMode = 'full';
+      return {
+        message: CONVERSATION_SCRIPTS.modeSwitch + '\n\n' + CONVERSATION_SCRIPTS.archetypePresentation,
+        newState: { ...this.state },
+        messageType: 'markdown'
+      };
+    }
+
     // Check if user is requesting more info about a specific archetype
     if (isRequestingMoreInfo(userInput)) {
       // Try to determine which archetype they want info about
@@ -158,7 +219,7 @@ export class ConversationManager {
           newState: { ...this.state }
         };
       }
-      
+
       return {
         message: "I'd be happy to explain any of the archetypes in more detail! Which one would you like to know more about? You can say something like 'tell me more about Eager Learner' or 'explain the Bold Playmaker'.",
         newState: { ...this.state }
@@ -167,19 +228,29 @@ export class ConversationManager {
 
     // Try to parse archetype selection
     const selectedArchetype = parseArchetypeSelection(userInput);
-    
+
     if (selectedArchetype) {
       this.state.selectedArchetype = selectedArchetype;
       this.state.phase = 'confirmation';
       this.state.attempts = 0;
-      
-      const archetype = getArchetypeByName(selectedArchetype);
-      const confirmationMessage = archetype ? archetype.confirmationMessage : 'Great choice!';
-      
-      return {
-        message: confirmationMessage + '\n\nIs this correct? Just say "yes" to confirm, or let me know if you\'d like to choose a different archetype.',
-        newState: { ...this.state }
-      };
+
+      // Use express confirmation for quick mode
+      if (this.state.selectedMode === 'quick') {
+        return {
+          message: CONVERSATION_SCRIPTS.expressConfirmation(selectedArchetype),
+          newState: { ...this.state },
+          messageType: 'markdown'
+        };
+      } else {
+        // Use full confirmation for regular mode
+        const archetype = getArchetypeByName(selectedArchetype);
+        const confirmationMessage = archetype ? archetype.confirmationMessage : 'Great choice!';
+
+        return {
+          message: confirmationMessage + '\n\nIs this correct? Just say "yes" to confirm, or let me know if you\'d like to choose a different archetype.',
+          newState: { ...this.state }
+        };
+      }
     }
 
     // Increment attempts and provide appropriate response
@@ -210,17 +281,25 @@ export class ConversationManager {
       
       this.state.phase = 'complete';
       
-      // Determine next step based on archetype
+      // Determine next step based on archetype and mode
       if (this.state.selectedArchetype === 'Eager Learner') {
+        const message = this.state.selectedMode === 'quick'
+          ? CONVERSATION_SCRIPTS.expressTransitionToQuestionnaire
+          : CONVERSATION_SCRIPTS.transitionToQuestionnaire;
+
         return {
-          message: CONVERSATION_SCRIPTS.transitionToQuestionnaire,
+          message,
           newState: { ...this.state },
           shouldPersistArchetype: true,
           shouldTransitionToNextStep: true
         };
       } else {
+        const message = this.state.selectedMode === 'quick'
+          ? CONVERSATION_SCRIPTS.expressTransitionToComplete
+          : CONVERSATION_SCRIPTS.transitionToComplete;
+
         return {
-          message: CONVERSATION_SCRIPTS.transitionToComplete,
+          message,
           newState: { ...this.state },
           shouldPersistArchetype: true,
           shouldTransitionToNextStep: false
@@ -229,15 +308,19 @@ export class ConversationManager {
     }
 
     // Check for rejection or desire to change
-    if (input.includes('no') || input.includes('different') || input.includes('change') || 
+    if (input.includes('no') || input.includes('different') || input.includes('change') ||
         input.includes('wrong') || input.includes('not right')) {
-      
+
       this.state.phase = 'archetype-selection';
       this.state.selectedArchetype = null;
       this.state.attempts = 0;
-      
+
+      const presentation = this.state.selectedMode === 'quick'
+        ? CONVERSATION_SCRIPTS.expressArchetypePresentation
+        : CONVERSATION_SCRIPTS.archetypePresentation;
+
       return {
-        message: 'No problem! Let\'s find the right archetype for you.\n\n' + CONVERSATION_SCRIPTS.archetypePresentation,
+        message: 'No problem! Let\'s find the right archetype for you.\n\n' + presentation,
         newState: { ...this.state }
       };
     }
@@ -273,7 +356,8 @@ export class ConversationManager {
       phase: 'greeting',
       selectedArchetype: null,
       lastUserInput: '',
-      attempts: 0
+      attempts: 0,
+      selectedMode: null
     };
   }
 
