@@ -8,6 +8,8 @@
   - [Component Breakdown & Implementation Details](https://www.google.com/search?q=%23component-breakdown--implementation-details)
       - [Component Naming & Organization](https://www.google.com/search?q=%23component-naming--organization)
       - [Template for Component Specification](https://www.google.com/search?q=%23template-for-component-specification)
+      - [Conversational Onboarding Architecture](https://www.google.com/search?q=%23conversational-onboarding-architecture)
+      - [Chat History Persistence Patterns](https://www.google.com/search?q=%23chat-history-persistence-patterns)
   - [State Management In-Depth](https://www.google.com/search?q=%23state-management-in-depth)
       - [Store Structure / Slices](https://www.google.com/search?q=%23store-structure--slices)
       - [Key Selectors](https://www.google.com/search?q=%23key-selectors)
@@ -103,7 +105,9 @@ roster-copilot/
 ├── components/                 # Shared & reusable React UI components
 │   ├── ai-copilot/              # UI components specifically for the AI Copilot Panel/Overlay & its content
 │   │   ├── AIPanel.tsx         # The main shell for the persistent AI panel/overlay
-│   │   ├── ArchetypeCard.tsx   # Interactive card for archetype selection during onboarding (rendered within AIPanel)
+│   │   ├── PersistentChatInterface.tsx # Core chat interface component with history persistence
+│   │   ├── ConversationalOnboarding.tsx # Conversational onboarding flow management
+│   │   ├── ChatHistoryManager.tsx # Chat history persistence and cross-device sync
 │   │   ├── DigestSummaryItem.tsx # Component for displaying items in digest summaries (in AIPanel or Dashboard)
 │   │   └── (other_interactive_chat_elements...).tsx # e.g., QuestionPromptCard.tsx
 │   ├── core/                   # Fundamental, highly reusable UI building blocks
@@ -129,9 +133,9 @@ roster-copilot/
 
 **Key Frontend Directory Descriptions & Conventions:**
 
-  * **`app/`**: Core Next.js application UI using App Router. `app/(main)/layout.tsx` is key for persistent UI like the AI Copilot panel. `app/(main)/onboarding/page.tsx` hosts the panel-driven conversational onboarding.
+  * **`app/`**: Core Next.js application UI using App Router. `app/(main)/layout.tsx` is key for persistent UI like the AI Copilot panel. `app/(main)/onboarding/page.tsx` hosts the conversational onboarding experience.
   * **`components/`**: Shared/reusable React UI components.
-      * `components/ai-copilot/`: For the AI Copilot Panel and its interactive elements.
+      * `components/ai-copilot/`: For the AI Copilot Panel, chat interface, and conversational onboarding components.
       * `components/core/`: Basic UI building blocks (likely wrappers around DaisyUI).
       * `components/layout/`: Structural components.
       * `components/onboarding/`: UI elements for the onboarding page (e.g., progress timeline).
@@ -179,6 +183,116 @@ roster-copilot/
 *For the Roster Copilot Proof-of-Concept, detailed specifications for most individual UI components will be created emergently during the UI design and development phases, adhering strictly to the "Template for Component Specification" defined above. Focus will be on components critical for the MVP user flows.*
 *Any foundational or globally shared custom components identified (e.g., a specialized `AIPanelViewCard.tsx` or a core `PageLayout.tsx`) must be documented using the template to ensure clarity and reusability.*
 
+### Conversational Onboarding Architecture
+
+The conversational onboarding system represents a significant architectural pattern that transforms traditional form-based user onboarding into natural chat-based interactions. This section defines the key architectural patterns and implementation approaches.
+
+#### **Core Architecture Principles**
+
+* **Chat-First Design:** All onboarding interactions occur through the existing `PersistentChatInterface.tsx` component
+* **Conversation State Management:** Dedicated state management for tracking onboarding progress, user selections, and conversation context
+* **Natural Language Processing:** Client-side processing for interpreting user responses in natural language format
+* **Progressive Enhancement:** Modular design allowing for express mode, voice-ready architecture, and cross-device continuity
+
+#### **Key Components & Patterns**
+
+**1. Conversation State Management**
+```typescript
+interface OnboardingConversationState {
+  currentPhase: 'greeting' | 'mode-selection' | 'archetype-selection' | 'questionnaire' | 'complete'
+  selectedMode: 'express' | 'full' | null
+  selectedArchetype: string | null
+  questionnaireAnswers: Record<string, string>
+  conversationHistory: ConversationMessage[]
+}
+```
+
+**2. Response Processing Pattern**
+```typescript
+interface ResponseProcessor {
+  processArchetypeSelection(userInput: string): ArchetypeSelectionResult
+  processQuestionnaireResponse(userInput: string, questionType: string): QuestionnaireResult
+  handleUnclearResponse(userInput: string, context: ConversationContext): ClarificationResponse
+}
+```
+
+**3. Conversation Flow Control**
+* **Mode Selection:** Express vs. Full conversation mode routing
+* **Archetype Selection:** Natural language processing for archetype identification
+* **Questionnaire Flow:** Sequential question handling with confirmation patterns
+* **Error Recovery:** Graceful handling of unclear responses and technical failures
+
+#### **Integration Points**
+
+* **Chat Interface:** Extends `PersistentChatInterface.tsx` with onboarding-specific message handling
+* **API Integration:** Connects to existing `PUT /api/users/me` endpoint for profile updates
+* **State Persistence:** Integrates with chat history persistence system for cross-device continuity
+* **Navigation:** Seamless transition to main application upon completion
+
+### Chat History Persistence Patterns
+
+The chat history persistence system provides the foundation for cross-device conversation continuity, AI personalization, and robust user experience. This section defines the architectural patterns for comprehensive chat storage and retrieval.
+
+#### **Core Architecture Principles**
+
+* **Comprehensive Persistence:** All chat conversations stored in backend, including onboarding interactions
+* **UI vs. Backend Separation:** UI "clear" functionality only affects visible history, backend storage remains intact
+* **Cross-Device Continuity:** Conversation state preserved and synchronized across device switches
+* **Performance Optimization:** Efficient loading and caching strategies for large conversation histories
+
+#### **Key Components & Patterns**
+
+**1. Chat History Data Model**
+```typescript
+interface ChatMessage {
+  id: string
+  userId: string
+  content: string
+  role: 'user' | 'assistant' | 'system'
+  timestamp: Date
+  conversationContext?: OnboardingContext | GeneralChatContext
+}
+
+interface ConversationSession {
+  id: string
+  userId: string
+  startTime: Date
+  lastActivity: Date
+  messageCount: number
+  conversationType: 'onboarding' | 'general' | 'digest'
+}
+```
+
+**2. Persistence Service Pattern**
+```typescript
+interface ChatHistoryService {
+  persistMessage(message: ChatMessage): Promise<void>
+  loadConversationHistory(userId: string, limit?: number): Promise<ChatMessage[]>
+  clearUIHistory(): void // UI-only operation
+  syncConversationState(deviceId: string): Promise<ConversationState>
+}
+```
+
+**3. State Management Integration**
+* **Local State:** Visible chat messages managed in component state
+* **Backend Sync:** Automatic persistence of all messages on send/receive
+* **Cross-Device Sync:** Conversation state synchronization on device handoff
+* **Offline Handling:** Queue messages for sync when connection restored
+
+#### **Performance Considerations**
+
+* **Lazy Loading:** Implement pagination for large conversation histories
+* **Caching Strategy:** Cache recent conversations in memory with efficient retrieval
+* **Database Optimization:** Indexed queries for user-specific chat history retrieval
+* **Real-time Sync:** Efficient synchronization patterns for cross-device continuity
+
+#### **Integration Points**
+
+* **Chat Interface:** Seamless integration with `PersistentChatInterface.tsx` for automatic persistence
+* **API Layer:** Dedicated chat history endpoints for CRUD operations
+* **Authentication:** User-scoped chat history with proper access controls
+* **Analytics:** Foundation for conversation analytics and AI personalization learning
+
 ## State Management In-Depth (Proof-of-Concept)
 
 The state management strategy for the Roster Copilot PoC prioritizes simplicity, leveraging React's built-in capabilities.
@@ -198,6 +312,7 @@ The state management strategy for the Roster Copilot PoC prioritizes simplicity,
   * **Error Handling (Frontend Client-Side):** `fetch` calls include `.catch()` or `try/catch` for error handling. User-facing errors displayed gracefully (e.g., via AI Copilot panel). Technical errors logged to console.
   * **Loading State Indication:** Components initiating API calls must manage and display loading states (e.g., DaisyUI "loading" or "skeleton" components).
   * **Abstraction (Optional for PoC, Recommended for Key Interactions):** Consider simple custom React hooks for frequently used or complex AI Copilot API interactions to encapsulate logic.
+  * **Chat History API Integration:** Dedicated endpoints for chat history persistence (`POST /api/chat/messages`, `GET /api/chat/history`, etc.) with automatic message persistence and cross-device synchronization support.
 
 ## Routing Strategy (Proof-of-Concept)
 
@@ -251,5 +366,6 @@ The web application must be fully responsive.
 | Change                                                          | Date       | Version | Description                                                     | Author      |
 | :-------------------------------------------------------------- | :--------- | :------ | :-------------------------------------------------------------- | :---------- |
 | Initial Frontend Architecture Document Draft for PoC Created    | 2025-05-30 | 0.1     | First complete draft based on user collaboration.             | Jane (DA)   |
+| Conversational Onboarding & Chat Persistence Architecture Added | 2025-01-27 | 0.2     | Added architecture patterns for conversational onboarding and comprehensive chat history persistence system. | Curly (PO)  |
 
 -----

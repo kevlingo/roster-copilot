@@ -22,10 +22,11 @@
 
 **B. Roster Copilot AI-Powered Features (MVP Differentiators):**
 
-* **AI Copilot Onboarding System (Revised):**
-    * The system shall present users with a selection of predefined "Fantasy Manager Archetypes" (e.g., "The Strategic Veteran," "The Bold Risk-Taker," "The Busy Optimizer," and **"Eager Learner"** (for users new to fantasy football or still learning)).
+* **AI Copilot Onboarding System (Conversational):**
+    * The system shall engage users in a natural conversation through the AI chat interface to select from predefined "Fantasy Manager Archetypes" (e.g., "The Strategic Veteran," "The Bold Risk-Taker," "The Busy Optimizer," and **"Eager Learner"** (for users new to fantasy football or still learning)).
+    * The archetype selection process shall be conversational, with the AI Copilot explaining each archetype and guiding users to make their selection through natural language interaction.
     * Upon selection, an initial User Preference Profile based on the chosen archetype will be established.
-    * If the **"Eager Learner"** archetype is selected, the system will follow up with a brief, guided questionnaire (2-3 key questions) to capture essential baseline preferences.
+    * If the **"Eager Learner"** archetype is selected, the conversation shall seamlessly continue with a brief, guided questionnaire (2-3 key questions) presented in conversational format to capture essential baseline preferences.
     * For all users, the system will employ a "Learn-As-You-Go" mechanism: The AI Copilot will observe user actions and decisions within the app and, when patterns or deviations from the current profile are detected, will proactively ask the user for confirmation to update and refine their User Preference Profile.
     * The system shall store and continuously evolve the User Preference Profile. **The User Preference Profile (selected archetype and responses to initial questions) should be easily viewable by the user within their profile settings for transparency (PoC scope).** *(Full editing capabilities and detailed views of implicitly learned traits are Post-MVP considerations).*
 * **"Draft Day Co-Pilot" (Revised):**
@@ -121,10 +122,10 @@ The Roster Copilot MVP will be developed through the following core Epics. Each 
 
 **Epic 2: AI Copilot Onboarding & Personalization Foundation MVP**
 
-* **Goal:** To implement the initial AI Copilot onboarding process, allowing the system to capture core user preferences and establish a foundational User Preference Profile that will drive personalized AI advice.
+* **Goal:** To implement the initial AI Copilot onboarding process through a conversational chat interface, allowing the system to capture core user preferences and establish a foundational User Preference Profile that will drive personalized AI advice.
 * **High-Level User Story Titles / Objectives:**
-    * Implement Fantasy Manager Archetype Selection Interface
-    * Implement Brief Guided Questionnaire for "Eager Learner" Archetype Users
+    * Implement Conversational Fantasy Manager Archetype Selection
+    * Implement Conversational Guided Questionnaire for "Eager Learner" Archetype Users
     * Develop "Learn-As-You-Go" Mechanism for User Preference Profile Refinement (PoC scope: AI observes patterns and asks user for confirmation to update profile)
     * Allow User to View their Core User Preference Profile (PoC scope: display selected archetype and explicit onboarding answers)
 
@@ -198,6 +199,7 @@ This section lists features and capabilities identified as valuable but not incl
 | :------------------------------------------ | :--------- | :------ | :------------------------------------------------ | :---------- |
 | Initial PRD Draft for Hackathon PoC Created | 2025-05-30 | 0.1     | First complete draft based on user collaboration. | John (PM)   |
 | Archetype Consolidation Update              | 2025-05-31 | 0.2     | Consolidated "New to All of This!" into "Eager Learner". Archetype list updated in Functional Requirements. | Sarah (PO)  |
+| Conversational Onboarding Enhancement      | 2025-01-27 | 0.3     | Updated Epic 2 and onboarding system to use conversational chat interface instead of modal forms. | Curly (PO)  |
 
 ----- END PRD START CHECKLIST OUTPUT ------
 
