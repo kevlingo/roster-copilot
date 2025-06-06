@@ -25,7 +25,7 @@ describe('ConversationManager', () => {
     it('should transition to archetype-presentation after greeting', () => {
       const response = manager.processUserInput('hello');
       
-      expect(response.message).toContain('Hi! I\'m your AI Copilot');
+      expect(response.message).toContain('Hi! I\'m Jake, your AI Copilot');
       expect(response.newState.phase).toBe('archetype-presentation');
     });
   });
@@ -55,7 +55,7 @@ describe('ConversationManager', () => {
       const response = manager.processUserInput('I like football');
 
       expect(response.newState.phase).toBe('archetype-selection');
-      expect(response.message).toContain('Which of these sounds most like you');
+      expect(response.message).toContain('Please select your archetype from the options below');
     });
 
     it('should provide more structured guidance after multiple attempts', () => {

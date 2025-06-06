@@ -6,7 +6,6 @@ import {
   MaxLength,
   MinLength,
   IsIn,
-  IsOptional,
 } from 'class-validator';
 
 // Password complexity: min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special char

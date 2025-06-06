@@ -14,10 +14,10 @@ const PersistentChatInterface: React.FC = () => {
   const [chatHistory, setChatHistory] = useState<MessageObject[]>([]);
   const [isOverlayVisible, setIsOverlayVisible] = useState(true);
   const [isLoadingResponse, setIsLoadingResponse] = useState(false);
-  const [conversationManager] = useState(() => new ConversationManager());
   const [isOnboardingMode, setIsOnboardingMode] = useState(false);
   const chatInputRef = useRef<HTMLTextAreaElement>(null);
   const { user, token } = useAuthStore();
+  const [conversationManager] = useState(() => new ConversationManager(undefined, user?.username));
   // const chatOverlayRef = useRef<HTMLDivElement>(null); // Removed as it's not currently used
 
 
@@ -68,6 +68,48 @@ const PersistentChatInterface: React.FC = () => {
     }
   };
 
+  // Handle component actions (like archetype selection)
+  const handleComponentAction = async (action: string, data: unknown) => {
+    if (action === 'archetype-selected' && typeof data === 'string') {
+      // Process archetype selection
+      const response = conversationManager.processUserInput(data);
+
+      // Create AI response message
+      const aiMessage: MessageObject = {
+        id: uuidv4(),
+        text: response.message,
+        sender: 'ai',
+        timestamp: new Date(),
+        type: response.messageType || 'conversation',
+        componentType: response.componentType,
+        componentProps: response.componentProps,
+      };
+
+      setChatHistory((prevHistory) => [...prevHistory, aiMessage]);
+
+      // Handle archetype persistence if needed
+      if (response.shouldPersistArchetype && conversationManager.getState().selectedArchetype) {
+        const success = await persistArchetype(conversationManager.getState().selectedArchetype!);
+        if (!success) {
+          // Add error message
+          const errorMessage: MessageObject = {
+            id: uuidv4(),
+            text: 'I had trouble saving your selection. Let me try again...',
+            sender: 'ai',
+            timestamp: new Date(),
+            type: 'conversation',
+          };
+          setChatHistory((prevHistory) => [...prevHistory, errorMessage]);
+        }
+      }
+
+      // Check if onboarding is complete
+      if (conversationManager.isComplete()) {
+        setIsOnboardingMode(false);
+      }
+    }
+  };
+
   // AC7: handleSendMessage
   const handleSendMessage = async (messageText?: string) => {
     const textToSend = typeof messageText === 'string' ? messageText : inputValue;
@@ -94,22 +136,30 @@ const PersistentChatInterface: React.FC = () => {
     // Add realistic delay for AI response
     await new Promise(resolve => setTimeout(resolve, Math.random() * 1000 + 1000)); // 1-2 seconds delay
 
-    let aiResponseText: string;
+    let aiResponse: MessageObject;
 
     if (isOnboardingMode) {
       // Use conversation manager for onboarding
       const response = conversationManager.processUserInput(textToSend);
-      aiResponseText = response.message;
+
+      aiResponse = {
+        id: uuidv4(),
+        text: response.message,
+        sender: 'ai',
+        timestamp: new Date(),
+        type: response.messageType || 'conversation',
+        componentType: response.componentType,
+        componentProps: response.componentProps,
+      };
 
       // Handle archetype persistence if needed
       if (response.shouldPersistArchetype && conversationManager.getState().selectedArchetype) {
         const success = await persistArchetype(conversationManager.getState().selectedArchetype!);
         if (!success) {
-          aiResponseText = 'I had trouble saving your selection. Let me try again...';
-          // Could add retry logic here
-        } else {
-          // Update user state in auth store if needed
-          // This would require updating the auth store to refresh user data
+          aiResponse.text = 'I had trouble saving your selection. Let me try again...';
+          aiResponse.type = 'conversation';
+          delete aiResponse.componentType;
+          delete aiResponse.componentProps;
         }
       }
 
@@ -119,16 +169,14 @@ const PersistentChatInterface: React.FC = () => {
       }
     } else {
       // Regular chat mode - simple echo for now
-      aiResponseText = `AI Echo: "${textToSend}"`;
+      aiResponse = {
+        id: uuidv4(),
+        text: `AI Echo: "${textToSend}"`,
+        sender: 'ai',
+        timestamp: new Date(),
+        type: 'conversation',
+      };
     }
-
-    const aiResponse: MessageObject = {
-      id: uuidv4(),
-      text: aiResponseText,
-      sender: 'ai',
-      timestamp: new Date(),
-      type: 'conversation',
-    };
     setChatHistory((prevHistory) => [...prevHistory, aiResponse]);
     setIsLoadingResponse(false);
     // Focus will be handled by the new useEffect below
@@ -170,7 +218,7 @@ const PersistentChatInterface: React.FC = () => {
     return () => {
       setGlobalNotificationHandler(() => {});
     };
-  }, []);
+  }, [addNotification]);
 
   // Check if user needs onboarding (no selected archetype)
   useEffect(() => {
@@ -183,7 +231,9 @@ const PersistentChatInterface: React.FC = () => {
         text: response.message,
         sender: 'ai',
         timestamp: new Date(),
-        type: 'conversation',
+        type: response.messageType || 'conversation',
+        componentType: response.componentType,
+        componentProps: response.componentProps,
       };
       setChatHistory([aiMessage]);
     }
@@ -195,6 +245,7 @@ const PersistentChatInterface: React.FC = () => {
       <ChatBubbleOverlay
         messages={chatHistory}
         isVisible={isOverlayVisible}
+        onComponentAction={handleComponentAction}
         // onHideOverlay and onClearHistory removed from here
       />
 

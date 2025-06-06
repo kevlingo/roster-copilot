@@ -5,11 +5,13 @@ import ChatMessageBubble from './ChatMessageBubble';
 interface ChatBubbleOverlayProps {
   messages: MessageObject[];
   isVisible: boolean;
+  onComponentAction?: (action: string, data: unknown) => void;
 }
 
 const ChatBubbleOverlay: React.FC<ChatBubbleOverlayProps> = ({
   messages,
   isVisible,
+  onComponentAction,
 }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -38,7 +40,11 @@ const ChatBubbleOverlay: React.FC<ChatBubbleOverlayProps> = ({
         tabIndex={0}
       >
         {messages.map((msg) => (
-          <ChatMessageBubble key={msg.id} message={msg} />
+          <ChatMessageBubble
+            key={msg.id}
+            message={msg}
+            onComponentAction={onComponentAction}
+          />
         ))}
         <div ref={messagesEndRef} data-testid="messages-end-sentinel" />
       </div>

@@ -16,12 +16,16 @@ export interface ConversationResponse {
   shouldPersistArchetype?: boolean;
   shouldTransitionToNextStep?: boolean;
   isError?: boolean;
+  messageType?: 'conversation' | 'markdown' | 'component';
+  componentType?: 'archetype-selection';
+  componentProps?: unknown;
 }
 
 export class ConversationManager {
   private state: ConversationState;
+  private userName?: string;
 
-  constructor(initialState?: Partial<ConversationState>) {
+  constructor(initialState?: Partial<ConversationState>, userName?: string) {
     this.state = {
       phase: 'greeting',
       selectedArchetype: null,
@@ -29,6 +33,7 @@ export class ConversationManager {
       attempts: 0,
       ...initialState
     };
+    this.userName = userName;
   }
 
   // Get current conversation state
@@ -74,10 +79,11 @@ export class ConversationManager {
   // Handle initial greeting phase
   private handleGreeting(): ConversationResponse {
     this.state.phase = 'archetype-presentation';
-    
+
     return {
-      message: CONVERSATION_SCRIPTS.greeting,
-      newState: { ...this.state }
+      message: CONVERSATION_SCRIPTS.greeting(this.userName),
+      newState: { ...this.state },
+      messageType: 'markdown'
     };
   }
 
@@ -87,33 +93,38 @@ export class ConversationManager {
     if (isRequestingMoreInfo(userInput)) {
       return {
         message: CONVERSATION_SCRIPTS.archetypePresentation,
-        newState: { ...this.state }
+        newState: { ...this.state },
+        messageType: 'markdown'
       };
     }
 
     // Try to parse archetype selection
     const selectedArchetype = parseArchetypeSelection(userInput);
-    
+
     if (selectedArchetype) {
       this.state.selectedArchetype = selectedArchetype;
       this.state.phase = 'confirmation';
-      
+
       const archetype = getArchetypeByName(selectedArchetype);
       const confirmationMessage = archetype ? archetype.confirmationMessage : 'Great choice!';
-      
+
       return {
         message: confirmationMessage + '\n\nIs this correct? Just say "yes" to confirm, or let me know if you\'d like to choose a different archetype.',
-        newState: { ...this.state }
+        newState: { ...this.state },
+        messageType: 'markdown'
       };
     }
 
-    // If we can't parse the selection, present the archetypes
+    // If we can't parse the selection, present the interactive archetype selection
     this.state.phase = 'archetype-selection';
     this.state.attempts = 1;
-    
+
     return {
-      message: CONVERSATION_SCRIPTS.archetypePresentation,
-      newState: { ...this.state }
+      message: 'Please select your archetype from the options below:',
+      newState: { ...this.state },
+      messageType: 'component',
+      componentType: 'archetype-selection',
+      componentProps: {}
     };
   }
 

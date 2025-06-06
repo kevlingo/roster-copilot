@@ -17,6 +17,9 @@ const customJestConfig = {
     '^@/lib/(.*)$': '<rootDir>/lib/$1', // Added mapping for @/lib
   },
   testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/', '<rootDir>/e2e/', '<rootDir>/test/e2e/'],
+  transformIgnorePatterns: [
+    'node_modules/(?!(react-markdown|remark-gfm|micromark|decode-named-character-reference|character-entities|unist-util-stringify-position|mdast-util-from-markdown|mdast-util-to-string|unist-util-visit|unist-util-is|unist-util-visit-parents)/)'
+  ],
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async

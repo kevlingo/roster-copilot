@@ -1,11 +1,15 @@
 import React from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { MessageObject } from '../../types/chat'; // Corrected path
+import ComponentMessageRenderer from './ComponentMessageRenderer';
 
 interface ChatMessageBubbleProps {
   message: MessageObject;
+  onComponentAction?: (action: string, data: unknown) => void;
 }
 
-const ChatMessageBubble: React.FC<ChatMessageBubbleProps> = ({ message }) => {
+const ChatMessageBubble: React.FC<ChatMessageBubbleProps> = ({ message, onComponentAction }) => {
   const { text, sender, timestamp, type, notificationType } = message;
 
   const isUser = sender === 'user';
@@ -49,18 +53,72 @@ const ChatMessageBubble: React.FC<ChatMessageBubbleProps> = ({ message }) => {
     hour12: true,
   });
 
+  // Render content based on message type
+  const renderMessageContent = () => {
+    if (type === 'component') {
+      return (
+        <ComponentMessageRenderer
+          message={message}
+          onComponentAction={onComponentAction}
+        />
+      );
+    }
+
+    if (type === 'markdown') {
+      return (
+        <div className={textContentClasses}>
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            components={{
+              // Custom styling for markdown elements
+              p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+              strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+              em: ({ children }) => <em className="italic">{children}</em>,
+              ul: ({ children }) => <ul className="list-disc list-inside mb-2 space-y-1">{children}</ul>,
+              ol: ({ children }) => <ol className="list-decimal list-inside mb-2 space-y-1">{children}</ol>,
+              li: ({ children }) => <li className="text-sm">{children}</li>,
+              a: ({ href, children }) => (
+                <a
+                  href={href}
+                  className="text-blue-600 hover:text-blue-800 underline"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {children}
+                </a>
+              ),
+              code: ({ children }) => (
+                <code className="bg-gray-100 px-1 py-0.5 rounded text-xs font-mono">
+                  {children}
+                </code>
+              ),
+            }}
+          >
+            {text}
+          </ReactMarkdown>
+        </div>
+      );
+    }
+
+    // Default: HTML content (existing behavior)
+    return (
+      <p
+        className={textContentClasses}
+        dangerouslySetInnerHTML={{ __html: text }}
+      />
+    );
+  };
+
   return (
     <div className={bubbleContainerClasses}>
       <div className={bubbleInstanceClasses}>
-        {/* AC10: Links clickable (via dangerouslySetInnerHTML), AC11: Text selectable (default for p) */}
-        <p
-          className={textContentClasses}
-          dangerouslySetInnerHTML={{ __html: text }}
-        />
-        {/* AC6: Render subtle timestamp */}
-        <div className={`${timestampClasses} ${isUser ? 'text-left' : 'text-right'}`}>
-          {formattedTimestamp}
-        </div>
+        {renderMessageContent()}
+        {/* AC6: Render subtle timestamp - only for non-component messages */}
+        {type !== 'component' && (
+          <div className={`${timestampClasses} ${isUser ? 'text-left' : 'text-right'}`}>
+            {formattedTimestamp}
+          </div>
+        )}
       </div>
     </div>
   );

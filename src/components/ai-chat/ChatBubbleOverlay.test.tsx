@@ -1,3 +1,24 @@
+// Mock react-markdown
+jest.mock('react-markdown', () => {
+  return function MockReactMarkdown({ children }: { children: string }) {
+    return <div data-testid="markdown-content">{children}</div>;
+  };
+});
+
+// Mock remark-gfm
+jest.mock('remark-gfm', () => {
+  return function mockRemarkGfm() {
+    return {};
+  };
+});
+
+// Mock the ComponentMessageRenderer
+jest.mock('./ComponentMessageRenderer', () => {
+  return function MockComponentMessageRenderer({ message }: { message: { componentType?: string } }) {
+    return <div data-testid="component-renderer">Component: {message.componentType}</div>;
+  };
+});
+
 import React from 'react';
 import { render, screen } from '@testing-library/react'; // Removed fireEvent
 import '@testing-library/jest-dom';

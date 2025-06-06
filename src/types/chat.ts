@@ -3,6 +3,8 @@ export interface MessageObject {
   text: string;
   sender: 'user' | 'ai';
   timestamp: Date;
-  type?: 'conversation' | 'notification';
+  type?: 'conversation' | 'notification' | 'markdown' | 'component';
   notificationType?: 'success' | 'error' | 'info';
+  componentType?: 'archetype-selection';
+  componentProps?: unknown;
 }

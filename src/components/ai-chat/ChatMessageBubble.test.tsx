@@ -1,3 +1,24 @@
+// Mock react-markdown
+jest.mock('react-markdown', () => {
+  return function MockReactMarkdown({ children }: { children: string }) {
+    return <div data-testid="markdown-content">{children}</div>;
+  };
+});
+
+// Mock remark-gfm
+jest.mock('remark-gfm', () => {
+  return function mockRemarkGfm() {
+    return {};
+  };
+});
+
+// Mock the ComponentMessageRenderer
+jest.mock('./ComponentMessageRenderer', () => {
+  return function MockComponentMessageRenderer({ message }: { message: { componentType?: string } }) {
+    return <div data-testid="component-renderer">Component: {message.componentType}</div>;
+  };
+});
+
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
@@ -5,6 +26,12 @@ import ChatMessageBubble from './ChatMessageBubble';
 import { MessageObject } from '../../types/chat';
 
 describe('ChatMessageBubble', () => {
+  const mockOnComponentAction = jest.fn();
+
+  beforeEach(() => {
+    mockOnComponentAction.mockClear();
+  });
+
   const mockUserMessage: MessageObject = {
     id: '1',
     text: 'Hello AI!',
@@ -27,6 +54,24 @@ describe('ChatMessageBubble', () => {
     sender: 'ai',
     timestamp: new Date('2023-01-01T10:02:00Z'),
     type: 'conversation',
+  };
+
+  const mockMarkdownMessage: MessageObject = {
+    id: '4',
+    text: '**Bold text** and *italic text* with a [link](https://example.com)',
+    sender: 'ai',
+    timestamp: new Date('2023-01-01T10:03:00Z'),
+    type: 'markdown',
+  };
+
+  const mockComponentMessage: MessageObject = {
+    id: '5',
+    text: 'Select your archetype',
+    sender: 'ai',
+    timestamp: new Date('2023-01-01T10:04:00Z'),
+    type: 'component',
+    componentType: 'archetype-selection',
+    componentProps: {},
   };
 
   const mockSuccessNotification: MessageObject = {
@@ -65,7 +110,7 @@ describe('ChatMessageBubble', () => {
   };
 
   test('renders user message correctly', () => {
-    render(<ChatMessageBubble message={mockUserMessage} />);
+    render(<ChatMessageBubble message={mockUserMessage} onComponentAction={mockOnComponentAction} />);
 
     const bubble = screen.getByText(mockUserMessage.text).closest('div');
     const container = bubble?.parentElement;
@@ -83,7 +128,7 @@ describe('ChatMessageBubble', () => {
   });
 
   test('renders AI message correctly', () => {
-    render(<ChatMessageBubble message={mockAiMessage} />);
+    render(<ChatMessageBubble message={mockAiMessage} onComponentAction={mockOnComponentAction} />);
     
     const bubble = screen.getByText(mockAiMessage.text).closest('div');
     const container = bubble?.parentElement;
@@ -101,7 +146,7 @@ describe('ChatMessageBubble', () => {
   });
 
   test('renders HTML content correctly and link is present', () => {
-    render(<ChatMessageBubble message={mockHtmlMessage} />);
+    render(<ChatMessageBubble message={mockHtmlMessage} onComponentAction={mockOnComponentAction} />);
 
     // Check if the link text is rendered (part of the HTML)
     // The getByRole below is a more robust way to check for the link and its accessible name.
@@ -117,12 +162,12 @@ describe('ChatMessageBubble', () => {
     // This is implicitly tested by being able to getByText.
     // Direct testing of browser's text selection behavior is complex and often out of scope for unit tests.
     // We assume standard paragraph behavior.
-    render(<ChatMessageBubble message={mockUserMessage} />);
+    render(<ChatMessageBubble message={mockUserMessage} onComponentAction={mockOnComponentAction} />);
     expect(screen.getByText(mockUserMessage.text)).toBeInTheDocument();
   });
 
   test('renders success notification with correct styling', () => {
-    render(<ChatMessageBubble message={mockSuccessNotification} />);
+    render(<ChatMessageBubble message={mockSuccessNotification} onComponentAction={mockOnComponentAction} />);
 
     const bubble = screen.getByText(mockSuccessNotification.text).closest('div');
     const container = bubble?.parentElement;
@@ -136,7 +181,7 @@ describe('ChatMessageBubble', () => {
   });
 
   test('renders error notification with correct styling', () => {
-    render(<ChatMessageBubble message={mockErrorNotification} />);
+    render(<ChatMessageBubble message={mockErrorNotification} onComponentAction={mockOnComponentAction} />);
 
     const bubble = screen.getByText(mockErrorNotification.text).closest('div');
     const container = bubble?.parentElement;
@@ -150,7 +195,7 @@ describe('ChatMessageBubble', () => {
   });
 
   test('renders info notification with correct styling', () => {
-    render(<ChatMessageBubble message={mockInfoNotification} />);
+    render(<ChatMessageBubble message={mockInfoNotification} onComponentAction={mockOnComponentAction} />);
 
     const bubble = screen.getByText(mockInfoNotification.text).closest('div');
     const container = bubble?.parentElement;
@@ -161,6 +206,32 @@ describe('ChatMessageBubble', () => {
     // Check notification-specific classes
     expect(container).toHaveClass('self-start'); // AI messages align to the left
     expect(bubble).toHaveClass('bg-blue-100', 'border-l-4', 'border-blue-500');
+  });
+
+  test('renders markdown content correctly', () => {
+    render(<ChatMessageBubble message={mockMarkdownMessage} onComponentAction={mockOnComponentAction} />);
+
+    // Check that markdown content is rendered (with mock)
+    expect(screen.getByTestId('markdown-content')).toBeInTheDocument();
+    expect(screen.getByText('**Bold text** and *italic text* with a [link](https://example.com)')).toBeInTheDocument();
+  });
+
+  test('renders component messages correctly', () => {
+    render(<ChatMessageBubble message={mockComponentMessage} onComponentAction={mockOnComponentAction} />);
+
+    // Check that component renderer is called
+    expect(screen.getByTestId('component-renderer')).toBeInTheDocument();
+    expect(screen.getByText('Component: archetype-selection')).toBeInTheDocument();
+
+    // Component messages should not show timestamp
+    expect(screen.queryByText('10:04 AM')).not.toBeInTheDocument();
+  });
+
+  test('passes onComponentAction to ComponentMessageRenderer', () => {
+    render(<ChatMessageBubble message={mockComponentMessage} onComponentAction={mockOnComponentAction} />);
+
+    // The mock component renderer should receive the message
+    expect(screen.getByTestId('component-renderer')).toBeInTheDocument();
   });
 
 });
