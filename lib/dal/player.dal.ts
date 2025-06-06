@@ -106,6 +106,52 @@ export async function getNFLPlayersByIds(playerIds: string[]): Promise<NFLPlayer
 }
 
 /**
+ * Gets NFL players that are available (not owned by any team) in a specific league
+ */
+export async function getAvailableNFLPlayersInLeague(
+  ownedPlayerIds: string[],
+  position?: "QB" | "RB" | "WR" | "TE" | "K" | "DEF",
+  searchTerm?: string
+): Promise<NFLPlayer[]> {
+  let sql = `SELECT * FROM NFLPlayers WHERE 1=1`;
+  const params: unknown[] = [];
+
+  // Exclude owned players
+  if (ownedPlayerIds.length > 0) {
+    const placeholders = ownedPlayerIds.map(() => '?').join(',');
+    sql += ` AND playerId NOT IN (${placeholders})`;
+    params.push(...ownedPlayerIds);
+  }
+
+  // Filter by position if specified
+  if (position) {
+    sql += ` AND position = ?`;
+    params.push(position);
+  }
+
+  // Filter by search term if specified
+  if (searchTerm && searchTerm.trim().length > 0) {
+    sql += ` AND fullName LIKE ?`;
+    params.push(`%${searchTerm.trim()}%`);
+  }
+
+  sql += ` ORDER BY projectedPoints DESC, fullName`;
+
+  const rows = await all<Record<string, unknown>>(sql, params);
+
+  return rows.map(row => ({
+    playerId: row.playerId as string,
+    fullName: row.fullName as string,
+    position: row.position as "QB" | "RB" | "WR" | "TE" | "K" | "DEF",
+    nflTeamAbbreviation: row.nflTeamAbbreviation as string,
+    status: row.status as "Active" | "Injured_Out" | "Injured_Questionable" | "Bye Week" | undefined,
+    projectedPoints: row.projectedPoints as number | undefined,
+    keyAttributes: row.keyAttributes ? JSON.parse(row.keyAttributes as string) : undefined,
+    notes: row.notes as string | undefined
+  }));
+}
+
+/**
  * Searches for NFL players by name
  */
 export async function searchNFLPlayersByName(searchTerm: string): Promise<NFLPlayer[]> {

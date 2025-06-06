@@ -49,6 +49,7 @@ export default function RosterPage({ params }: PageProps) {
   const [rosterData, setRosterData] = useState<RosterData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [droppingPlayer, setDroppingPlayer] = useState<string | null>(null);
 
   // Fetch roster data from API
   useEffect(() => {
@@ -94,6 +95,47 @@ export default function RosterPage({ params }: PageProps) {
         return 'badge-info';
       default:
         return 'badge-neutral';
+    }
+  };
+
+  // Handle dropping a player
+  const handleDropPlayer = async (playerId: string, playerName: string) => {
+    if (!confirm(`Are you sure you want to drop ${playerName}?`)) {
+      return;
+    }
+
+    try {
+      setDroppingPlayer(playerId);
+
+      const response = await fetch(`/api/leagues/${leagueId}/my-team/roster/drop`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ playerIdToDrop: playerId }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to drop player');
+      }
+
+      const result = await response.json();
+
+      // Refresh roster data after successful drop
+      const rosterResponse = await fetch(`/api/leagues/${leagueId}/my-team/roster`);
+      if (rosterResponse.ok) {
+        const updatedRosterData = await rosterResponse.json();
+        setRosterData(updatedRosterData);
+      }
+
+      console.log('Player dropped successfully:', result.message);
+
+    } catch (error) {
+      console.error('Failed to drop player:', error);
+      alert(`Failed to drop player: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setDroppingPlayer(null);
     }
   };
 
@@ -242,6 +284,7 @@ export default function RosterPage({ params }: PageProps) {
                           <th>Status</th>
                           <th>Projected Points</th>
                           <th>Lineup Status</th>
+                          <th>Actions</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -266,6 +309,19 @@ export default function RosterPage({ params }: PageProps) {
                               <span className={`badge ${player.lineupStatus === 'starter' ? 'badge-primary' : 'badge-ghost'}`}>
                                 {player.lineupStatus === 'starter' ? 'Starter' : 'Bench'}
                               </span>
+                            </td>
+                            <td>
+                              <button
+                                className="btn btn-error btn-xs"
+                                onClick={() => handleDropPlayer(player.playerId, player.fullName)}
+                                disabled={droppingPlayer === player.playerId}
+                              >
+                                {droppingPlayer === player.playerId ? (
+                                  <span className="loading loading-spinner loading-xs"></span>
+                                ) : (
+                                  'Drop'
+                                )}
+                              </button>
                             </td>
                           </tr>
                         ))}

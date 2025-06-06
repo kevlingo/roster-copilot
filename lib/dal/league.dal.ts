@@ -269,6 +269,41 @@ export async function addPlayerToTeamRoster(teamId: string, playerId: string): P
 }
 
 /**
+ * Removes a player from a team's roster
+ */
+export async function removePlayerFromTeamRoster(teamId: string, playerId: string): Promise<void> {
+  // Get current roster
+  const team = await getFantasyTeamById(teamId);
+  if (!team) {
+    throw new Error(`Team not found: ${teamId}`);
+  }
+
+  // Remove player from roster if present
+  const updatedRoster = team.playerIds_onRoster.filter(id => id !== playerId);
+
+  // Update team roster
+  const sql = `UPDATE FantasyTeams_PoC SET playerIds_onRoster = ? WHERE teamId = ?`;
+  await run(sql, [JSON.stringify(updatedRoster), teamId]);
+}
+
+/**
+ * Gets all player IDs that are currently on rosters in a specific league
+ */
+export async function getOwnedPlayerIdsInLeague(leagueId: string): Promise<string[]> {
+  const sql = `SELECT playerIds_onRoster FROM FantasyTeams_PoC WHERE leagueId = ?`;
+  const rows = await all<{ playerIds_onRoster: string }>(sql, [leagueId]);
+
+  const ownedPlayerIds = new Set<string>();
+
+  for (const row of rows) {
+    const playerIds = row.playerIds_onRoster ? JSON.parse(row.playerIds_onRoster) : [];
+    playerIds.forEach((id: string) => ownedPlayerIds.add(id));
+  }
+
+  return Array.from(ownedPlayerIds);
+}
+
+/**
  * Checks if a user already has a team in a specific league
  */
 export async function userHasTeamInLeague(userId: string, leagueId: string): Promise<boolean> {

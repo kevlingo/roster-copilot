@@ -61,15 +61,45 @@ export default function WaiversPage({ params }: PageProps) {
     dropPlayer?: RosterPlayer;
   }>({});
   
-  // Simulate data loading
+  // Load data from APIs
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setAvailablePlayers(mockAvailablePlayers);
-      setRoster(mockRoster);
-      setIsLoading(false);
-    }, 1000);
-    
-    return () => clearTimeout(timer);
+    const loadData = async () => {
+      try {
+        setIsLoading(true);
+
+        // Load available players and roster in parallel
+        const [availablePlayersResponse, rosterResponse] = await Promise.all([
+          fetch(`/api/leagues/${leagueId}/available-players`),
+          fetch(`/api/leagues/${leagueId}/my-team/roster`)
+        ]);
+
+        if (!availablePlayersResponse.ok) {
+          throw new Error('Failed to fetch available players');
+        }
+
+        if (!rosterResponse.ok) {
+          throw new Error('Failed to fetch roster');
+        }
+
+        const availablePlayersData = await availablePlayersResponse.json();
+        const rosterData = await rosterResponse.json();
+
+        // Transform roster data to match component interface
+        const allRosterPlayers = Object.values(rosterData.playersByPosition).flat() as RosterPlayer[];
+
+        setAvailablePlayers(availablePlayersData.players);
+        setRoster(allRosterPlayers);
+      } catch (error) {
+        console.error('Failed to load data:', error);
+        // For now, fall back to mock data on error
+        setAvailablePlayers(mockAvailablePlayers);
+        setRoster(mockRoster);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
   }, [leagueId]);
   
   // Filter players by position and search query
@@ -95,29 +125,65 @@ export default function WaiversPage({ params }: PageProps) {
   };
   
   const handleSubmitClaim = async () => {
-    if (!pendingClaim.addPlayer || !pendingClaim.dropPlayer) return;
-    
+    if (!pendingClaim.addPlayer) return;
+
     try {
-      // TODO: Call API to /api/leagues/:leagueId/waivers/claim
-      // For the PoC, we'll simulate a successful claim after a delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Update local state
-      setRoster(prev => [
-        ...prev.filter(p => p.playerId !== pendingClaim.dropPlayer?.playerId),
-        { ...pendingClaim.addPlayer, isStarter: false } as RosterPlayer
-      ]);
-      
-      setAvailablePlayers(prev => [
-        ...prev.filter(p => p.playerId !== pendingClaim.addPlayer?.playerId),
-        pendingClaim.dropPlayer as NFLPlayer
-      ]);
-      
+      const requestBody = {
+        playerIdToAdd: pendingClaim.addPlayer.playerId,
+        ...(pendingClaim.dropPlayer && { playerIdToDrop: pendingClaim.dropPlayer.playerId })
+      };
+
+      const response = await fetch(`/api/leagues/${leagueId}/my-team/roster/add`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to add player');
+      }
+
+      const result = await response.json();
+
+      // Update local state based on the transaction
+      setRoster(prev => {
+        let updatedRoster = [...prev];
+
+        // Remove dropped player if any
+        if (pendingClaim.dropPlayer) {
+          updatedRoster = updatedRoster.filter(p => p.playerId !== pendingClaim.dropPlayer?.playerId);
+        }
+
+        // Add new player
+        updatedRoster.push({ ...pendingClaim.addPlayer, isStarter: false } as RosterPlayer);
+
+        return updatedRoster;
+      });
+
+      setAvailablePlayers(prev => {
+        const updatedAvailable = prev.filter(p => p.playerId !== pendingClaim.addPlayer?.playerId);
+
+        // Add dropped player to available if any
+        if (pendingClaim.dropPlayer) {
+          updatedAvailable.push(pendingClaim.dropPlayer as NFLPlayer);
+        }
+
+        return updatedAvailable;
+      });
+
       // Clear pending claim
       setPendingClaim({});
+
+      // Show success message (you could add a toast notification here)
+      console.log('Transaction successful:', result.message);
+
     } catch (error) {
       console.error('Waiver claim failed:', error);
-      // Handle error
+      // Show error message (you could add a toast notification here)
+      alert(`Failed to complete transaction: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
   
