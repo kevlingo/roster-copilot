@@ -1,8 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server';
+import * as jwt from 'jsonwebtoken';
 
 // Define a type for our API Route Handlers for better type safety
 export type ApiRouteHandler = (
   req: NextRequest,
+  params?: { [key: string]: string | string[] | undefined },
+) => Promise<NextResponse> | NextResponse;
+
+/**
+ * Extended NextRequest with user information for authenticated routes.
+ */
+export interface AuthenticatedRequest extends NextRequest {
+  user: {
+    userId: string;
+    email: string;
+    username: string;
+  };
+}
+
+/**
+ * Type definition for authenticated API Route Handlers.
+ * @param req The AuthenticatedRequest object with user info.
+ * @param params Optional route parameters.
+ * @returns A Promise that resolves to a NextResponse.
+ */
+export type AuthenticatedApiRouteHandler = (
+  req: AuthenticatedRequest,
   params?: { [key: string]: string | string[] | undefined },
 ) => Promise<NextResponse> | NextResponse;
 
@@ -86,21 +109,48 @@ export function withRequestLogging(handler: ApiRouteHandler): ApiRouteHandler {
 }
 
 /**
- * (Stub) Wraps an API Route Handler with an authentication check.
- * This is a placeholder for future authentication logic (Story 1.2).
+ * Wraps an API Route Handler with JWT authentication check.
+ * Validates JWT token from Authorization header and adds user info to request.
  *
  * @param handler The API Route Handler to wrap.
- * @returns A new handler function with a stubbed authentication check.
+ * @returns A new handler function with authentication check.
  */
-export function withAuth(handler: ApiRouteHandler): ApiRouteHandler {
+export function withAuth(handler: AuthenticatedApiRouteHandler): ApiRouteHandler {
   return async (req, params) => {
-    // TODO: Implement session/token validation logic here (Story 1.2)
-    // For now, we'll simulate a successful authentication check.
-    // In a real scenario, if auth fails, you would return:
-    // return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const authHeader = req.headers.get('authorization');
 
-    console.log('[Auth Stub] Placeholder authentication check passed.');
-    return handler(req, params);
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Unauthorized - Missing or invalid authorization header' }, { status: 401 });
+    }
+
+    const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+
+    try {
+      const jwtSecret = process.env.JWT_SECRET;
+      if (!jwtSecret) {
+        console.error('JWT_SECRET is not defined in environment variables.');
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+      }
+
+      const decoded = jwt.verify(token, jwtSecret) as jwt.JwtPayload & {
+        userId: string;
+        email: string;
+        username: string;
+      };
+
+      // Add user info to the request for the handler to use
+      const authenticatedReq = req as AuthenticatedRequest;
+      authenticatedReq.user = {
+        userId: decoded.userId,
+        email: decoded.email,
+        username: decoded.username,
+      };
+
+      return handler(authenticatedReq, params);
+    } catch (error) {
+      console.error('[Auth] JWT verification failed:', error);
+      return NextResponse.json({ error: 'Unauthorized - Invalid token' }, { status: 401 });
+    }
   };
 }
 

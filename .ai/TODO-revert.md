@@ -33,3 +33,44 @@
 - **Rationale:** The E2E test for email verification failed because the `/api/auth/verify-email/[token]` route encountered a "Database not connected" error. This was likely due to the database instance not being initialized or available for this specific request when run under Playwright's webServer. Adding `initializeDatabase()` ensures the DB connection is established before DAL operations.
 - **Expected Outcome:** The E2E test for user registration and email verification should pass, as the verify-email endpoint will now correctly connect to the database.
 - **Status:** Resolved (2025-06-04). E2E test passed after adding `initializeDatabase()` to `verifyEmailHandler`.
+
+## Story 1.2: User Login - Backend API Endpoint
+... (JWT entries) ...
+- **Status:** Success.
+
+## Story 1.2: User Login - Frontend Client-Side Validation Tests (`app/(auth)/login/page.test.tsx`)
+
+- **File Path:** [`app/(auth)/login/page.test.tsx`](app/(auth)/login/page.test.tsx)
+- **Change Description (Debug Attempt - `screen.debug()`):**
+  Added `console.log(screen.debug(...))` in failing tests.
+- **Rationale:** Inspect DOM state.
+- **Actual Outcome:** Error elements not present in DOM.
+- **Status:** Completed. Debug lines were removed.
+
+- **File Path:** [`app/(auth)/login/page.test.tsx`](app/(auth)/login/page.test.tsx)
+- **Change Description (Debug Attempt - Mock `React.useState` for `error` state using `jest.spyOn`):**
+  Mocked `React.useState` with `jest.spyOn` to spy on `setError`.
+- **Rationale:** Confirm `setError` invocation.
+- **Actual Outcome:** Spy did not register calls, despite component logs (next step) showing `setError` line was hit.
+- **Status:** Superseded by root cause.
+
+- **File Path:** [`app/(auth)/login/page.tsx`](app/(auth)/login/page.tsx) & [`app/(auth)/login/page.test.tsx`](app/(auth)/login/page.test.tsx)
+- **Change Description (Debug Attempt - `console.log` in `handleSubmit`):**
+  Added `console.log` in `handleSubmit` of `LoginPage`.
+- **Rationale:** Observe data flow in `handleSubmit`.
+- **Actual Outcome:** Component logs confirmed `setError` line was reached, but spy in test didn't register.
+- **Status:** Superseded by root cause. Console logs should be removed.
+
+- **File Path:** [`app/(auth)/login/page.test.tsx`](app/(auth)/login/page.test.tsx)
+- **Change Description (Refine `React.useState` mock setup / `jest.mock('react')`):**
+  Multiple attempts to refine `useState` mocking, including `jest.mock('react')`.
+- **Rationale:** Address potential import/spy issues.
+- **Actual Outcome:** Spy (`mockSetError`) still failed to register calls.
+- **Status:** Superseded by root cause. All `useState` mocking should be removed from tests.
+
+- **ROOT CAUSE IDENTIFIED & FIXED (by User on 2025-06-04):**
+  - **Problem:** HTML5 `required` attributes on email/password inputs in `app/(auth)/login/page.tsx` prevented form submission with empty fields, bypassing custom validation logic (`handleSubmit` and `setError` calls).
+  - **Fix Applied by User:** Removed `required` attributes from the email and password input fields in `app/(auth)/login/page.tsx`.
+  - **Consequence:** This should allow `handleSubmit` to execute and custom client-side validation to run, making `setError` calls effective.
+- **Next Step:** Validate the fix by running all tests. All temporary debugging code (console.logs in component, useState mocks in tests) should be removed by the user or by me after test validation.
+- **Status:** Fix applied by user. Pending test validation.

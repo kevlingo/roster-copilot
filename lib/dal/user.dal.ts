@@ -1,4 +1,4 @@
-import { UserProfile, EmailVerificationToken_PoC } from '@/lib/models/user.models';
+import { UserProfile, EmailVerificationToken_PoC, ResetToken_PoC } from '@/lib/models/user.models';
 import { get, run } from './db'; // Removed 'all' as it's unused
 import { v4 as uuidv4 } from 'uuid'; // For generating userId
 
@@ -136,5 +136,95 @@ export async function updateUserEmailVerificationStatus(
  */
 export async function markTokenAsUsed(token: string): Promise<void> {
   const sql = 'UPDATE EmailVerificationTokens_PoC SET used = 1 WHERE token = ?';
+  await run(sql, [token]);
+}
+
+/**
+ * Finds a user by their userId.
+ * @param userId The userId to search for.
+ * @returns A promise that resolves with the UserProfile or undefined if not found.
+ */
+export async function findUserById(userId: string): Promise<UserProfile | undefined> {
+  const sql = 'SELECT * FROM UserProfiles WHERE userId = ?';
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const user: any = await get<any>(sql, [userId]);
+  if (user) {
+    return { ...user, emailVerified: Boolean(user.emailVerified) };
+  }
+  return undefined;
+}
+
+/**
+ * Updates a user's username.
+ * @param userId The ID of the user to update.
+ * @param username The new username.
+ * @returns A promise that resolves when the user is updated.
+ */
+export async function updateUserUsername(userId: string, username: string): Promise<void> {
+  const sql = 'UPDATE UserProfiles SET username = ?, updatedAt = ? WHERE userId = ?';
+  await run(sql, [username, new Date().toISOString(), userId]);
+}
+
+/**
+ * Updates a user's email address and sets emailVerified to false.
+ * @param userId The ID of the user to update.
+ * @param email The new email address.
+ * @returns A promise that resolves when the user is updated.
+ */
+export async function updateUserEmail(userId: string, email: string): Promise<void> {
+  const sql = 'UPDATE UserProfiles SET email = ?, emailVerified = 0, updatedAt = ? WHERE userId = ?';
+  await run(sql, [email, new Date().toISOString(), userId]);
+}
+
+/**
+ * Updates a user's password hash.
+ * @param userId The ID of the user to update.
+ * @param passwordHash The new password hash.
+ * @returns A promise that resolves when the user is updated.
+ */
+export async function updateUserPassword(userId: string, passwordHash: string): Promise<void> {
+  const sql = 'UPDATE UserProfiles SET passwordHash = ?, updatedAt = ? WHERE userId = ?';
+  await run(sql, [passwordHash, new Date().toISOString(), userId]);
+}
+
+/**
+ * Creates a password reset token in the database.
+ * @param tokenData Object containing userId, token, and expiresAt.
+ * @returns A promise that resolves when the token is created.
+ */
+export async function createResetToken(tokenData: {
+  userId: string;
+  token: string;
+  expiresAt: string;
+}): Promise<void> {
+  const sql = `
+    INSERT INTO ResetTokens_PoC (token, userId, expiresAt, used)
+    VALUES (?, ?, ?, 0)
+  `; // used defaults to 0 (false)
+  await run(sql, [tokenData.token, tokenData.userId, tokenData.expiresAt]);
+}
+
+/**
+ * Finds a password reset token by the token string.
+ * @param token The token string to search for.
+ * @returns A promise that resolves with the ResetToken_PoC or undefined.
+ */
+export async function findResetToken(token: string): Promise<ResetToken_PoC | undefined> {
+  const sql = 'SELECT * FROM ResetTokens_PoC WHERE token = ?';
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const result: any = await get<any>(sql, [token]);
+  if (result) {
+    return { ...result, used: Boolean(result.used) }; // Ensure 'used' is boolean
+  }
+  return undefined;
+}
+
+/**
+ * Marks a password reset token as used.
+ * @param token The token string to update.
+ * @returns A promise that resolves when the token is updated.
+ */
+export async function markResetTokenAsUsed(token: string): Promise<void> {
+  const sql = 'UPDATE ResetTokens_PoC SET used = 1 WHERE token = ?';
   await run(sql, [token]);
 }

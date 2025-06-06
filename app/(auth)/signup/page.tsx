@@ -6,8 +6,8 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { SignUpDto } from '@/lib/dtos/auth.dto'; // Assuming this DTO can be used on frontend too
 
 // Password complexity: min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special char
-// Regex from: https://ihateregex.io/expr/password
-const PASSWORD_REGEX = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
+// Updated regex to include underscore and other common special characters
+const PASSWORD_REGEX = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*\-_+=<>{}[\]|\\:";'.,/~`]).{8,}$/;
 
 type Inputs = SignUpDto & { terms: boolean }; // Add terms field for form
 

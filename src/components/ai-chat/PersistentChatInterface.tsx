@@ -5,6 +5,7 @@ import ChatInput from './ChatInput';
 import ChatBubbleOverlay from './ChatBubbleOverlay';
 import { MessageObject } from '../../types/chat';
 import { v4 as uuidv4 } from 'uuid'; // For generating unique IDs
+import { setGlobalNotificationHandler, createAINotificationMessage } from '../../hooks/useAINotification';
 
 const PersistentChatInterface: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
@@ -19,6 +20,17 @@ const PersistentChatInterface: React.FC = () => {
     setInputValue(value);
   };
 
+  // Handler for AI notifications
+  const addNotification = (message: string, type: 'success' | 'error' | 'info') => {
+    const notificationMessage = createAINotificationMessage(message, type);
+    setChatHistory((prevHistory) => [...prevHistory, notificationMessage]);
+
+    // Ensure overlay is visible when notification arrives
+    if (!isOverlayVisible) {
+      setIsOverlayVisible(true);
+    }
+  };
+
   // AC7: handleSendMessage
   const handleSendMessage = async (messageText?: string) => {
     const textToSend = typeof messageText === 'string' ? messageText : inputValue;
@@ -29,6 +41,7 @@ const PersistentChatInterface: React.FC = () => {
       text: textToSend,
       sender: 'user',
       timestamp: new Date(),
+      type: 'conversation',
     };
 
     setChatHistory((prevHistory) => [...prevHistory, userMessage]);
@@ -49,6 +62,7 @@ const PersistentChatInterface: React.FC = () => {
       text: `AI Echo: "${textToSend}"`, // Simple echo for now
       sender: 'ai',
       timestamp: new Date(),
+      type: 'conversation',
     };
     setChatHistory((prevHistory) => [...prevHistory, aiResponse]);
     setIsLoadingResponse(false);
@@ -82,6 +96,16 @@ const PersistentChatInterface: React.FC = () => {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoadingResponse]); // Only re-run when isLoadingResponse changes
+
+  // Set up global notification handler
+  useEffect(() => {
+    setGlobalNotificationHandler(addNotification);
+
+    // Cleanup on unmount
+    return () => {
+      setGlobalNotificationHandler(() => {});
+    };
+  }, []);
 
   return (
     // AC12: z-index and pointer events for main container

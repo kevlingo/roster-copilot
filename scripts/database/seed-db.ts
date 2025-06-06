@@ -1,6 +1,8 @@
 import sqlite3 from 'sqlite3';
 import fs from 'fs';
 import path from 'path';
+import bcrypt from 'bcrypt';
+import { v4 as uuidv4 } from 'uuid';
 
 // Define paths
 const projectRootDir = path.resolve(__dirname, '../../'); // Adjust as needed if script moves
@@ -62,6 +64,25 @@ CREATE TABLE IF NOT EXISTS NFLGames (
     gameStatus TEXT
 );`;
 
+// SQL for UserProfiles table (matching the schema from lib/dal/db.ts)
+const createUserProfilesTableSQL = `
+CREATE TABLE IF NOT EXISTS UserProfiles (
+  userId TEXT PRIMARY KEY,
+  username TEXT UNIQUE NOT NULL,
+  email TEXT UNIQUE NOT NULL,
+  passwordHash TEXT NOT NULL,
+  emailVerified BOOLEAN NOT NULL DEFAULT 0,
+  selectedArchetype TEXT,
+  onboardingAnswers TEXT,
+  riskToleranceNumeric REAL,
+  aiInteractionStyle TEXT,
+  favoriteNFLTeam TEXT,
+  teamsToAvoidPlayersFrom TEXT,
+  learnedObservations TEXT,
+  createdAt TEXT NOT NULL,
+  updatedAt TEXT NOT NULL
+);`;
+
 async function seedDatabase() {
   console.log('Starting database seeding process...');
 
@@ -72,16 +93,26 @@ async function seedDatabase() {
     console.log(`Created data directory: ${dataDir}`);
   }
 
-  const db = new sqlite3.Database(dbPath, (err) => {
-    if (err) {
-      console.error('Error opening database:', err.message);
-      return;
-    }
-    console.log(`Connected to SQLite database: ${dbPath}`);
-  });
+  return new Promise<void>((resolve, reject) => {
+    const db = new sqlite3.Database(dbPath, (err) => {
+      if (err) {
+        console.error('Error opening database:', err.message);
+        reject(err);
+        return;
+      }
+      console.log(`Connected to SQLite database: ${dbPath}`);
+    });
 
-  db.serialize(() => {
+    db.serialize(async () => {
     // Create tables
+    db.run(createUserProfilesTableSQL, (err) => {
+      if (err) {
+        console.error('Error creating UserProfiles table:', err.message);
+        return;
+      }
+      console.log('UserProfiles table created or already exists.');
+    });
+
     db.run(createPlayersTableSQL, (err) => {
       if (err) {
         console.error('Error creating NFLPlayers table:', err.message);
@@ -99,6 +130,10 @@ async function seedDatabase() {
     });
 
     // Clear existing data for idempotency
+    db.run('DELETE FROM UserProfiles;', (err) => {
+        if (err) console.error('Error clearing UserProfiles table:', err.message);
+        else console.log('Cleared existing data from UserProfiles table.');
+    });
     db.run('DELETE FROM NFLPlayers;', (err) => {
         if (err) console.error('Error clearing NFLPlayers table:', err.message);
         else console.log('Cleared existing data from NFLPlayers table.');
@@ -108,6 +143,59 @@ async function seedDatabase() {
         else console.log('Cleared existing data from NFLGames table.');
     });
 
+    // Seed default user (Kevin)
+    try {
+      const userId = uuidv4();
+      const username = 'Kevin';
+      const email = 'kevlingo@gmail.com';
+      const password = '7fej3w_ixVjRaKW';
+      const saltRounds = 10; // Same as used in signup
+      const passwordHash = await bcrypt.hash(password, saltRounds);
+      const now = new Date().toISOString();
+
+      const userInsertStmt = db.prepare(
+        `INSERT INTO UserProfiles (
+          userId, username, email, passwordHash, emailVerified,
+          selectedArchetype, onboardingAnswers, riskToleranceNumeric,
+          aiInteractionStyle, favoriteNFLTeam, teamsToAvoidPlayersFrom,
+          learnedObservations, createdAt, updatedAt
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      );
+
+      userInsertStmt.run(
+        userId,
+        username,
+        email,
+        passwordHash,
+        1, // emailVerified = true (1)
+        null, // selectedArchetype
+        null, // onboardingAnswers
+        null, // riskToleranceNumeric
+        null, // aiInteractionStyle
+        null, // favoriteNFLTeam
+        null, // teamsToAvoidPlayersFrom
+        null, // learnedObservations
+        now,  // createdAt
+        now,  // updatedAt
+        (err: Error | null) => {
+          if (err) {
+            console.error('Error inserting default user:', err.message);
+          } else {
+            console.log(`✅ Default user '${username}' (${email}) created successfully - already verified!`);
+          }
+        }
+      );
+
+      userInsertStmt.finalize((err) => {
+        if (err) {
+          console.error('Error finalizing user insert statement:', err.message);
+        } else {
+          console.log('Finished seeding default user.');
+        }
+      });
+    } catch (error: any) {
+      console.error('Error creating default user:', error.message);
+    }
 
     // Seed NFLPlayers
     try {
@@ -186,13 +274,16 @@ async function seedDatabase() {
       console.error('Error processing nfl-games.json:', error.message);
     }
 
-    // Close database connection
-    db.close((err) => {
-      if (err) {
-        console.error('Error closing database:', err.message);
-      } else {
-        console.log('Database connection closed. Seeding process completed.');
-      }
+      // Close database connection
+      db.close((err) => {
+        if (err) {
+          console.error('Error closing database:', err.message);
+          reject(err);
+        } else {
+          console.log('Database connection closed. Seeding process completed.');
+          resolve();
+        }
+      });
     });
   });
 }

@@ -181,15 +181,114 @@ export async function initializeDatabase(dbPath?: string): Promise<void> {
       FOREIGN KEY (userId) REFERENCES UserProfiles(userId) ON DELETE CASCADE
     );
   `;
-  
-  // TODO: Add other tables like NFLPlayers, NFLGames, Leagues_PoC, FantasyTeams_PoC, ResetTokens_PoC later if needed by other stories.
+
+  const createResetTokensTable = `
+    CREATE TABLE IF NOT EXISTS ResetTokens_PoC (
+      token TEXT PRIMARY KEY,
+      userId TEXT NOT NULL,
+      expiresAt TEXT NOT NULL,
+      used BOOLEAN NOT NULL DEFAULT 0,
+      FOREIGN KEY (userId) REFERENCES UserProfiles(userId) ON DELETE CASCADE
+    );
+  `;
+
+  const createLeaguesTable = `
+    CREATE TABLE IF NOT EXISTS Leagues_PoC (
+      leagueId TEXT PRIMARY KEY,
+      leagueName TEXT NOT NULL,
+      commissionerUserId TEXT NOT NULL,
+      numberOfTeams INTEGER NOT NULL CHECK (numberOfTeams IN (8, 10, 12)),
+      scoringType TEXT NOT NULL CHECK (scoringType IN ('Standard', 'PPR')),
+      draftStatus TEXT NOT NULL DEFAULT 'Scheduled' CHECK (draftStatus IN ('Scheduled', 'InProgress', 'Completed')),
+      currentSeasonWeek INTEGER NOT NULL DEFAULT 1,
+      participatingTeamIds TEXT, -- JSON string array
+      rosterSettings TEXT, -- JSON string object
+      createdAt TEXT NOT NULL,
+      FOREIGN KEY (commissionerUserId) REFERENCES UserProfiles(userId) ON DELETE CASCADE
+    );
+  `;
+
+  const createFantasyTeamsTable = `
+    CREATE TABLE IF NOT EXISTS FantasyTeams_PoC (
+      teamId TEXT PRIMARY KEY,
+      leagueId TEXT NOT NULL,
+      userId TEXT NOT NULL,
+      teamName TEXT NOT NULL,
+      playerIds_onRoster TEXT, -- JSON string array
+      createdAt TEXT NOT NULL,
+      FOREIGN KEY (leagueId) REFERENCES Leagues_PoC(leagueId) ON DELETE CASCADE,
+      FOREIGN KEY (userId) REFERENCES UserProfiles(userId) ON DELETE CASCADE
+    );
+  `;
+
+  const createWeeklyLineupsTable = `
+    CREATE TABLE IF NOT EXISTS WeeklyLineups_PoC (
+      lineupId TEXT PRIMARY KEY,
+      teamId TEXT NOT NULL,
+      leagueId TEXT NOT NULL,
+      weekNumber INTEGER NOT NULL,
+      starterPlayerIds TEXT, -- JSON string array
+      benchPlayerIds TEXT, -- JSON string array
+      createdAt TEXT NOT NULL,
+      updatedAt TEXT NOT NULL,
+      FOREIGN KEY (teamId) REFERENCES FantasyTeams_PoC(teamId) ON DELETE CASCADE,
+      FOREIGN KEY (leagueId) REFERENCES Leagues_PoC(leagueId) ON DELETE CASCADE,
+      UNIQUE(teamId, weekNumber) -- One lineup per team per week
+    );
+  `;
+
+  const createDraftPicksTable = `
+    CREATE TABLE IF NOT EXISTS DraftPicks (
+      pickId TEXT PRIMARY KEY,
+      leagueId TEXT NOT NULL,
+      pickNumber INTEGER NOT NULL,
+      round INTEGER NOT NULL,
+      teamId TEXT NOT NULL,
+      playerId TEXT,
+      pickTimestamp TEXT,
+      createdAt TEXT NOT NULL,
+      FOREIGN KEY (leagueId) REFERENCES Leagues_PoC(leagueId) ON DELETE CASCADE,
+      FOREIGN KEY (teamId) REFERENCES FantasyTeams_PoC(teamId) ON DELETE CASCADE,
+      UNIQUE(leagueId, pickNumber)
+    );
+  `;
+
+  const createDraftStatesTable = `
+    CREATE TABLE IF NOT EXISTS DraftStates (
+      leagueId TEXT PRIMARY KEY,
+      draftOrder TEXT NOT NULL, -- JSON string array of teamIds
+      currentPickNumber INTEGER NOT NULL,
+      currentRound INTEGER NOT NULL,
+      currentTeamId TEXT NOT NULL,
+      isComplete BOOLEAN NOT NULL DEFAULT 0,
+      draftStartedAt TEXT,
+      draftCompletedAt TEXT,
+      totalPicks INTEGER NOT NULL,
+      totalRounds INTEGER NOT NULL,
+      createdAt TEXT NOT NULL,
+      updatedAt TEXT NOT NULL,
+      FOREIGN KEY (leagueId) REFERENCES Leagues_PoC(leagueId) ON DELETE CASCADE,
+      FOREIGN KEY (currentTeamId) REFERENCES FantasyTeams_PoC(teamId) ON DELETE CASCADE
+    );
+  `;
 
   try {
     await run(createUserProfilesTable);
     console.log('[SQLite] UserProfiles table checked/created.');
     await run(createEmailVerificationTokensTable);
     console.log('[SQLite] EmailVerificationTokens_PoC table checked/created.');
-    // Add other table creations here
+    await run(createResetTokensTable);
+    console.log('[SQLite] ResetTokens_PoC table checked/created.');
+    await run(createLeaguesTable);
+    console.log('[SQLite] Leagues_PoC table checked/created.');
+    await run(createFantasyTeamsTable);
+    console.log('[SQLite] FantasyTeams_PoC table checked/created.');
+    await run(createWeeklyLineupsTable);
+    console.log('[SQLite] WeeklyLineups_PoC table checked/created.');
+    await run(createDraftPicksTable);
+    console.log('[SQLite] DraftPicks table checked/created.');
+    await run(createDraftStatesTable);
+    console.log('[SQLite] DraftStates table checked/created.');
   } catch (error) {
     console.error('[SQLite Schema Initialization Error]', error);
     // Potentially throw error to halt app startup if schema is critical
