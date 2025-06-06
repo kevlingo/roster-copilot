@@ -73,10 +73,28 @@ export default function DashboardPage() {
 
   return (
     <div className="page-container space-y-6">
-      <h1 className="page-title">Dashboard</h1>
-      
+      <div className="flex justify-between items-center">
+        <h1 className="page-title">Dashboard</h1>
+        <div className="flex gap-2">
+          <Link
+            href="/league/join"
+            className="btn btn-outline"
+          >
+            Join League
+          </Link>
+          <Link
+            href="/league/create"
+            className="btn btn-primary"
+          >
+            + Create League
+          </Link>
+        </div>
+      </div>
+
       {/* League Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <h2 className="section-title mb-4">My Leagues</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {mockLeagues.map((league) => (
           <div 
             key={league.id}
@@ -105,6 +123,7 @@ export default function DashboardPage() {
             </div>
           </div>
         ))}
+        </div>
       </div>
       
       {/* AI Copilot Insights */}

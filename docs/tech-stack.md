@@ -14,7 +14,16 @@
 |                      | Playwright                | Latest stable version (e.g., 1.41.0)                   | E2E tests for 1-2 critical "happy path" demo flows.      | User preference, provides some automated confidence in core demo flows. Scope very limited for PoC.                   |
 |                      | (Methodology Note)        | Pragmatic TDD approach                  | TDD for select critical backend logic; test-after for most UI/features. | Balances rigor with hackathon speed.                                                                                 |
 | **CI/CD (PoC)** | Managed by Netlify via Git integration | N/A                      | Automate build and deployment from Git.                    | Efficient for PoC, standard Netlify feature.                                                                       |
-| **Other Tools** | Google Gemini AI with Official SDK | `@google/generative-ai` (e.g., 0.7.0) | Core AI intelligence for Copilot features.                  | User's explicit choice, powerful LLM for rapid AI feature dev for PoC.                                             |
-|                      | Resend                    | API via SDK/HTTP (e.g. `resend` Node.js SDK 2.0.0) | Transactional Email Service (verification, password reset) | User preference; reliable email delivery for PoC. Chosen over Nodemailer for potential scalability/features. |
-|                      | React Context API / Zustand (optional) | Latest stable       | Frontend state management.                                 | Simplicity for PoC (Context), lightweight option if global store needed (Zustand).                                 |
-|                      | Day.js (optional)         | Latest stable                           | Date/time manipulation if native JS insufficient.        | Lightweight and fast if needed.                                                                                      |
+| **Authentication & Security** | bcrypt | ^6.0.0 | Password hashing for secure user authentication | Industry standard for password hashing, provides secure salt and hash generation |
+|                      | jsonwebtoken | ^9.0.2 | JWT token generation and validation for sessions | Stateless authentication, secure session management |
+|                      | class-validator | ^0.14.2 | Input validation for API endpoints | Type-safe validation with decorators, prevents injection attacks |
+|                      | class-transformer | ^0.5.1 | Data transformation for API DTOs | Works with class-validator for robust input handling |
+|                      | uuid | ^11.1.0 | Unique identifier generation | Secure token generation for email verification and other unique IDs |
+| **Email Services** | Resend | ^4.5.1 | Transactional Email Service (verification, password reset) | User preference; reliable email delivery for PoC. Chosen over Nodemailer for potential scalability/features. |
+| **Frontend State & Forms** | Zustand | ^5.0.5 | Frontend state management for authentication | Lightweight alternative to Redux, perfect for PoC authentication state |
+|                      | react-hook-form | ^7.57.0 | Form handling and validation | Performant forms with minimal re-renders, excellent TypeScript support |
+| **Development Tools** | @faker-js/faker | ^9.8.0 (dev) | Generate realistic test data for PoC | Creates plausible NFL player and game data for development and testing |
+|                      | ts-node | ^10.9.2 (dev) | TypeScript execution for scripts | Enables running TypeScript scripts directly for data generation |
+|                      | tsx | 4.19.4 (dev) | Fast TypeScript execution | Used for database seeding scripts |
+| **AI Integration** | Google Gemini AI with Official SDK | `@google/generative-ai` (planned) | Core AI intelligence for Copilot features | User's explicit choice, powerful LLM for rapid AI feature dev for PoC |
+| **Utilities** | Day.js (optional) | Latest stable | Date/time manipulation if native JS insufficient | Lightweight and fast if needed |

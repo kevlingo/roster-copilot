@@ -34,3 +34,10 @@ export interface EmailVerificationToken_PoC {
   // PoC: We might also want a 'used' flag or simply delete upon use
   used?: boolean;
 }
+
+export interface ResetToken_PoC {
+  token: string; // The unique token
+  userId: string; // User this token belongs to
+  expiresAt: string; // ISO timestamp for expiry
+  used: boolean; // Whether the token has been used
+}

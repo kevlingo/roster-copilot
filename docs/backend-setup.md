@@ -79,3 +79,13 @@ When a request hits an endpoint using the example composition:
 5.  `withErrorHandling` (if an unhandled error occurred anywhere in the chain, it would be caught here).
 
 This pattern ensures that all API routes benefit from standardized logging, error handling, and (eventually) authentication by simply wrapping the core route logic.
+
+## Production Examples
+
+The middleware wrappers are actively used in production API routes throughout the application:
+
+- **Authentication routes**: `app/api/auth/login/route.ts`, `app/api/auth/signup/route.ts` - Use `withErrorHandling` and `withRequestLogging`
+- **Protected routes**: `app/api/users/me/route.ts`, `app/api/leagues/*/route.ts` - Use all three wrappers including `withAuth`
+- **Public routes**: `app/api/players/route.ts` - Use `withErrorHandling` and `withRequestLogging`
+
+These routes demonstrate the middleware functionality in real-world usage and provide examples of proper implementation patterns.

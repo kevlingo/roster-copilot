@@ -48,6 +48,15 @@ This index provides a central catalog of key project documents for Roster Copilo
 
 *   [**Master To-Do List**](./master-todo-list.md) - Tracks overall project tasks and progress.
 *   [**Prompt Engineering Guide**](./prompt.md) - Contains guidelines and examples for AI prompt engineering.
+*   [**Backend Setup**](./backend-setup.md) - Backend API setup, middleware, and core utilities.
+
+## Feature Documentation
+
+*   [**Features Implementation Status**](./features-status.md) - Comprehensive tracking of all implemented and planned features.
+*   [**Authentication System**](./authentication-system.md) - Complete user authentication, registration, and security features.
+*   [**League Management**](./league-management.md) - League joining, validation, and team creation functionality.
+*   [**Draft System**](./draft-system.md) - Live online snake draft room with real-time updates and player management.
+*   [**Roster Management**](./roster-management.md) - Team roster viewing, player management, and roster composition features.
 
 ## Stories
 

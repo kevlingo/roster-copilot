@@ -6,6 +6,13 @@ import {
   findVerificationToken,
   updateUserEmailVerificationStatus,
   markTokenAsUsed,
+  findUserById,
+  updateUserUsername,
+  updateUserEmail,
+  updateUserPassword,
+  createResetToken,
+  findResetToken,
+  markResetTokenAsUsed,
 } from './user.dal';
 // EmailVerificationToken_PoC was unused
 import { UserProfile } from '@/lib/models/user.models';
@@ -176,6 +183,124 @@ describe('User DAL', () => {
       await markTokenAsUsed(token);
       expect(mockDbRun).toHaveBeenCalledWith(
         'UPDATE EmailVerificationTokens_PoC SET used = 1 WHERE token = ?',
+        [token],
+      );
+    });
+  });
+
+  describe('findUserById', () => {
+    it('should call mockDbGet with correct SQL and params', async () => {
+      const userId = 'user-123';
+      await findUserById(userId);
+      expect(mockDbGet).toHaveBeenCalledWith(
+        'SELECT * FROM UserProfiles WHERE userId = ?',
+        [userId],
+      );
+    });
+
+    it('should return user profile if found and convert emailVerified to boolean', async () => {
+      const mockUser = { userId: '1', username: 'testuser', email: 'test@test.com', passwordHash: 'hash', emailVerified: 1, selectedArchetype: null, createdAt: '', updatedAt: '' };
+      mockDbGet.mockResolvedValue(mockUser);
+      const user = await findUserById('1');
+      expect(user).toEqual({ ...mockUser, emailVerified: true });
+    });
+  });
+
+  describe('updateUserUsername', () => {
+    it('should call mockDbRun with correct SQL and params', async () => {
+      const userId = 'user-123';
+      const username = 'newusername';
+      const OriginalDate = global.Date;
+      const expectedDate = new OriginalDate().toISOString();
+      const mockDateInstance = new OriginalDate(expectedDate);
+      const spy = jest.spyOn(global, 'Date').mockImplementation(() => mockDateInstance as unknown as Date);
+
+      await updateUserUsername(userId, username);
+      expect(mockDbRun).toHaveBeenCalledWith(
+        'UPDATE UserProfiles SET username = ?, updatedAt = ? WHERE userId = ?',
+        [username, expectedDate, userId],
+      );
+      spy.mockRestore();
+    });
+  });
+
+  describe('updateUserEmail', () => {
+    it('should call mockDbRun with correct SQL and params and set emailVerified to false', async () => {
+      const userId = 'user-123';
+      const email = 'newemail@example.com';
+      const OriginalDate = global.Date;
+      const expectedDate = new OriginalDate().toISOString();
+      const mockDateInstance = new OriginalDate(expectedDate);
+      const spy = jest.spyOn(global, 'Date').mockImplementation(() => mockDateInstance as unknown as Date);
+
+      await updateUserEmail(userId, email);
+      expect(mockDbRun).toHaveBeenCalledWith(
+        'UPDATE UserProfiles SET email = ?, emailVerified = 0, updatedAt = ? WHERE userId = ?',
+        [email, expectedDate, userId],
+      );
+      spy.mockRestore();
+    });
+  });
+
+  describe('updateUserPassword', () => {
+    it('should call mockDbRun with correct SQL and params', async () => {
+      const userId = 'user-123';
+      const passwordHash = 'newhash123';
+      const OriginalDate = global.Date;
+      const expectedDate = new OriginalDate().toISOString();
+      const mockDateInstance = new OriginalDate(expectedDate);
+      const spy = jest.spyOn(global, 'Date').mockImplementation(() => mockDateInstance as unknown as Date);
+
+      await updateUserPassword(userId, passwordHash);
+      expect(mockDbRun).toHaveBeenCalledWith(
+        'UPDATE UserProfiles SET passwordHash = ?, updatedAt = ? WHERE userId = ?',
+        [passwordHash, expectedDate, userId],
+      );
+      spy.mockRestore();
+    });
+  });
+
+  describe('createResetToken', () => {
+    it('should call mockDbRun with correct SQL and params', async () => {
+      const tokenData = { userId: 'user-123', token: 'reset-token-123', expiresAt: new Date().toISOString() };
+
+      await createResetToken(tokenData);
+      expect(mockDbRun).toHaveBeenCalledWith(
+        expect.stringContaining('INSERT INTO ResetTokens_PoC'),
+        [tokenData.token, tokenData.userId, tokenData.expiresAt],
+      );
+    });
+  });
+
+  describe('findResetToken', () => {
+    it('should call mockDbGet and correctly parse boolean for "used"', async () => {
+      const token = 'reset-token-123';
+      const mockDbToken = { token, userId: 'user-123', expiresAt: 'date', used: 0 };
+      mockDbGet.mockResolvedValue(mockDbToken);
+
+      const foundToken = await findResetToken(token);
+      expect(mockDbGet).toHaveBeenCalledWith('SELECT * FROM ResetTokens_PoC WHERE token = ?', [token]);
+      expect(foundToken).toEqual({ ...mockDbToken, used: false });
+
+      const mockDbTokenUsed = { ...mockDbToken, used: 1 };
+      mockDbGet.mockResolvedValue(mockDbTokenUsed);
+      const foundTokenUsed = await findResetToken(token);
+      expect(foundTokenUsed).toEqual({ ...mockDbTokenUsed, used: true });
+    });
+
+    it('should return undefined if token not found', async () => {
+      mockDbGet.mockResolvedValue(undefined);
+      const foundToken = await findResetToken('nonexistent-token');
+      expect(foundToken).toBeUndefined();
+    });
+  });
+
+  describe('markResetTokenAsUsed', () => {
+    it('should call mockDbRun with correct SQL and params', async () => {
+      const token = 'reset-token-123';
+      await markResetTokenAsUsed(token);
+      expect(mockDbRun).toHaveBeenCalledWith(
+        'UPDATE ResetTokens_PoC SET used = 1 WHERE token = ?',
         [token],
       );
     });

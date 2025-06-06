@@ -10,6 +10,7 @@ describe('ChatMessageBubble', () => {
     text: 'Hello AI!',
     sender: 'user',
     timestamp: new Date('2023-01-01T10:00:00Z'),
+    type: 'conversation',
   };
 
   const mockAiMessage: MessageObject = {
@@ -17,6 +18,7 @@ describe('ChatMessageBubble', () => {
     text: 'Hello User!',
     sender: 'ai',
     timestamp: new Date('2023-01-01T10:01:00Z'),
+    type: 'conversation',
   };
 
   const mockHtmlMessage: MessageObject = {
@@ -24,6 +26,34 @@ describe('ChatMessageBubble', () => {
     text: 'Check <a href="https://example.com">this link</a>',
     sender: 'ai',
     timestamp: new Date('2023-01-01T10:02:00Z'),
+    type: 'conversation',
+  };
+
+  const mockSuccessNotification: MessageObject = {
+    id: '4',
+    text: 'Great news! Operation completed successfully! 🎉',
+    sender: 'ai',
+    timestamp: new Date('2023-01-01T10:03:00Z'),
+    type: 'notification',
+    notificationType: 'success',
+  };
+
+  const mockErrorNotification: MessageObject = {
+    id: '5',
+    text: 'Oops! Something went wrong. I\'m here to help if you need assistance.',
+    sender: 'ai',
+    timestamp: new Date('2023-01-01T10:04:00Z'),
+    type: 'notification',
+    notificationType: 'error',
+  };
+
+  const mockInfoNotification: MessageObject = {
+    id: '6',
+    text: 'Just so you know: System maintenance scheduled for tonight.',
+    sender: 'ai',
+    timestamp: new Date('2023-01-01T10:05:00Z'),
+    type: 'notification',
+    notificationType: 'info',
   };
 
   const formatTime = (date: Date) => {
@@ -88,7 +118,49 @@ describe('ChatMessageBubble', () => {
     // Direct testing of browser's text selection behavior is complex and often out of scope for unit tests.
     // We assume standard paragraph behavior.
     render(<ChatMessageBubble message={mockUserMessage} />);
-    expect(screen.getByText(mockUserMessage.text)).toBeInTheDocument(); 
+    expect(screen.getByText(mockUserMessage.text)).toBeInTheDocument();
+  });
+
+  test('renders success notification with correct styling', () => {
+    render(<ChatMessageBubble message={mockSuccessNotification} />);
+
+    const bubble = screen.getByText(mockSuccessNotification.text).closest('div');
+    const container = bubble?.parentElement;
+
+    // Check text content
+    expect(screen.getByText(mockSuccessNotification.text)).toBeInTheDocument();
+
+    // Check notification-specific classes
+    expect(container).toHaveClass('self-start'); // AI messages align to the left
+    expect(bubble).toHaveClass('bg-green-100', 'border-l-4', 'border-green-500');
+  });
+
+  test('renders error notification with correct styling', () => {
+    render(<ChatMessageBubble message={mockErrorNotification} />);
+
+    const bubble = screen.getByText(mockErrorNotification.text).closest('div');
+    const container = bubble?.parentElement;
+
+    // Check text content
+    expect(screen.getByText(mockErrorNotification.text)).toBeInTheDocument();
+
+    // Check notification-specific classes
+    expect(container).toHaveClass('self-start'); // AI messages align to the left
+    expect(bubble).toHaveClass('bg-red-100', 'border-l-4', 'border-red-500');
+  });
+
+  test('renders info notification with correct styling', () => {
+    render(<ChatMessageBubble message={mockInfoNotification} />);
+
+    const bubble = screen.getByText(mockInfoNotification.text).closest('div');
+    const container = bubble?.parentElement;
+
+    // Check text content
+    expect(screen.getByText(mockInfoNotification.text)).toBeInTheDocument();
+
+    // Check notification-specific classes
+    expect(container).toHaveClass('self-start'); // AI messages align to the left
+    expect(bubble).toHaveClass('bg-blue-100', 'border-l-4', 'border-blue-500');
   });
 
 });

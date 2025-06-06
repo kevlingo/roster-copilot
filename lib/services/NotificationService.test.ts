@@ -1,17 +1,19 @@
 // Resend was unused
 // import { Resend } from 'resend';
 
-// Define the mock functions first
-const mockResendEmailSend = jest.fn();
-
 // Mock Resend
 jest.mock('resend', () => {
+  const mockResendEmailSend = jest.fn();
   return {
     Resend: jest.fn().mockImplementation(() => ({
       emails: { send: mockResendEmailSend },
     })),
+    mockResendEmailSend, // Export the mock for use in tests
   };
 });
+
+// Get the mock function from the mocked module
+const { mockResendEmailSend } = jest.requireMock('resend') as { mockResendEmailSend: jest.Mock };
 
 // Import NotificationService AFTER top-level mocks are set up
 import { NotificationService as GlobalNotificationService } from './NotificationService';
