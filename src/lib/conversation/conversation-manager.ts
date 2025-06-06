@@ -57,20 +57,26 @@ export class ConversationManager {
 
     switch (this.state.phase) {
       case 'greeting':
-        return this.handleGreeting();
-      
-      case 'archetype-presentation':
-        return this.handleArchetypePresentation(userInput);
-      
+        // If empty input, show greeting. If user responds, transition to next phase
+        if (userInput.trim() === '') {
+          return this.handleGreeting();
+        } else {
+          this.state.phase = 'transition-to-selection';
+          return this.handleTransitionToSelection(userInput);
+        }
+
+      case 'transition-to-selection':
+        return this.handleTransitionToSelection(userInput);
+
       case 'archetype-selection':
         return this.handleArchetypeSelection(userInput);
-      
+
       case 'confirmation':
         return this.handleConfirmation(userInput);
-      
+
       case 'complete':
         return this.handleComplete();
-      
+
       default:
         return this.handleError();
     }
@@ -78,8 +84,7 @@ export class ConversationManager {
 
   // Handle initial greeting phase
   private handleGreeting(): ConversationResponse {
-    this.state.phase = 'archetype-presentation';
-
+    // Stay in greeting phase until user responds
     return {
       message: CONVERSATION_SCRIPTS.greeting(this.userName),
       newState: { ...this.state },
@@ -87,18 +92,36 @@ export class ConversationManager {
     };
   }
 
-  // Handle archetype presentation phase
-  private handleArchetypePresentation(userInput: string): ConversationResponse {
-    // Check if user is asking for more information
-    if (isRequestingMoreInfo(userInput)) {
+  // Handle transition to selection phase
+  private handleTransitionToSelection(userInput: string): ConversationResponse {
+    // If no input (initial state), just wait for user response
+    if (userInput.trim() === '') {
       return {
-        message: CONVERSATION_SCRIPTS.archetypePresentation,
+        message: 'I\'m waiting for your response! Are you ready to discover your fantasy football archetype?',
         newState: { ...this.state },
         messageType: 'markdown'
       };
     }
 
-    // Try to parse archetype selection
+    // Check if user is ready to see the selection (positive responses)
+    const input = userInput.toLowerCase().trim();
+    if (input.includes('ready') || input.includes('yes') || input.includes('show') ||
+        input.includes('let\'s go') || input.includes('continue') || input.includes('proceed') ||
+        input.includes('sure') || input.includes('okay') || input.includes('ok')) {
+
+      this.state.phase = 'archetype-selection';
+      this.state.attempts = 1;
+
+      return {
+        message: '', // No message needed - user already confirmed they want to proceed
+        newState: { ...this.state },
+        messageType: 'component',
+        componentType: 'archetype-selection',
+        componentProps: { enableStaggeredAnimation: true }
+      };
+    }
+
+    // Try to parse archetype selection (in case they mention one directly)
     const selectedArchetype = parseArchetypeSelection(userInput);
 
     if (selectedArchetype) {
@@ -115,16 +138,11 @@ export class ConversationManager {
       };
     }
 
-    // If we can't parse the selection, present the interactive archetype selection
-    this.state.phase = 'archetype-selection';
-    this.state.attempts = 1;
-
+    // If user says something else, encourage them to proceed
     return {
-      message: 'Please select your archetype from the options below:',
+      message: 'I\'m excited to help you find your perfect archetype! Just say "ready" or "yes" when you\'d like to see your options.',
       newState: { ...this.state },
-      messageType: 'component',
-      componentType: 'archetype-selection',
-      componentProps: {}
+      messageType: 'markdown'
     };
   }
 

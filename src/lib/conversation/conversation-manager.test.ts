@@ -22,17 +22,23 @@ describe('ConversationManager', () => {
   });
 
   describe('Greeting Phase', () => {
-    it('should transition to archetype-presentation after greeting', () => {
-      const response = manager.processUserInput('hello');
-      
+    it('should show greeting message on empty input', () => {
+      const response = manager.processUserInput('');
+
       expect(response.message).toContain('Hi! I\'m Jake, your AI Copilot');
-      expect(response.newState.phase).toBe('archetype-presentation');
+      expect(response.newState.phase).toBe('greeting');
+    });
+
+    it('should transition to transition-to-selection when user responds', () => {
+      const response = manager.processUserInput('hello');
+
+      expect(response.newState.phase).toBe('transition-to-selection');
     });
   });
 
   describe('Archetype Selection', () => {
     beforeEach(() => {
-      // Move to archetype-presentation phase
+      // Move to transition-to-selection phase
       manager.processUserInput('hello');
     });
 
@@ -54,20 +60,29 @@ describe('ConversationManager', () => {
     it('should handle unclear responses with clarification', () => {
       const response = manager.processUserInput('I like football');
 
-      expect(response.newState.phase).toBe('archetype-selection');
-      expect(response.message).toContain('Please select your archetype from the options below');
+      expect(response.newState.phase).toBe('transition-to-selection');
+      expect(response.message).toContain('I\'m excited to help you find your perfect archetype');
     });
 
-    it('should provide more structured guidance after multiple attempts', () => {
+    it('should show archetype selection when user says ready', () => {
+      const response = manager.processUserInput('ready');
+
+      expect(response.message).toBe(''); // No message needed - user already confirmed
+      expect(response.newState.phase).toBe('archetype-selection');
+      expect(response.messageType).toBe('component');
+      expect(response.componentType).toBe('archetype-selection');
+    });
+
+    it('should encourage user to proceed after multiple unclear responses', () => {
       // First unclear response
       manager.processUserInput('I like football');
-      // Second unclear response  
+      // Second unclear response
       manager.processUserInput('I want to win');
       // Third unclear response
       const response = manager.processUserInput('help me');
-      
-      expect(response.message).toContain('1. **Eager Learner**');
-      expect(response.message).toContain('Which number (1-4)');
+
+      expect(response.message).toContain('I\'m excited to help you find your perfect archetype');
+      expect(response.newState.phase).toBe('transition-to-selection');
     });
   });
 

@@ -10,7 +10,7 @@ export interface ArchetypeData {
 }
 
 export interface ConversationState {
-  phase: 'greeting' | 'archetype-presentation' | 'archetype-selection' | 'confirmation' | 'complete';
+  phase: 'greeting' | 'transition-to-selection' | 'archetype-selection' | 'confirmation' | 'complete';
   selectedArchetype: string | null;
   lastUserInput: string;
   attempts: number;
@@ -54,9 +54,9 @@ export const CONVERSATION_SCRIPTS = {
     const greeting = userName ? `Hi ${userName}!` : 'Hi!';
     return `${greeting} I'm Jake, your AI Copilot, and I'm excited to help you dominate your fantasy football league! 🏈
 
-To give you the best personalized advice, I'd like to understand your fantasy football style. I'll walk you through four different "Fantasy Manager Archetypes" - think of them as different approaches to playing fantasy football.
+To give you the best personalized advice, I'd like to understand your fantasy football style. I have four different "Fantasy Manager Archetypes" that represent different approaches to fantasy football.
 
-Each archetype represents a unique style, and knowing yours will help me tailor my advice perfectly to your preferences. Ready to discover your fantasy football personality?`;
+Knowing your archetype will help me tailor my advice perfectly to your preferences. Ready to discover your fantasy football personality?`;
   },
 
   archetypePresentation: `Great! Let me introduce you to the four Fantasy Manager Archetypes:

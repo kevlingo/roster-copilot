@@ -1,21 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ArchetypeCard from '../ai-copilot/ArchetypeCard';
 import { ARCHETYPES } from '../../lib/conversation/archetype-onboarding';
-import { 
-  UserIcon, 
-  ChartBarIcon, 
-  BoltIcon, 
-  ClockIcon 
+import {
+  UserIcon,
+  ChartBarIcon,
+  BoltIcon,
+  ClockIcon
 } from '@heroicons/react/24/outline';
 
 interface ArchetypeSelectionComponentProps {
   onSelection: (archetypeName: string) => void;
+  enableStaggeredAnimation?: boolean;
 }
 
-const ArchetypeSelectionComponent: React.FC<ArchetypeSelectionComponentProps> = ({ 
-  onSelection 
+const ArchetypeSelectionComponent: React.FC<ArchetypeSelectionComponentProps> = ({
+  onSelection,
+  enableStaggeredAnimation = false
 }) => {
   const [selectedArchetype, setSelectedArchetype] = useState<string | null>(null);
+  const [visibleCards, setVisibleCards] = useState<number[]>([]);
+
+  // Handle staggered animation
+  useEffect(() => {
+    if (enableStaggeredAnimation) {
+      // Start with no cards visible
+      setVisibleCards([]);
+
+      // Show cards one by one with delay
+      ARCHETYPES.forEach((_, index) => {
+        setTimeout(() => {
+          setVisibleCards(prev => [...prev, index]);
+        }, index * 250); // 250ms delay between each card
+      });
+    } else {
+      // Show all cards immediately
+      setVisibleCards(ARCHETYPES.map((_, index) => index));
+    }
+  }, [enableStaggeredAnimation]);
 
   // Icon mapping for each archetype
   const getArchetypeIcon = (archetypeId: string) => {
@@ -52,16 +73,27 @@ const ArchetypeSelectionComponent: React.FC<ArchetypeSelectionComponentProps> = 
         </p>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {ARCHETYPES.map((archetype) => (
-          <ArchetypeCard
+      <div className="flex flex-col gap-4">
+        {ARCHETYPES.map((archetype, index) => (
+          <div
             key={archetype.id}
-            title={archetype.name}
-            description={archetype.description}
-            icon={getArchetypeIcon(archetype.id)}
-            isSelected={selectedArchetype === archetype.name}
-            onSelect={() => handleArchetypeSelect(archetype.name)}
-          />
+            className={`transition-all duration-500 ease-out ${
+              visibleCards.includes(index)
+                ? 'opacity-100 translate-y-0'
+                : 'opacity-0 translate-y-4'
+            }`}
+            style={{
+              transitionDelay: enableStaggeredAnimation ? `${index * 100}ms` : '0ms'
+            }}
+          >
+            <ArchetypeCard
+              title={archetype.name}
+              description={archetype.description}
+              icon={getArchetypeIcon(archetype.id)}
+              isSelected={selectedArchetype === archetype.name}
+              onSelect={() => handleArchetypeSelect(archetype.name)}
+            />
+          </div>
         ))}
       </div>
       

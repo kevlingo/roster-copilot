@@ -110,7 +110,7 @@ const ChatMessageBubble: React.FC<ChatMessageBubbleProps> = ({ message, onCompon
   };
 
   return (
-    <div className={bubbleContainerClasses}>
+    <div className={bubbleContainerClasses} data-message-id={message.id}>
       <div className={bubbleInstanceClasses}>
         {renderMessageContent()}
         {/* AC6: Render subtle timestamp - only for non-component messages */}
