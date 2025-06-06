@@ -64,6 +64,18 @@ export function closeDb(): Promise<void> {
   });
 }
 
+// Force close and reset connection (useful for tests)
+export function forceCloseDb(): void {
+  if (db) {
+    try {
+      db.close();
+    } catch (error) {
+      console.warn('[SQLite] Force close warning:', error);
+    }
+    db = null;
+  }
+}
+
 function ensureDbConnected(): sqlite3.Database {
   if (!db) {
     // This case should ideally be handled by explicit connection management (e.g., connectDb call at app start)
@@ -272,6 +284,38 @@ export async function initializeDatabase(dbPath?: string): Promise<void> {
     );
   `;
 
+  const createChatHistoryTable = `
+    CREATE TABLE IF NOT EXISTS ChatHistory (
+      messageId TEXT PRIMARY KEY,
+      userId TEXT NOT NULL,
+      content TEXT NOT NULL,
+      role TEXT NOT NULL CHECK (role IN ('user', 'assistant', 'system')),
+      messageType TEXT DEFAULT 'conversation' CHECK (messageType IN ('conversation', 'notification', 'markdown', 'component')),
+      componentType TEXT,
+      componentProps TEXT, -- JSON string
+      conversationContext TEXT, -- JSON string for onboarding/general context
+      timestamp TEXT NOT NULL,
+      createdAt TEXT NOT NULL,
+      FOREIGN KEY (userId) REFERENCES UserProfiles(userId) ON DELETE CASCADE
+    );
+  `;
+
+  const createConversationSessionsTable = `
+    CREATE TABLE IF NOT EXISTS ConversationSessions (
+      sessionId TEXT PRIMARY KEY,
+      userId TEXT NOT NULL,
+      conversationType TEXT NOT NULL DEFAULT 'general' CHECK (conversationType IN ('onboarding', 'general', 'digest')),
+      startTime TEXT NOT NULL,
+      lastActivity TEXT NOT NULL,
+      messageCount INTEGER NOT NULL DEFAULT 0,
+      isActive BOOLEAN NOT NULL DEFAULT 1,
+      deviceInfo TEXT, -- JSON string for device tracking
+      createdAt TEXT NOT NULL,
+      updatedAt TEXT NOT NULL,
+      FOREIGN KEY (userId) REFERENCES UserProfiles(userId) ON DELETE CASCADE
+    );
+  `;
+
   try {
     await run(createUserProfilesTable);
     console.log('[SQLite] UserProfiles table checked/created.');
@@ -289,6 +333,10 @@ export async function initializeDatabase(dbPath?: string): Promise<void> {
     console.log('[SQLite] DraftPicks table checked/created.');
     await run(createDraftStatesTable);
     console.log('[SQLite] DraftStates table checked/created.');
+    await run(createChatHistoryTable);
+    console.log('[SQLite] ChatHistory table checked/created.');
+    await run(createConversationSessionsTable);
+    console.log('[SQLite] ConversationSessions table checked/created.');
   } catch (error) {
     console.error('[SQLite Schema Initialization Error]', error);
     // Potentially throw error to halt app startup if schema is critical
