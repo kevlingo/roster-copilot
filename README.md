@@ -1,6 +1,6 @@
 # Roster Copilot - Proof of Concept (PoC)
 
-This project is a Proof-of-Concept for Roster Copilot, an AI-powered assistant for fantasy football league management.
+This project is a Proof-of-Concept for Roster Copilot, an AI-powered assistant for fantasy football league management. The application features a conversational AI Copilot powered by Google Gemini that helps users through personalized onboarding and provides intelligent fantasy football guidance.
 
 ## Features Implemented
 
@@ -12,6 +12,14 @@ This project is a Proof-of-Concept for Roster Copilot, an AI-powered assistant f
 - **Live Draft System**: Real-time snake draft room with turn-based picking and live updates
 - **Team Roster Management**: View team rosters with player details and position groupings
 - **API Middleware**: Standardized error handling, request logging, and authentication middleware
+
+### ✅ AI Copilot Foundation
+- **Conversational Onboarding**: Complete archetype selection through natural chat interface
+- **Fantasy Manager Archetypes**: Four personality-based user profiles (Eager Learner, Calculated Strategist, Bold Playmaker, Busy Optimizer)
+- **Natural Language Processing**: Handles user responses by name, number, or description
+- **User Profile Integration**: Persists archetype selections to user profiles
+- **Chat Interface**: Persistent chat interface with conversation state management
+- **Google Gemini AI Integration**: Backend AI service integration for intelligent conversations
 
 ### ✅ Database & Data Management
 - **SQLite Database**: File-based persistence with comprehensive data models
@@ -41,6 +49,9 @@ This project is a Proof-of-Concept for Roster Copilot, an AI-powered assistant f
 
 Create a `.env.local` file in the root directory with the following variables:
 ```bash
+# Google Gemini AI service (for AI Copilot features)
+GEMINI_API_KEY=your_gemini_api_key_here
+
 # Email service (Resend)
 RESEND_API_KEY=your_resend_api_key_here
 
@@ -130,3 +141,5 @@ Refer to [`docs/tech-stack.md`](docs/tech-stack.md) for details on the technolog
 - Authentication uses JWT tokens stored in Zustand state management
 - All API routes include standardized error handling and request logging
 - The frontend uses Next.js App Router with Tailwind CSS and DaisyUI for styling
+- AI Copilot features are powered by Google Gemini AI with conversational onboarding implemented
+- Users without selected archetypes are automatically guided through the onboarding conversation flow
