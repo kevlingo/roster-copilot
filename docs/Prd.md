@@ -125,6 +125,7 @@ The Roster Copilot MVP will be developed through the following core Epics. Each 
 * **Goal:** To implement the initial AI Copilot onboarding process through a conversational chat interface, allowing the system to capture core user preferences and establish a foundational User Preference Profile that will drive personalized AI advice.
 * **High-Level User Story Titles / Objectives:**
     * Implement Conversational Fantasy Manager Archetype Selection
+    * Implement Enhanced Interactive Onboarding Experience (markdown rendering, personalized welcome, visual archetype selection)
     * Implement Conversational Guided Questionnaire for "Eager Learner" Archetype Users
     * Develop "Learn-As-You-Go" Mechanism for User Preference Profile Refinement (PoC scope: AI observes patterns and asks user for confirmation to update profile)
     * Allow User to View their Core User Preference Profile (PoC scope: display selected archetype and explicit onboarding answers)
@@ -200,6 +201,7 @@ This section lists features and capabilities identified as valuable but not incl
 | Initial PRD Draft for Hackathon PoC Created | 2025-05-30 | 0.1     | First complete draft based on user collaboration. | John (PM)   |
 | Archetype Consolidation Update              | 2025-05-31 | 0.2     | Consolidated "New to All of This!" into "Eager Learner". Archetype list updated in Functional Requirements. | Sarah (PO)  |
 | Conversational Onboarding Enhancement      | 2025-01-27 | 0.3     | Updated Epic 2 and onboarding system to use conversational chat interface instead of modal forms. | Curly (PO)  |
+| Enhanced Interactive Onboarding Addition   | 2025-01-27 | 0.4     | Added Enhanced Interactive Onboarding Experience to Epic 2 objectives for improved UX. | BMAD Orchestrator |
 
 ----- END PRD START CHECKLIST OUTPUT ------
 

@@ -65,6 +65,8 @@ This index provides a central catalog of key project documents for Roster Copilo
     *   [Story 1.0.2](./stories/1.0.2.story.md)
     *   [Story 1.0.3](./stories/1.0.3.story.md)
     *   [Story 1.1](./stories/1.1.story.md)
+    *   [Story 2.1](./stories/2.1.story.md)
+    *   [Story 2.1.4](./stories/2.1.4.story.md) - Enhanced Interactive Onboarding Experience
     *   ... (and so on for all stories)
 
 ## Checklists
