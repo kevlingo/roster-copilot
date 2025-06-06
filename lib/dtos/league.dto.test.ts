@@ -62,7 +62,7 @@ describe('League DTOs', () => {
         rosterSettings: {
           QB: 1, RB: 2, WR: 2, TE: 1, K: 1, DEF: 1, BENCH: 6
         },
-        createdAt: '2025-01-27T00:00:00.000Z'
+        createdAt: '2025-06-06T00:00:00.000Z'
       };
 
       expect(validResponse.leagueId).toBe('league-123');

@@ -303,5 +303,5 @@ graph TD
 
 | Change                    | Date       | Version | Description                                    | Author        |
 | ------------------------- | ---------- | ------- | ---------------------------------------------- | ------------- |
-| Initial Specification     | 2025-01-27 | 1.0     | Created conversational onboarding UX spec     | Millie (Design Architect) |
-| Enhanced with User Feedback | 2025-01-27 | 2.0   | Added express mode, voice-ready design, enhanced persistence | Millie (Design Architect) |
+| Initial Specification     | 2025-06-06 | 1.0     | Created conversational onboarding UX spec     | Millie (Design Architect) |
+| Enhanced with User Feedback | 2025-06-06 | 2.0   | Added express mode, voice-ready design, enhanced persistence | Millie (Design Architect) |

@@ -33,7 +33,7 @@ describe('League Models', () => {
         currentSeasonWeek: 1,
         participatingTeamIds: [],
         rosterSettings: DEFAULT_ROSTER_SETTINGS,
-        createdAt: '2025-01-27T00:00:00.000Z'
+        createdAt: '2025-06-06T00:00:00.000Z'
       };
 
       expect(validLeague.leagueId).toBe('league-123');
@@ -51,7 +51,7 @@ describe('League Models', () => {
         userId: 'user-123',
         teamName: 'Test Team',
         playerIds_onRoster: ['player1', 'player2'],
-        createdAt: '2025-01-27T00:00:00.000Z'
+        createdAt: '2025-06-06T00:00:00.000Z'
       };
 
       expect(validTeam.teamId).toBe('team-123');

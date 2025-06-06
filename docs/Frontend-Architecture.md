@@ -366,6 +366,6 @@ The web application must be fully responsive.
 | Change                                                          | Date       | Version | Description                                                     | Author      |
 | :-------------------------------------------------------------- | :--------- | :------ | :-------------------------------------------------------------- | :---------- |
 | Initial Frontend Architecture Document Draft for PoC Created    | 2025-05-30 | 0.1     | First complete draft based on user collaboration.             | Jane (DA)   |
-| Conversational Onboarding & Chat Persistence Architecture Added | 2025-01-27 | 0.2     | Added architecture patterns for conversational onboarding and comprehensive chat history persistence system. | Curly (PO)  |
+| Conversational Onboarding & Chat Persistence Architecture Added | 2025-06-06 | 0.2     | Added architecture patterns for conversational onboarding and comprehensive chat history persistence system. | Curly (PO)  |
 
 -----

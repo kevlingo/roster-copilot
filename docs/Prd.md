@@ -200,8 +200,8 @@ This section lists features and capabilities identified as valuable but not incl
 | :------------------------------------------ | :--------- | :------ | :------------------------------------------------ | :---------- |
 | Initial PRD Draft for Hackathon PoC Created | 2025-05-30 | 0.1     | First complete draft based on user collaboration. | John (PM)   |
 | Archetype Consolidation Update              | 2025-05-31 | 0.2     | Consolidated "New to All of This!" into "Eager Learner". Archetype list updated in Functional Requirements. | Sarah (PO)  |
-| Conversational Onboarding Enhancement      | 2025-01-27 | 0.3     | Updated Epic 2 and onboarding system to use conversational chat interface instead of modal forms. | Curly (PO)  |
-| Enhanced Interactive Onboarding Addition   | 2025-01-27 | 0.4     | Added Enhanced Interactive Onboarding Experience to Epic 2 objectives for improved UX. | BMAD Orchestrator |
+| Conversational Onboarding Enhancement      | 2025-06-06 | 0.3     | Updated Epic 2 and onboarding system to use conversational chat interface instead of modal forms. | Curly (PO)  |
+| Enhanced Interactive Onboarding Addition   | 2025-06-06 | 0.4     | Added Enhanced Interactive Onboarding Experience to Epic 2 objectives for improved UX. | BMAD Orchestrator |
 
 ----- END PRD START CHECKLIST OUTPUT ------
 
