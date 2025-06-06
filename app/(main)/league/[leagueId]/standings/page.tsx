@@ -1,29 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-
-// Mock data interfaces
-interface TeamStanding {
-  teamId: string;
-  name: string;
-  owner: string;
-  wins: number;
-  losses: number;
-  ties: number;
-  pointsFor: number;
-  pointsAgainst: number;
-  streak: string;
-}
-
-// Mock data
-const mockStandings: TeamStanding[] = [
-  { teamId: 'team2', name: 'Fantasy Kings', owner: 'John', wins: 4, losses: 1, ties: 0, pointsFor: 587.2, pointsAgainst: 513.8, streak: 'W3' },
-  { teamId: 'team4', name: 'EndZone Eagles', owner: 'Mike', wins: 4, losses: 1, ties: 0, pointsFor: 552.7, pointsAgainst: 489.4, streak: 'W2' },
-  { teamId: 'team1', name: 'Your Team', owner: 'You', wins: 3, losses: 2, ties: 0, pointsFor: 573.6, pointsAgainst: 565.2, streak: 'L1' },
-  { teamId: 'team3', name: 'Touchdown Titans', owner: 'Sarah', wins: 2, losses: 3, ties: 0, pointsFor: 536.9, pointsAgainst: 552.1, streak: 'W1' },
-  { teamId: 'team5', name: 'Red Zone Raiders', owner: 'Alex', wins: 2, losses: 3, ties: 0, pointsFor: 501.3, pointsAgainst: 518.7, streak: 'L2' },
-  { teamId: 'team6', name: 'Gridiron Giants', owner: 'Emma', wins: 0, losses: 5, ties: 0, pointsFor: 478.5, pointsAgainst: 590.9, streak: 'L5' },
-];
+import { GetStandingsResponseDto, TeamStandingDto } from '@/lib/dtos/standings.dto';
 
 interface PageProps {
   params: {
@@ -34,30 +12,81 @@ interface PageProps {
 export default function StandingsPage({ params }: PageProps) {
   const { leagueId } = params;
   const [isLoading, setIsLoading] = useState(true);
-  const [standings, setStandings] = useState<TeamStanding[]>([]);
-  
-  // Simulate data loading
+  const [standings, setStandings] = useState<TeamStandingDto[]>([]);
+  const [leagueInfo, setLeagueInfo] = useState<GetStandingsResponseDto['leagueInfo'] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch standings data from API
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setStandings(mockStandings);
-      setIsLoading(false);
-    }, 1000);
-    
-    return () => clearTimeout(timer);
+    async function fetchStandings() {
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        const response = await fetch(`/api/leagues/${leagueId}/standings`);
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to fetch standings');
+        }
+
+        const data: GetStandingsResponseDto = await response.json();
+        setStandings(data.standings);
+        setLeagueInfo(data.leagueInfo);
+
+      } catch (err) {
+        console.error('Error fetching standings:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load standings');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    if (leagueId) {
+      fetchStandings();
+    }
   }, [leagueId]);
   
   if (isLoading) {
     return (
       <div className="page-container space-y-6">
-        <h1 className="page-title">League Standings - Loading...</h1>
-        <div className="loading-pulse h-64"></div>
+        <h1 className="page-title">League Standings</h1>
+        <div className="card bg-base-100 shadow">
+          <div className="card-body">
+            <div className="flex items-center justify-center h-64">
+              <span className="loading loading-spinner loading-lg"></span>
+              <span className="ml-4">Loading standings...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="page-container space-y-6">
+        <h1 className="page-title">League Standings</h1>
+        <div className="alert alert-error">
+          <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>Error loading standings: {error}</span>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="page-container space-y-6">
-      <h1 className="page-title">League Standings</h1>
+      <div className="flex justify-between items-center">
+        <h1 className="page-title">League Standings</h1>
+        {leagueInfo && (
+          <div className="text-sm text-base-content/70">
+            Week {leagueInfo.currentSeasonWeek} • {leagueInfo.leagueName}
+          </div>
+        )}
+      </div>
       
       <div className="card bg-base-100 shadow">
         <div className="card-body">
@@ -75,23 +104,23 @@ export default function StandingsPage({ params }: PageProps) {
                 </tr>
               </thead>
               <tbody>
-                {standings.map((team, index) => (
-                  <tr key={team.teamId} className={team.teamId === 'team1' ? 'bg-primary/10' : ''}>
-                    <td>{index + 1}</td>
+                {standings.map((team) => (
+                  <tr key={team.teamId} className="">
+                    <td>{team.rank}</td>
                     <td>
-                      <div className="font-medium">{team.name}</div>
-                      <div className="text-sm text-base-content/70">{team.owner}</div>
+                      <div className="font-medium">{team.teamName}</div>
+                      <div className="text-sm text-base-content/70">Team ID: {team.teamId.slice(-8)}</div>
                     </td>
                     <td>{team.wins}-{team.losses}{team.ties > 0 ? `-${team.ties}` : ''}</td>
                     <td className="hidden md:table-cell">
-                      {team.wins + team.losses + team.ties > 0 
-                        ? (team.wins / (team.wins + team.losses + team.ties)).toFixed(3)
-                        : '.000'
-                      }
+                      {team.winPercentage.toFixed(3)}
                     </td>
                     <td className="hidden md:table-cell">{team.pointsFor.toFixed(1)}</td>
                     <td className="hidden md:table-cell">{team.pointsAgainst.toFixed(1)}</td>
-                    <td className="hidden md:table-cell">{team.streak}</td>
+                    <td className="hidden md:table-cell">
+                      {/* TODO: Calculate streak from recent matchups */}
+                      --
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -109,19 +138,19 @@ export default function StandingsPage({ params }: PageProps) {
               <h3 className="font-semibold mb-2">Playoff Teams (Top 4)</h3>
               <ol className="list-decimal list-inside space-y-1">
                 {standings.slice(0, 4).map(team => (
-                  <li key={team.teamId} className={team.teamId === 'team1' ? 'font-medium text-primary' : ''}>
-                    {team.name} ({team.wins}-{team.losses})
+                  <li key={team.teamId}>
+                    {team.teamName} ({team.wins}-{team.losses})
                   </li>
                 ))}
               </ol>
             </div>
-            
+
             <div className="border border-base-300 rounded-lg p-4">
               <h3 className="font-semibold mb-2">On the Outside</h3>
               <ol className="list-decimal list-inside space-y-1" start={5}>
                 {standings.slice(4).map(team => (
-                  <li key={team.teamId} className={team.teamId === 'team1' ? 'font-medium text-primary' : ''}>
-                    {team.name} ({team.wins}-{team.losses})
+                  <li key={team.teamId}>
+                    {team.teamName} ({team.wins}-{team.losses})
                   </li>
                 ))}
               </ol>
@@ -131,13 +160,19 @@ export default function StandingsPage({ params }: PageProps) {
       </div>
       
       {/* AI Copilot Analysis */}
-      <div className="card bg-primary text-primary-content">
-        <div className="card-body">
-          <h2 className="card-title">AI Copilot Analysis</h2>
-          <p>Your team is currently in playoff position at 3rd place, but there&apos;s only a 1-game lead over the 5th place team.</p>
-          <p className="text-sm mt-2">Your team has scored the 2nd most points in the league, which is a good sign. Teams that score a lot of points tend to win more games in the long run.</p>
+      {standings.length > 0 && (
+        <div className="card bg-primary text-primary-content">
+          <div className="card-body">
+            <h2 className="card-title">League Analysis</h2>
+            <p>
+              Current standings show {standings[0].teamName} leading with a {standings[0].wins}-{standings[0].losses} record.
+            </p>
+            <p className="text-sm mt-2">
+              {standings.length} teams competing • Week {leagueInfo?.currentSeasonWeek} of the season
+            </p>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

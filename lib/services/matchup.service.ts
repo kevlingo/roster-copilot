@@ -1,57 +1,32 @@
 /**
  * Matchup Service Layer
  * Handles business logic for fantasy matchups and scoring
+ * Extended for Story 1.13 with standings calculation logic
  */
 
 import { getFantasyTeamsByLeagueId, getWeeklyLineup } from '../dal/league.dal';
 import { getNFLPlayersByIds } from '../dal/player.dal';
 import { getOpponentForTeam } from '../dal/game.dal';
 import { FantasyTeamDto, FantasyPlayerDto, FantasyMatchupDto } from '../dtos/matchup.dto';
+import { getLeagueSchedule, TeamRecord, isWeekCompleted } from './schedule.service';
+import { League_PoC } from '../models/league.models';
 
 /**
  * Determines the opponent team for a given user's team in a specific week
- * For PoC: Simple round-robin scheduling based on team order
+ * Uses the schedule service for consistent matchup determination
  */
 export async function getFantasyOpponent(
-  userTeamId: string, 
-  leagueId: string, 
+  userTeamId: string,
+  leagueId: string,
   weekNumber: number
 ): Promise<string | undefined> {
-  // Get all teams in the league
-  const allTeams = await getFantasyTeamsByLeagueId(leagueId);
-  
-  if (allTeams.length < 2) {
-    return undefined; // Need at least 2 teams for matchups
-  }
-
-  // Find user's team index
-  const userTeamIndex = allTeams.findIndex(team => team.teamId === userTeamId);
-  if (userTeamIndex === -1) {
+  try {
+    const { getOpponentForTeamInWeek } = await import('./schedule.service');
+    return await getOpponentForTeamInWeek(leagueId, userTeamId, weekNumber);
+  } catch (error) {
+    console.error('Error getting fantasy opponent:', error);
     return undefined;
   }
-
-  // Simple PoC matchup logic: rotate opponents each week
-  const numberOfTeams = allTeams.length;
-
-  // For PoC, use a simple rotation algorithm
-  // Week 1: team 0 vs team 1, team 2 vs team 3, etc.
-  // Week 2: team 0 vs team 2, team 1 vs team 3, etc.
-  // Week 3: team 0 vs team 3, team 1 vs team 2, etc.
-
-  if (numberOfTeams < 2) {
-    return undefined; // Need at least 2 teams
-  }
-
-  // Simple rotation: each team plays against the next team in rotation
-  const weekOffset = (weekNumber - 1) % (numberOfTeams - 1);
-  let opponentIndex = (userTeamIndex + 1 + weekOffset) % numberOfTeams;
-
-  // If we wrapped around to ourselves, skip to the next team
-  if (opponentIndex === userTeamIndex) {
-    opponentIndex = (opponentIndex + 1) % numberOfTeams;
-  }
-
-  return allTeams[opponentIndex].teamId;
 }
 
 /**
@@ -142,4 +117,115 @@ export async function createFantasyMatchup(
     weekNumber,
     matchupStatus
   };
+}
+
+/**
+ * Calculates win/loss/tie outcome for a matchup
+ */
+export function calculateMatchupOutcome(
+  team1Score: number,
+  team2Score: number,
+  tieThreshold: number = 0.1
+): { team1Result: 'W' | 'L' | 'T'; team2Result: 'W' | 'L' | 'T' } {
+  const scoreDifference = Math.abs(team1Score - team2Score);
+
+  if (scoreDifference <= tieThreshold) {
+    return { team1Result: 'T', team2Result: 'T' };
+  }
+
+  if (team1Score > team2Score) {
+    return { team1Result: 'W', team2Result: 'L' };
+  } else {
+    return { team1Result: 'L', team2Result: 'W' };
+  }
+}
+
+/**
+ * Calculates standings for all teams in a league
+ */
+export async function calculateLeagueStandings(
+  leagueId: string,
+  league: League_PoC
+): Promise<TeamRecord[]> {
+  const teams = await getFantasyTeamsByLeagueId(leagueId);
+  const schedule = await getLeagueSchedule(leagueId);
+
+  // Initialize team records
+  const teamRecords: Map<string, TeamRecord> = new Map();
+
+  for (const team of teams) {
+    teamRecords.set(team.teamId, {
+      teamId: team.teamId,
+      teamName: team.teamName,
+      userId: team.userId,
+      wins: 0,
+      losses: 0,
+      ties: 0,
+      pointsFor: 0,
+      pointsAgainst: 0,
+      winPercentage: 0
+    });
+  }
+
+  // Process completed weeks
+  const currentWeek = league.currentSeasonWeek;
+
+  for (const matchup of schedule.matchups) {
+    if (!isWeekCompleted(matchup.weekNumber, currentWeek)) {
+      continue; // Skip future weeks
+    }
+
+    try {
+      // Calculate scores for both teams
+      const team1Result = await calculateFantasyTeamScore(matchup.team1Id, matchup.weekNumber);
+      const team2Result = await calculateFantasyTeamScore(matchup.team2Id, matchup.weekNumber);
+
+      const team1Score = team1Result.totalPoints;
+      const team2Score = team2Result.totalPoints;
+
+      // Determine outcome
+      const outcome = calculateMatchupOutcome(team1Score, team2Score);
+
+      // Update team records
+      const team1Record = teamRecords.get(matchup.team1Id);
+      const team2Record = teamRecords.get(matchup.team2Id);
+
+      if (team1Record && team2Record) {
+        // Update wins/losses/ties
+        if (outcome.team1Result === 'W') team1Record.wins++;
+        else if (outcome.team1Result === 'L') team1Record.losses++;
+        else team1Record.ties++;
+
+        if (outcome.team2Result === 'W') team2Record.wins++;
+        else if (outcome.team2Result === 'L') team2Record.losses++;
+        else team2Record.ties++;
+
+        // Update points for/against
+        team1Record.pointsFor += team1Score;
+        team1Record.pointsAgainst += team2Score;
+        team2Record.pointsFor += team2Score;
+        team2Record.pointsAgainst += team1Score;
+      }
+    } catch (error) {
+      console.warn(`Failed to calculate scores for matchup in week ${matchup.weekNumber}:`, error);
+      // Continue processing other matchups
+    }
+  }
+
+  // Calculate win percentages and convert to array
+  const standings: TeamRecord[] = Array.from(teamRecords.values()).map(record => {
+    const totalGames = record.wins + record.losses + record.ties;
+    record.winPercentage = totalGames > 0 ? (record.wins + record.ties * 0.5) / totalGames : 0;
+    return record;
+  });
+
+  // Sort by win percentage (descending), then by points for (descending)
+  standings.sort((a, b) => {
+    if (a.winPercentage !== b.winPercentage) {
+      return b.winPercentage - a.winPercentage;
+    }
+    return b.pointsFor - a.pointsFor;
+  });
+
+  return standings;
 }

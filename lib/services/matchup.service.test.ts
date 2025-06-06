@@ -3,10 +3,11 @@
  * Tests for fantasy matchup business logic
  */
 
-import { 
-  getFantasyOpponent, 
-  calculateFantasyTeamScore, 
-  createFantasyMatchup 
+import {
+  getFantasyOpponent,
+  calculateFantasyTeamScore,
+  createFantasyMatchup,
+  calculateMatchupOutcome
 } from './matchup.service';
 import { initializeDatabase, closeDb } from '../dal/db';
 import { createLeague, createFantasyTeam, saveWeeklyLineup } from '../dal/league.dal';
@@ -93,11 +94,11 @@ describe('Matchup Service', () => {
 
     it('should return undefined for non-existent team', async () => {
       const opponent = await getFantasyOpponent(
-        'non-existent-team', 
-        testLeagueId, 
+        'non-existent-team',
+        testLeagueId,
         1
       );
-      
+
       expect(opponent).toBeUndefined();
     });
 
@@ -247,6 +248,37 @@ describe('Matchup Service', () => {
       expect(opponent1).toBe(opponent2);
       expect(opponent1).toBeDefined();
       expect(opponent1).not.toBe(teamA);
+    });
+  });
+
+  describe('calculateMatchupOutcome', () => {
+    it('should determine team1 wins when team1 score is higher', () => {
+      const result = calculateMatchupOutcome(120.5, 115.2);
+
+      expect(result.team1Result).toBe('W');
+      expect(result.team2Result).toBe('L');
+    });
+
+    it('should determine team2 wins when team2 score is higher', () => {
+      const result = calculateMatchupOutcome(98.7, 105.3);
+
+      expect(result.team1Result).toBe('L');
+      expect(result.team2Result).toBe('W');
+    });
+
+    it('should determine tie when scores are very close', () => {
+      const result = calculateMatchupOutcome(100.05, 100.0);
+
+      expect(result.team1Result).toBe('T');
+      expect(result.team2Result).toBe('T');
+    });
+
+    it('should respect custom tie threshold', () => {
+      const result1 = calculateMatchupOutcome(100.5, 100.0, 1.0);
+      expect(result1.team1Result).toBe('T');
+
+      const result2 = calculateMatchupOutcome(101.5, 100.0, 1.0);
+      expect(result2.team1Result).toBe('W');
     });
   });
 });
