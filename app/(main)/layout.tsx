@@ -108,7 +108,7 @@ export default function MainLayout({
             isDarkTheme={theme === 'dark'}
           />
           
-          <main className="flex-1 overflow-y-auto bg-base-200 p-4">
+          <main className="flex-1 overflow-y-auto bg-base-200 p-4 pb-[calc(var(--chat-interface-height)+1rem)]">
             {children}
           </main>
         </div>
@@ -129,7 +129,7 @@ export default function MainLayout({
           isDarkTheme={theme === 'dark'}
         />
         
-        <main className="flex-1 overflow-y-auto bg-base-200 p-4">
+        <main className="flex-1 overflow-y-auto bg-base-200 p-4 pb-[calc(var(--chat-interface-height)+1rem)]">
           {children}
         </main>
       </div>

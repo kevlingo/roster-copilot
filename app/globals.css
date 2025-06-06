@@ -5,6 +5,7 @@
 @layer base {
 :root {
     --header-height: 64px;
+    --chat-interface-height: 88px;
   }
   html {
     @apply scroll-smooth;
