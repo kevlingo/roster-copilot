@@ -4,7 +4,7 @@ import { validate } from 'class-validator';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 
-import { UpdateProfileDto, ChangePasswordDto } from '@/lib/dtos/auth.dto';
+import { UpdateProfileDto, ChangePasswordDto, UpdateArchetypeDto } from '@/lib/dtos/auth.dto';
 import {
   withErrorHandling,
   withRequestLogging,
@@ -20,6 +20,7 @@ import {
   updateUserUsername,
   updateUserEmail,
   updateUserPassword,
+  updateUserArchetype,
   createEmailVerificationToken,
 } from '@/lib/dal/user.dal';
 import { notificationService } from '@/lib/services/NotificationService';
@@ -58,15 +59,48 @@ const updateUserProfileHandler: AuthenticatedApiRouteHandler = async (req: Authe
 
   // Determine what type of update this is based on the fields present
   const hasPasswordFields = body.currentPassword || body.newPassword || body.confirmPassword;
-  
+  const hasArchetypeField = body.selectedArchetype;
+
   if (hasPasswordFields) {
     // Handle password change
     return handlePasswordChange(req, body);
+  } else if (hasArchetypeField) {
+    // Handle archetype update
+    return handleArchetypeUpdate(req, body);
   } else {
     // Handle profile update (username/email)
     return handleProfileUpdate(req, body);
   }
 };
+
+/**
+ * Handle archetype update
+ */
+async function handleArchetypeUpdate(req: AuthenticatedRequest, body: { selectedArchetype: string }): Promise<NextResponse> {
+  const updateDto = plainToInstance(UpdateArchetypeDto, body);
+  const errors = await validate(updateDto);
+
+  if (errors.length > 0) {
+    const formattedErrors = errors.map((err) => ({
+      property: err.property,
+      constraints: err.constraints,
+    }));
+    return NextResponse.json({ errors: formattedErrors }, { status: 400 });
+  }
+
+  const { selectedArchetype } = updateDto;
+
+  try {
+    await updateUserArchetype(req.user.userId, selectedArchetype);
+    return NextResponse.json({
+      message: 'Archetype updated successfully',
+      selectedArchetype
+    });
+  } catch (error) {
+    console.error('[Archetype Update] Error updating archetype:', error);
+    return NextResponse.json({ error: 'Failed to update archetype' }, { status: 500 });
+  }
+}
 
 /**
  * Handle profile update (username and/or email)

@@ -6,13 +6,18 @@ import ChatBubbleOverlay from './ChatBubbleOverlay';
 import { MessageObject } from '../../types/chat';
 import { v4 as uuidv4 } from 'uuid'; // For generating unique IDs
 import { setGlobalNotificationHandler, createAINotificationMessage } from '../../hooks/useAINotification';
+import { ConversationManager } from '../../lib/conversation/conversation-manager';
+import { useAuthStore } from '@/lib/store/auth.store';
 
 const PersistentChatInterface: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
   const [chatHistory, setChatHistory] = useState<MessageObject[]>([]);
   const [isOverlayVisible, setIsOverlayVisible] = useState(true);
   const [isLoadingResponse, setIsLoadingResponse] = useState(false);
+  const [conversationManager] = useState(() => new ConversationManager());
+  const [isOnboardingMode, setIsOnboardingMode] = useState(false);
   const chatInputRef = useRef<HTMLTextAreaElement>(null);
+  const { user, token } = useAuthStore();
   // const chatOverlayRef = useRef<HTMLDivElement>(null); // Removed as it's not currently used
 
 
@@ -28,6 +33,38 @@ const PersistentChatInterface: React.FC = () => {
     // Ensure overlay is visible when notification arrives
     if (!isOverlayVisible) {
       setIsOverlayVisible(true);
+    }
+  };
+
+  // Function to persist archetype selection to backend
+  const persistArchetype = async (selectedArchetype: string): Promise<boolean> => {
+    if (!token) {
+      console.error('No auth token available');
+      return false;
+    }
+
+    try {
+      const response = await fetch('/api/users/me', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ selectedArchetype }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Archetype updated successfully:', data);
+        return true;
+      } else {
+        const errorData = await response.json();
+        console.error('Failed to update archetype:', errorData);
+        return false;
+      }
+    } catch (error) {
+      console.error('Error updating archetype:', error);
+      return false;
     }
   };
 
@@ -54,12 +91,40 @@ const PersistentChatInterface: React.FC = () => {
 
     setIsLoadingResponse(true);
 
-    // Simulate AI response (AC7)
+    // Add realistic delay for AI response
     await new Promise(resolve => setTimeout(resolve, Math.random() * 1000 + 1000)); // 1-2 seconds delay
+
+    let aiResponseText: string;
+
+    if (isOnboardingMode) {
+      // Use conversation manager for onboarding
+      const response = conversationManager.processUserInput(textToSend);
+      aiResponseText = response.message;
+
+      // Handle archetype persistence if needed
+      if (response.shouldPersistArchetype && conversationManager.getState().selectedArchetype) {
+        const success = await persistArchetype(conversationManager.getState().selectedArchetype!);
+        if (!success) {
+          aiResponseText = 'I had trouble saving your selection. Let me try again...';
+          // Could add retry logic here
+        } else {
+          // Update user state in auth store if needed
+          // This would require updating the auth store to refresh user data
+        }
+      }
+
+      // Check if onboarding is complete
+      if (conversationManager.isComplete()) {
+        setIsOnboardingMode(false);
+      }
+    } else {
+      // Regular chat mode - simple echo for now
+      aiResponseText = `AI Echo: "${textToSend}"`;
+    }
 
     const aiResponse: MessageObject = {
       id: uuidv4(),
-      text: `AI Echo: "${textToSend}"`, // Simple echo for now
+      text: aiResponseText,
       sender: 'ai',
       timestamp: new Date(),
       type: 'conversation',
@@ -106,6 +171,23 @@ const PersistentChatInterface: React.FC = () => {
       setGlobalNotificationHandler(() => {});
     };
   }, []);
+
+  // Check if user needs onboarding (no selected archetype)
+  useEffect(() => {
+    if (user && !user.selectedArchetype && chatHistory.length === 0) {
+      setIsOnboardingMode(true);
+      // Start onboarding conversation
+      const response = conversationManager.processUserInput('');
+      const aiMessage: MessageObject = {
+        id: uuidv4(),
+        text: response.message,
+        sender: 'ai',
+        timestamp: new Date(),
+        type: 'conversation',
+      };
+      setChatHistory([aiMessage]);
+    }
+  }, [user, chatHistory.length, conversationManager]);
 
   return (
     // AC12: z-index and pointer events for main container

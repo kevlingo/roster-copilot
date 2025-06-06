@@ -5,6 +5,8 @@ import {
   Matches,
   MaxLength,
   MinLength,
+  IsIn,
+  IsOptional,
 } from 'class-validator';
 
 // Password complexity: min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special char
@@ -114,4 +116,13 @@ export class ResetPasswordDto {
   @IsString()
   @IsNotEmpty()
   confirmNewPassword!: string;
+}
+
+export class UpdateArchetypeDto {
+  @IsString()
+  @IsNotEmpty()
+  @IsIn(['Eager Learner', 'Calculated Strategist', 'Bold Playmaker', 'Busy Optimizer'], {
+    message: 'Selected archetype must be one of: Eager Learner, Calculated Strategist, Bold Playmaker, Busy Optimizer',
+  })
+  selectedArchetype!: string;
 }

@@ -188,6 +188,17 @@ export async function updateUserPassword(userId: string, passwordHash: string): 
 }
 
 /**
+ * Updates a user's selected archetype.
+ * @param userId The ID of the user to update.
+ * @param selectedArchetype The new selected archetype.
+ * @returns A promise that resolves when the user is updated.
+ */
+export async function updateUserArchetype(userId: string, selectedArchetype: string): Promise<void> {
+  const sql = 'UPDATE UserProfiles SET selectedArchetype = ?, updatedAt = ? WHERE userId = ?';
+  await run(sql, [selectedArchetype, new Date().toISOString(), userId]);
+}
+
+/**
  * Creates a password reset token in the database.
  * @param tokenData Object containing userId, token, and expiresAt.
  * @returns A promise that resolves when the token is created.
