@@ -14,6 +14,12 @@ This index provides a central catalog of key project documents for Roster Copilo
 *   [**Epic 3: AI-Powered Draft Assistance MVP (Draft Day Co-Pilot)**](./epic-3.md) - Describes AI-driven guidance for the live draft.
 *   [**Epic 4: AI-Driven In-Season Strategic Guidance MVP**](./epic-4.md) - Outlines AI-powered strategic advice for in-season management.
 
+## 🤖 AI-Powered Conversational Intelligence
+
+*   [**AI-Powered Conversation Strategy**](./AI-Powered-Conversation-Strategy.md) - Strategic transformation to Gemini API-powered conversational intelligence
+*   [**Conversational Onboarding UX Specification**](./Conversational-Onboarding-UX-Spec.md) - Enhanced UX design for AI-powered conversations with Jake personality system
+*   [**Architecture Update Summary**](./Architecture-Update-Summary.md) - Complete summary of AI conversational intelligence architecture updates
+
 ## Architecture & Design
 
 *   [**System Architecture**](./Architecture.md) - Describes the overall system architecture for Roster Copilot.
@@ -65,8 +71,12 @@ This index provides a central catalog of key project documents for Roster Copilo
     *   [Story 1.0.2](./stories/1.0.2.story.md)
     *   [Story 1.0.3](./stories/1.0.3.story.md)
     *   [Story 1.1](./stories/1.1.story.md)
-    *   [Story 2.1](./stories/2.1.story.md)
-    *   [Story 2.1.4](./stories/2.1.4.story.md) - Enhanced Interactive Onboarding Experience
+    *   [Story 2.1](./stories/2.1.story.md) - Core Conversational Archetype Selection (COMPLETE)
+    *   [Story 2.1.4](./stories/2.1.4.story.md) - Enhanced Interactive Onboarding Experience (COMPLETE)
+    *   **🚀 NEW AI-Powered Stories:**
+    *   [Story 2.5](./stories/2.5.story.md) - Gemini API Conversational Intelligence Foundation
+    *   [Story 2.6](./stories/2.6.story.md) - AI-Powered Archetype Discovery
+    *   [Story 2.7](./stories/2.7.story.md) - Enhanced Conversational Questionnaire (Gemini-Powered)
     *   ... (and so on for all stories)
 
 ## Checklists

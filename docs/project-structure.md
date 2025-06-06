@@ -52,7 +52,13 @@ roster-copilot/
 │   │   └── nfl-games.json
 │   └── roster_copilot_poc.db    # SQLite database file
 ├── lib/                        # Shared utilities, constants, core backend logic
-│   ├── ai/                     # AI Copilot Service logic: prompt engineering, interaction with Gemini SDK, response processing
+│   ├── ai/                     # AI Copilot Service logic: Gemini API integration, Jake personality system, conversation intelligence
+│   │   ├── gemini-service.ts   # Centralized Gemini API integration service
+│   │   ├── jake-personality.ts # Jake's personality system and conversation intelligence
+│   │   └── conversation-manager.ts # AI-powered conversation flow and context management
+│   ├── conversation/           # Enhanced conversation management for AI-powered interactions
+│   │   ├── ai-conversation-manager.ts # AI conversation intelligence engine
+│   │   └── conversation-context.ts    # Conversation context optimization and management
 │   ├── dal/                    # Data Access Layer: SQLite interaction logic (using Provider Model), static data parsing functions
 │   ├── services/               # Other backend services (e.g., NotificationService for email)
 │   │   └── NotificationService.ts

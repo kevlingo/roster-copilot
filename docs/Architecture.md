@@ -200,17 +200,127 @@ roster-copilot/
 * **`public/`**: For static assets like images.
 * **`scripts/`**: For utility/developer scripts like database seeding.
 
+## AI-Powered Conversational Intelligence Architecture
+
+### Overview
+
+The Roster Copilot implements an advanced AI-powered conversational system using Google's Gemini API to create engaging, natural conversations that feel like chatting with a knowledgeable fantasy football enthusiast. This system replaces traditional keyword-matching approaches with dynamic, personality-driven conversation intelligence.
+
+### Core Components
+
+#### **1. Gemini API Integration Service**
+- **Location:** `src/lib/ai/gemini-service.ts`
+- **Purpose:** Centralized service for all Gemini API interactions
+- **Key Features:**
+  - API authentication and rate limiting
+  - Conversation context management
+  - Response streaming and optimization
+  - Error handling and fallback strategies
+
+#### **2. Jake Personality System**
+- **Location:** `src/lib/ai/jake-personality.ts`
+- **Purpose:** Defines Jake's personality, knowledge, and conversation intelligence
+- **Key Features:**
+  - Comprehensive system prompts for consistent personality
+  - Fantasy football expertise and terminology
+  - Personality adaptation based on user communication style
+  - Conversation guidelines and response patterns
+
+#### **3. Conversation Intelligence Engine**
+- **Location:** `src/lib/conversation/ai-conversation-manager.ts`
+- **Purpose:** Manages AI-powered conversation flow and context
+- **Key Features:**
+  - Dynamic conversation state management
+  - Context optimization for API efficiency
+  - Conversation history analysis and building
+  - Intelligent flow control and phase detection
+
+#### **4. Enhanced Chat Interface**
+- **Location:** `src/components/ai-chat/PersistentChatInterface.tsx` (Enhanced)
+- **Purpose:** UI component for AI-powered conversations
+- **Key Features:**
+  - Gemini API integration for dynamic responses
+  - Natural conversation timing and loading states
+  - Context-aware message handling
+  - Seamless onboarding and regular chat modes
+
+### Conversation Flow Architecture
+
+```mermaid
+graph TD
+    U[User Input] --> CI[Chat Interface]
+    CI --> CIE[Conversation Intelligence Engine]
+    CIE --> CH[Conversation History Analysis]
+    CIE --> CP[Context Preparation]
+    CP --> JPS[Jake Personality System]
+    JPS --> SP[System Prompt Generation]
+    SP --> GS[Gemini Service]
+    GS --> GA[Gemini API]
+    GA --> GR[AI Response]
+    GR --> RP[Response Processing]
+    RP --> CIE
+    CIE --> CI
+    CI --> UR[User Response Display]
+
+    CIE --> CS[Conversation State Update]
+    CS --> DB[(Conversation Storage)]
+```
+
+### System Prompt Architecture
+
+The AI conversation system uses sophisticated system prompts to maintain Jake's personality and conversation intelligence:
+
+#### **Jake's Core Personality Prompt**
+```
+You are Jake, an enthusiastic AI fantasy football copilot. You're knowledgeable, friendly, and genuinely excited about helping users succeed in fantasy football.
+
+PERSONALITY TRAITS:
+- Enthusiastic but not overwhelming
+- Knowledgeable without being condescending
+- Adaptable to user communication style
+- Celebrates user engagement and decisions
+- Uses fantasy football terminology naturally
+- Shows genuine excitement about the game
+```
+
+#### **Conversation Intelligence Guidelines**
+```
+RESPONSE GUIDELINES:
+- Read between the lines of user responses
+- Adapt your communication style to match theirs
+- If they're uncertain, ask clarifying questions that feel natural
+- If they show expertise, acknowledge it and build on it
+- If they seem new, be encouraging and supportive
+- Always maintain enthusiasm for fantasy football
+```
+
+### Performance & Optimization
+
+#### **Context Management**
+- **Conversation Summarization:** Long conversations summarized to manage token limits
+- **Relevant Context Selection:** Only relevant conversation parts sent to API
+- **Token Optimization:** Efficient prompt construction for cost control
+- **Response Caching:** Common conversation patterns cached for performance
+
+#### **API Efficiency**
+- **Rate Limiting:** Proper request throttling and queue management
+- **Response Streaming:** Real-time response display for better UX
+- **Error Recovery:** Graceful fallbacks maintaining conversation flow
+- **Performance Monitoring:** API usage tracking and optimization
+
 ## API Reference
 
 ### External APIs Consumed
 
 **#### Google Gemini AI Service API**
 
-* **Purpose:** To provide the core generative AI capabilities for the Roster Copilot's intelligent features.
+* **Purpose:** To provide the core generative AI capabilities for the Roster Copilot's intelligent features, with primary focus on AI-powered conversational onboarding intelligence.
 * **Base URL(s):** N/A (interaction via official Google AI SDK for Node.js/TypeScript).
 * **Authentication:** API Key (managed as a secure backend environment variable `GEMINI_API_KEY`).
-* **Key SDK Interactions (Conceptual for PoC):**
-    * **Onboarding Profile Analysis/Greeting Generation:** Gemini model invoked with user archetype/preferences for personalized onboarding elements.
+* **Key SDK Interactions (Enhanced for AI-Powered Conversations):**
+    * **Conversational Onboarding Intelligence (NEW - Stories 2.5-2.7):** Gemini model powers dynamic, personality-driven conversations for archetype discovery and preference gathering
+    * **Jake Personality System:** Comprehensive system prompts enable consistent AI personality adaptation and natural conversation flow
+    * **Context-Aware Response Generation:** Full conversation history sent to Gemini for natural references and conversation building
     * **Draft Pick Recommendation & Explanation:** Gemini model invoked with draft state, user profile, and player data for personalized draft advice.
     * **In-Season Advice Generation (Weekly Digest, Alerts, On-Demand Queries):** Gemini model invoked with user profile, weekly static NFL data, and specific advice type needed.
 

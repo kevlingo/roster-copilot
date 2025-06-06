@@ -4,11 +4,13 @@
 
 **#### Google Gemini AI Service API**
 
-* **Purpose:** To provide the core generative AI capabilities for the Roster Copilot's intelligent features.
+* **Purpose:** To provide the core generative AI capabilities for the Roster Copilot's intelligent features, with primary focus on AI-powered conversational onboarding intelligence.
 * **Base URL(s):** N/A (interaction via official Google AI SDK for Node.js/TypeScript).
 * **Authentication:** API Key (managed as a secure backend environment variable `GEMINI_API_KEY`).
-* **Key SDK Interactions (Conceptual for PoC):**
-    * **Onboarding Profile Analysis/Greeting Generation:** Gemini model invoked with user archetype/preferences for personalized onboarding elements.
+* **Key SDK Interactions (Enhanced for AI-Powered Conversations):**
+    * **Conversational Onboarding Intelligence (NEW - Stories 2.5-2.7):** Gemini model powers dynamic, personality-driven conversations for archetype discovery and preference gathering
+    * **Jake Personality System:** Comprehensive system prompts enable consistent AI personality adaptation and natural conversation flow
+    * **Context-Aware Response Generation:** Full conversation history sent to Gemini for natural references and conversation building
     * **Draft Pick Recommendation & Explanation:** Gemini model invoked with draft state, user profile, and player data for personalized draft advice.
     * **In-Season Advice Generation (Weekly Digest, Alerts, On-Demand Queries):** Gemini model invoked with user profile, weekly static NFL data, and specific advice type needed.
 

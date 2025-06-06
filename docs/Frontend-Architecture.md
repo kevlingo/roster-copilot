@@ -189,38 +189,42 @@ The conversational onboarding system represents a significant architectural patt
 
 #### **Core Architecture Principles**
 
-* **Chat-First Design:** All onboarding interactions occur through the existing `PersistentChatInterface.tsx` component
-* **Conversation State Management:** Dedicated state management for tracking onboarding progress, user selections, and conversation context
-* **Natural Language Processing:** Client-side processing for interpreting user responses in natural language format
-* **Progressive Enhancement:** Modular design allowing for express mode, voice-ready architecture, and cross-device continuity
+* **AI-Powered Chat Design:** All onboarding interactions occur through enhanced `PersistentChatInterface.tsx` with Gemini API integration
+* **Dynamic Conversation Intelligence:** AI-powered conversation state management with personality adaptation and context awareness
+* **Gemini API Integration:** Server-side AI processing for natural language understanding and dynamic response generation
+* **Jake Personality System:** Consistent AI personality with fantasy football expertise and adaptive communication style
 
 #### **Key Components & Patterns**
 
-**1. Conversation State Management**
+**1. AI Conversation State Management**
 ```typescript
-interface OnboardingConversationState {
-  currentPhase: 'greeting' | 'mode-selection' | 'archetype-selection' | 'questionnaire' | 'complete'
-  selectedMode: 'express' | 'full' | null
+interface AIConversationState {
+  conversationId: string
+  currentPhase: 'onboarding' | 'regular-chat' | 'complete'
+  conversationHistory: ConversationMessage[]
+  userPersonalityProfile: UserPersonalityProfile
   selectedArchetype: string | null
   questionnaireAnswers: Record<string, string>
-  conversationHistory: ConversationMessage[]
+  contextSummary?: string // For long conversations
 }
 ```
 
-**2. Response Processing Pattern**
+**2. Gemini API Integration Pattern**
 ```typescript
-interface ResponseProcessor {
-  processArchetypeSelection(userInput: string): ArchetypeSelectionResult
-  processQuestionnaireResponse(userInput: string, questionType: string): QuestionnaireResult
-  handleUnclearResponse(userInput: string, context: ConversationContext): ClarificationResponse
+interface GeminiConversationService {
+  generateResponse(userInput: string, conversationContext: ConversationContext): Promise<AIResponse>
+  buildSystemPrompt(userProfile: UserPersonalityProfile, conversationPhase: string): string
+  optimizeContext(conversationHistory: ConversationMessage[]): OptimizedContext
+  handleAPIError(error: GeminiAPIError): FallbackResponse
 }
 ```
 
-**3. Conversation Flow Control**
-* **Mode Selection:** Express vs. Full conversation mode routing
-* **Archetype Selection:** Natural language processing for archetype identification
-* **Questionnaire Flow:** Sequential question handling with confirmation patterns
-* **Error Recovery:** Graceful handling of unclear responses and technical failures
+**3. AI-Powered Conversation Flow Control**
+* **Dynamic Response Generation:** Gemini API powers all conversation responses with Jake's personality
+* **Intelligent Archetype Discovery:** Natural conversation analysis for archetype identification
+* **Adaptive Questionnaire Flow:** AI-driven question generation based on user responses and style
+* **Conversation Intelligence:** Context-aware responses with memory and personality adaptation
+* **Error Recovery:** AI-powered conversation repair maintaining Jake's personality
 
 #### **Integration Points**
 

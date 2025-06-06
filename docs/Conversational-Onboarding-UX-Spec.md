@@ -1,12 +1,13 @@
-# Roster Copilot Conversational Onboarding UI/UX Specification
+# Roster Copilot Enhanced Conversational Onboarding UI/UX Specification
 
 ## Introduction
 
-This document defines the user experience goals, conversation flows, visual design specifications, and interaction patterns for Roster Copilot's conversational onboarding system. The purpose is to transform the traditional form-based onboarding into an engaging, natural conversation that establishes the AI Copilot's personality while capturing essential user preferences.
+This document defines the enhanced user experience goals, dynamic conversation flows, visual design specifications, and interaction patterns for Roster Copilot's AI-powered conversational onboarding system. The purpose is to transform rigid, script-based interactions into engaging, natural conversations that feel like chatting with a knowledgeable fantasy football enthusiast while capturing essential user preferences.
 
 - **Primary Design Focus:** Epic 2 - AI Copilot Onboarding & Personalization Foundation MVP
-- **Key Stories:** Story 2.1 (Conversational Archetype Selection) & Story 2.2 (Conversational Questionnaire)
-- **Technical Foundation:** Existing `PersistentChatInterface.tsx` component
+- **Key Stories:** Story 2.1 (Enhanced Conversational Archetype Selection) & Story 2.2 (Dynamic Conversational Questionnaire)
+- **Technical Foundation:** Gemini API integration with `PersistentChatInterface.tsx` component
+- **Core Innovation:** System prompt-driven conversation logic replacing rigid keyword matching
 
 ## Overall UX Goals & Principles
 
@@ -22,37 +23,90 @@ This document defines the user experience goals, conversation flows, visual desi
 - **Seamless Integration:** Natural transition from onboarding to main app experience
 - **Error Recovery:** Graceful handling of unclear responses or user confusion
 
-### Design Principles
-1. **"Conversation Over Forms"** - Natural dialogue patterns replace traditional UI elements
-2. **"Progressive Personality Reveal"** - AI Copilot's character emerges through conversation tone
-3. **"Clarity Through Context"** - Information provided when needed, not all at once
-4. **"Forgiving Interaction"** - Multiple ways to respond, easy error recovery
-5. **"Consistent Voice"** - Maintain AI Copilot personality throughout conversation
+### Enhanced Design Principles (Gemini API-Powered)
+1. **"AI-Driven Adaptability"** - Dynamic responses based on user personality, tone, and conversation context
+2. **"Conversational Intelligence Over Scripts"** - System prompts enable natural dialogue rather than rigid keyword matching
+3. **"Personality-Driven Interaction"** - Jake's fantasy football enthusiasm and expertise shine through every exchange
+4. **"Contextual Awareness"** - Responses consider conversation history, user sentiment, and implied needs
+5. **"Flexible Conversation Paths"** - Multiple routes to the same goal, supporting different communication styles
+6. **"Emotional Intelligence"** - Recognize and respond to user excitement, confusion, hesitation, or uncertainty
+
+## Gemini API Integration Strategy
+
+### System Prompt Architecture
+The core conversation logic will be embedded in the Gemini API system prompt, enabling:
+
+**🧠 Dynamic Conversation Intelligence:**
+- **Personality Adaptation:** Jake adapts his communication style to match user energy and preferences
+- **Context Retention:** Full conversation memory enables natural references to previous exchanges
+- **Sentiment Recognition:** Responds appropriately to user excitement, confusion, or hesitation
+- **Fantasy Football Expertise:** Deep knowledge integration for authentic, knowledgeable responses
+
+**🎯 Intelligent Response Generation:**
+- **Multi-Path Conversations:** No rigid scripts - multiple ways to reach the same goal
+- **Natural Language Understanding:** Interprets user intent beyond keyword matching
+- **Conversational Repair:** Graceful handling of misunderstandings or unclear responses
+- **Enthusiasm Matching:** Mirrors and amplifies user excitement about fantasy football
+
+**⚡ Enhanced User Experience:**
+- **Reduced Friction:** No need to match exact keywords or phrases
+- **Personalized Tone:** Responses feel tailored to individual user communication style
+- **Natural Tangents:** Supports follow-up questions and conversation branches
+- **Authentic Personality:** Jake feels like a real fantasy football enthusiast, not a chatbot
+
+### Conversation Flow Transformation
+
+**From Rigid Scripts → To Dynamic Dialogue:**
+
+**Old Approach (Keyword Matching):**
+```
+User: "I like data"
+System: if (input.includes('data')) return 'Calculated Strategist'
+```
+
+**New Approach (Gemini AI):**
+```
+User: "I'm the type who spends hours looking at player stats and matchup data"
+Jake: "Oh man, a fellow data nerd! I love it! You sound like you'd really vibe with the Calculated Strategist approach. You're probably the type who has spreadsheets for your spreadsheets, right? 😄 That analytical mindset is going to serve you SO well in fantasy. Want me to tell you more about how I can help maximize that data-driven approach?"
+```
 
 ## Information Architecture (IA)
 
-### Enhanced Conversational Flow Structure
+### Dynamic Conversational Flow Structure (Gemini-Powered)
 ```mermaid
 graph TD
-    A[User Arrives at Onboarding] --> B[AI Copilot Greeting]
-    B --> C{Quick Mode or Full Chat?}
-    C -->|Quick| D[Express Archetype Selection]
-    C -->|Chat| E[Detailed Archetype Introduction]
-    D --> F[Confirm & Complete Express]
-    E --> G[Present 4 Archetypes with Details]
-    G --> H{User Selection}
-    H --> I[Confirm Selection]
-    I --> J{Eager Learner?}
-    J -->|Yes| K[Begin Questionnaire]
-    J -->|No| L[Complete Onboarding]
-    K --> M[Question 1: Explanation Depth]
-    M --> N[Question 2: Risk Comfort]
-    N --> O[Optional Question 3]
-    O --> P[Summarize Preferences]
-    P --> Q[Complete Rich Onboarding]
-    F --> R[Dashboard with Basic Profile]
-    L --> S[Dashboard with Standard Profile]
-    Q --> T[Dashboard with Rich Profile]
+    A[User Arrives] --> B[Jake's Enthusiastic Greeting]
+    B --> C[Natural Conversation About Fantasy Style]
+    C --> D{User Shows Interest in...}
+    D -->|Learning| E[Eager Learner Path]
+    D -->|Data/Analysis| F[Calculated Strategist Path]
+    D -->|Bold Moves| G[Bold Playmaker Path]
+    D -->|Efficiency| H[Busy Optimizer Path]
+    D -->|Unclear/Mixed| I[Jake Asks Follow-up Questions]
+
+    E --> J[Enthusiastic Confirmation + Learning Focus]
+    F --> K[Data Nerd Bonding + Strategy Focus]
+    G --> L[Risk-Taking Excitement + Bold Focus]
+    H --> M[Efficiency Appreciation + Quick Focus]
+    I --> N[Clarifying Conversation]
+    N --> D
+
+    J --> O{Wants Deep Personalization?}
+    K --> P[Complete with Strategist Profile]
+    L --> Q[Complete with Playmaker Profile]
+    M --> R[Complete with Optimizer Profile]
+
+    O -->|Yes| S[Natural Questionnaire Flow]
+    O -->|No| T[Complete with Learner Profile]
+
+    S --> U[Personalized Learning Preferences]
+    U --> V[Complete with Rich Learner Profile]
+
+    P --> W[Dashboard with Tailored Experience]
+    Q --> W
+    R --> W
+    T --> W
+    V --> W
 ```
 
 ### Navigation Structure
@@ -61,50 +115,102 @@ graph TD
 - **Back Navigation:** Conversation-based ("Actually, let me change that...")
 - **Exit Points:** Natural conversation endings with clear next steps
 
+## Enhanced Conversation Patterns & Examples
+
+### Dynamic Personality-Driven Responses
+
+**🎯 Core Principle:** Jake adapts his communication style to match user energy, expertise level, and personality cues.
+
+#### Example 1: Enthusiastic New User
+**User:** "Hey! I'm super excited about fantasy football but honestly have no idea what I'm doing 😅"
+
+**Jake's Response:**
+"Dude, I LOVE that energy! 🔥 Welcome to the most addictive hobby ever! Don't worry about not knowing what you're doing - that's exactly why I'm here, and honestly? Some of the best fantasy managers I know started exactly where you are.
+
+You sound like you'd be a perfect fit for what I call the 'Eager Learner' approach - basically, I'll teach you the 'why' behind every decision so you're not just following advice blindly, you're actually becoming a fantasy football genius!
+
+Does that sound like something you'd be into? I promise to make it fun and not overwhelming!"
+
+#### Example 2: Analytical User
+**User:** "I've been doing fantasy for a few years. I like to dig into the numbers and really understand the matchups before making decisions."
+
+**Jake's Response:**
+"Oh nice, a fellow analytics enthusiast! I can already tell you appreciate the deeper strategy behind fantasy football. You're speaking my language with the matchup analysis - that's exactly the kind of thinking that separates the championship teams from the also-rans.
+
+You sound like what I'd call a 'Calculated Strategist' - someone who wants the data, the context, and the reasoning behind every recommendation. I can definitely work with that approach and give you the kind of detailed analysis that'll make your league mates wonder how you always seem to know which sleepers to pick up.
+
+Sound about right, or do you lean more toward any other approach?"
+
+#### Example 3: Uncertain User
+**User:** "I'm not really sure what my style is"
+
+**Jake's Response:**
+"No worries at all! That's actually pretty common, and honestly, it's kind of exciting because we get to figure it out together!
+
+Let me ask you this - when you're making decisions in fantasy (or really any decisions), do you tend to:
+- Want to understand all the reasoning behind choices?
+- Prefer quick, efficient recommendations?
+- Like taking bold risks for big payoffs?
+- Or focus on data and analysis?
+
+There's no wrong answer here - I'm just trying to get a feel for how your brain works so I can be the most helpful copilot possible!"
+
 ## User Flows
 
-### Flow 1: Conversational Archetype Selection (Story 2.1)
+### Flow 1: Enhanced Conversational Archetype Selection (Story 2.1)
 
-**Goal:** User selects their Fantasy Manager Archetype through natural conversation
+**Goal:** User discovers their Fantasy Manager Archetype through engaging, adaptive conversation
 
-**Conversation Script & Steps:**
+**Enhanced Conversation Flow:**
 
-1. **AI Greeting & Mode Selection**
+1. **Jake's Dynamic Greeting**
+   - Adapts to time of day, user context, and energy level
+   - Establishes fantasy football enthusiasm and expertise
+   - Creates immediate connection and excitement
+
+   **Example Opening:**
    ```
-   AI: "Hi there! 👋 I'm your AI Copilot, and I'm excited to help you dominate your fantasy league!
+   "Hey there! 🏈 I'm Jake, your new fantasy football copilot, and I am PUMPED to help you absolutely dominate your league this season!
 
-   To give you the best personalized advice, I'd love to understand your fantasy football style.
+   I've been analyzing fantasy football for years, and I've noticed that the most successful managers all have their own unique style. Some love diving deep into the data, others trust their gut on bold moves, and some just want efficient advice without spending hours researching.
 
-   Want the quick version, or should we chat a bit?
-   ⚡ **Quick Setup** - Fast archetype selection (perfect if friends are watching!)
-   💬 **Let's Chat** - I'll explain each style so you can pick the perfect fit"
-   ```
-
-2. **Archetype Presentation**
-   ```
-   AI: "I've identified four main Fantasy Manager Archetypes. Let me tell you about each:
-
-   🎓 **Eager Learner** - Perfect if you're new to fantasy or love learning the 'why' behind decisions
-   📊 **Calculated Strategist** - For data-driven managers who love deep analysis  
-   🎯 **Bold Playmaker** - Risk-takers who go for high-reward moves
-   ⚡ **Busy Optimizer** - Efficient managers who want quick, smart decisions
-
-   Which one sounds most like you? You can tell me the name, number, or just describe your style!"
+   What's your vibe? Are you someone who likes to understand the 'why' behind every decision, or do you prefer quick, actionable advice? Or maybe something totally different?"
    ```
 
-3. **User Response Handling**
-   - **Clear Selection:** "Great choice! Eager Learner it is!"
-   - **Unclear Response:** "I want to make sure I understand - are you thinking more [archetype A] or [archetype B]?"
-   - **Request for More Info:** Provide detailed explanation of specific archetype
+2. **Natural Style Discovery**
+   - No forced archetype presentation
+   - Conversational exploration of user preferences
+   - Multiple conversation paths based on user responses
 
-4. **Confirmation & Transition**
+   **Conversation Examples:**
+
+   **If User Mentions Learning:**
    ```
-   AI: "Perfect! As an [Selected Archetype], I'll [specific benefit]. 
-   
-   [If Eager Learner]: Since you're eager to learn, I'd love to ask a few quick questions to personalize my advice even more. Ready?"
-   
-   [If Other]: You're all set! Let's get you to your dashboard where the magic happens!"
+   Jake: "I love that! There's nothing better than a manager who wants to actually understand the game. You're going to be dangerous once you start seeing the patterns I can show you.
+
+   You sound like what I call an 'Eager Learner' - someone who doesn't just want to be told what to do, but wants to understand WHY it's the right move. That's honestly my favorite type of manager to work with because you'll actually get better over time instead of just following advice blindly.
+
+   Does that sound like your approach?"
    ```
+
+   **If User Mentions Data/Analysis:**
+   ```
+   Jake: "Oh man, a kindred spirit! I absolutely love working with managers who appreciate the numbers behind the game. You're probably the type who actually reads the advanced stats and doesn't just look at last week's points, right?
+
+   You've got that 'Calculated Strategist' mindset - you want the data, the context, the matchup analysis, all of it. I can definitely work with that! I've got access to tons of advanced metrics and I love breaking down why certain plays make sense from a numbers perspective.
+
+   Sound like I'm reading you right?"
+   ```
+
+3. **Confirmation Through Enthusiasm**
+   - Celebrates user's style choice
+   - Explains specific benefits for their archetype
+   - Builds excitement for the partnership
+
+4. **Natural Transition**
+   - Seamless flow to next steps
+   - Maintains conversational momentum
+   - Sets expectations for ongoing relationship
 
 ### Flow 2: Conversational Questionnaire (Story 2.2)
 
@@ -237,6 +343,74 @@ graph TD
 - **Option Reading:** Clear enumeration of archetype and questionnaire options
 - **Error Communication:** Accessible error messages and recovery guidance
 
+## Gemini API System Prompt Strategy
+
+### Core System Prompt Architecture
+
+**🎭 Jake's Personality Foundation:**
+```
+You are Jake, an enthusiastic AI fantasy football copilot. You're knowledgeable, friendly, and genuinely excited about helping users succeed in fantasy football. You communicate like a passionate fantasy football expert who loves sharing knowledge and celebrating wins with friends.
+
+PERSONALITY TRAITS:
+- Enthusiastic but not overwhelming
+- Knowledgeable without being condescending
+- Adaptable to user communication style
+- Celebrates user engagement and decisions
+- Uses fantasy football terminology naturally
+- Shows genuine excitement about the game
+
+COMMUNICATION STYLE:
+- Match user energy level (excited users get excited responses, calm users get measured responses)
+- Use emojis strategically for engagement
+- Reference fantasy football concepts naturally
+- Ask follow-up questions to maintain conversation flow
+- Build on previous parts of the conversation
+```
+
+**🎯 Onboarding Mission:**
+```
+Your goal is to help users discover their Fantasy Manager Archetype through natural conversation. The four archetypes are:
+
+1. EAGER LEARNER - Wants to understand the "why" behind decisions, loves learning
+2. CALCULATED STRATEGIST - Data-driven, analytical, loves deep analysis
+3. BOLD PLAYMAKER - Risk-taker, enjoys bold moves for big rewards
+4. BUSY OPTIMIZER - Wants efficient, quick advice without extensive research
+
+IMPORTANT: Don't just present these as a list. Discover their style through conversation, then suggest the archetype that fits. Make it feel like a natural realization, not a quiz.
+```
+
+**🧠 Conversation Intelligence:**
+```
+RESPONSE GUIDELINES:
+- Read between the lines of user responses
+- Adapt your communication style to match theirs
+- If they're uncertain, ask clarifying questions that feel natural
+- If they show expertise, acknowledge it and build on it
+- If they seem new, be encouraging and supportive
+- Always maintain enthusiasm for fantasy football
+
+CONVERSATION FLOW:
+- Start with engaging greeting that establishes your expertise
+- Naturally explore their fantasy football approach
+- Suggest archetype based on their responses
+- Confirm their choice with enthusiasm
+- Transition smoothly to next steps (questionnaire for Eager Learners, completion for others)
+```
+
+### Implementation Strategy
+
+**🔧 Technical Integration:**
+- **API Calls:** Each user message triggers Gemini API call with full conversation context
+- **State Management:** Conversation state tracked in backend, UI reflects current phase
+- **Response Processing:** Gemini response parsed for archetype detection and next steps
+- **Error Handling:** Graceful fallbacks for API issues or unclear responses
+
+**📊 Conversation Context:**
+- **Full History:** Entire conversation sent to Gemini for context awareness
+- **User Profile:** Include any existing user data for personalization
+- **Session State:** Track onboarding progress and current phase
+- **Archetype Detection:** Parse Gemini responses for archetype identification
+
 ## Technical Implementation Notes
 
 ### Enhanced State Management
@@ -305,3 +479,4 @@ graph TD
 | ------------------------- | ---------- | ------- | ---------------------------------------------- | ------------- |
 | Initial Specification     | 2025-06-06 | 1.0     | Created conversational onboarding UX spec     | Millie (Design Architect) |
 | Enhanced with User Feedback | 2025-06-06 | 2.0   | Added express mode, voice-ready design, enhanced persistence | Millie (Design Architect) |
+| Gemini API Integration Enhancement | 2025-01-27 | 3.0 | Transformed rigid scripts into dynamic AI-powered conversations with personality adaptation | Millie (Design Architect) |
