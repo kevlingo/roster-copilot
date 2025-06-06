@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import PlayerProfileModal from '@/src/components/player/PlayerProfileModal';
 
 // Types for the roster data from API
 interface RosterPlayer {
@@ -50,6 +51,8 @@ export default function RosterPage({ params }: PageProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [droppingPlayer, setDroppingPlayer] = useState<string | null>(null);
+  const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Fetch roster data from API
   useEffect(() => {
@@ -96,6 +99,12 @@ export default function RosterPage({ params }: PageProps) {
       default:
         return 'badge-neutral';
     }
+  };
+
+  // Handle opening player profile modal
+  const handlePlayerNameClick = (playerId: string) => {
+    setSelectedPlayerId(playerId);
+    setIsModalOpen(true);
   };
 
   // Handle dropping a player
@@ -291,7 +300,13 @@ export default function RosterPage({ params }: PageProps) {
                         {players.map((player) => (
                           <tr key={player.playerId}>
                             <td>
-                              <div className="font-semibold">{player.fullName}</div>
+                              <button
+                                onClick={() => handlePlayerNameClick(player.playerId)}
+                                className="font-semibold text-left hover:text-primary transition-colors cursor-pointer"
+                                title="View player details"
+                              >
+                                {player.fullName}
+                              </button>
                               <div className="text-sm text-base-content/70">{player.position}</div>
                             </td>
                             <td>
@@ -344,6 +359,13 @@ export default function RosterPage({ params }: PageProps) {
           </div>
         </div>
       )}
+
+      {/* Player Profile Modal */}
+      <PlayerProfileModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        playerId={selectedPlayerId}
+      />
     </div>
   );
 }
