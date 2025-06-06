@@ -56,10 +56,19 @@ export default function LoginPage() {
         setError(data.message || 'Login failed. Please try again.');
       } else {
         // Login successful
-        
+
         loginToStore(data.user, data.token); // Subtask 2.6
-        // Subtask 2.7: Redirect to dashboard
-        router.push('/dashboard');
+
+        // Check for stored redirect URL
+        const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
+        if (redirectUrl) {
+          // Clear the stored URL and redirect to it
+          sessionStorage.removeItem('redirectAfterLogin');
+          router.push(redirectUrl);
+        } else {
+          // Default redirect to dashboard
+          router.push('/dashboard');
+        }
       }
     } catch (networkError) {
       console.error('Login API call failed:', networkError);

@@ -27,6 +27,12 @@ export default function AuthGuard({ children, fallback }: AuthGuardProps) {
     // Check authentication status after potential restoration
     if (!isAuthenticated || !token) {
       console.log('[AuthGuard] User not authenticated, redirecting to login');
+
+      // Store the current URL as the intended destination
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('redirectAfterLogin', window.location.pathname + window.location.search);
+      }
+
       router.push('/login');
       return;
     }
