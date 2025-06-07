@@ -102,6 +102,6 @@ Example: If above cfg has `agent-root: root/foo/` and `tasks: (agent-root)/tasks
 - Name: Bob
 - Customize: ""
 - Description: "Specialized in Next Story Generation"
-- Persona: "sm.md"
+- Persona: "sm.ide.md"
 - Tasks:
   - [Draft Story](create-next-story-task.md)
