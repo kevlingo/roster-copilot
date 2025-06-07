@@ -1,4 +1,4 @@
-# Story Analysis Sprint 2: Epic 2 Core Stories
+# Story Analysis Sprint 2A: Story 2.4 - Trade Management System
 
 ## Status: Not Started
 
@@ -6,41 +6,27 @@
 
 ## Story
 
-As a development team, I want complete systematic analysis with 2025 best practices for Epic 2 core user stories (2.4, 2.5, 2.6, 2.7, 2.1.1) so that all Epic 2 core stories have comprehensive technical guidance, testing strategies, and modern implementation patterns for advanced league management features.
+As a development team, I want complete systematic analysis with 2025 best practices for Story 2.4 (Trade Management System) so that this advanced workflow feature has comprehensive technical guidance, testing strategies, and modern implementation patterns for efficient development.
 
-## Acceptance Criteria (7 Tasks)
+## Acceptance Criteria (8 Tasks)
 
-1. **Technical Analysis**: Story content is analyzed and technical requirements are extracted for all 5 Epic 2 core stories.
-2. **Research Phase**: 2025 best practices are researched using Perplexity for each story's specific tech stack and implementation patterns.
-3. **Technical Guidance**: Comprehensive technical guidance sections are created for all stories with modern frameworks and patterns.
-4. **Implementation References**: Current implementation references are added with modern tooling and 2025 standards.
-5. **Testing Strategy**: Focused testing strategy sections are created for all stories with practical examples and best practices.
-6. **Documentation Updates**: Changelogs are updated for all 5 stories with enhancement entries dated 2025-06-07.
-7. **Quality Validation**: All updated stories are validated for integration, formatting, and completeness following established patterns.
+1. **Technical Analysis**: Story 2.4 content is analyzed and technical requirements are extracted for trade management workflows and approval systems.
+2. **Research Phase**: 2025 best practices are researched using Perplexity for workflow management, state machines, and approval process patterns.
+3. **Technical Guidance**: Comprehensive technical guidance section is created with modern workflow frameworks and approval patterns.
+4. **Implementation References**: Current implementation references are added with modern workflow tooling and 2025 approval standards.
+5. **Testing Strategy**: Focused testing strategy section is created with practical workflow testing examples and approval process best practices.
+6. **Documentation Updates**: Changelog is updated for Story 2.4 with enhancement entry dated 2025-06-07.
+7. **Quality Validation**: Updated story is validated for integration, formatting, and completeness following established patterns.
+8. **Story Completion**: Story 2.4 is marked as analysis-complete and ready for development implementation.
 
-## Stories in This Sprint
+## Target Story
 
-### Epic 2 - Advanced League Management & Commissioner Tools (Core)
+### Epic 2 - Advanced League Management & Commissioner Tools
 
-1. **Story 2.4 - Trade Management System**
-   - Brief: Comprehensive trade proposal, negotiation, and approval system
-   - Tech Stack: Complex workflows, multi-party interactions, approval processes
-
-2. **Story 2.5 - Waiver Wire & Free Agency**
-   - Brief: Waiver wire claims, free agent pickups, and priority management
-   - Tech Stack: Priority queues, time-based processing, conflict resolution
-
-3. **Story 2.6 - League Communication Tools**
-   - Brief: In-league messaging, announcements, and communication features
-   - Tech Stack: Real-time messaging, notification systems, moderation tools
-
-4. **Story 2.7 - Advanced Analytics Dashboard**
-   - Brief: Comprehensive analytics and insights for league performance
-   - Tech Stack: Data visualization, statistical analysis, dashboard design
-
-5. **Story 2.1.1 - Custom Scoring Rules Engine**
-   - Brief: Flexible scoring system with custom rules and calculations
-   - Tech Stack: Rule engines, mathematical calculations, configuration management
+**Story 2.4 - Trade Management System**
+- Brief: Comprehensive trade proposal, negotiation, and approval system
+- Tech Stack: Complex workflows, multi-party interactions, approval processes
+- Focus Areas: State machine patterns, workflow orchestration, multi-party approval systems, conflict resolution
 
 ## Methodology
 

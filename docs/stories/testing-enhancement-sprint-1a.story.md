@@ -1,4 +1,4 @@
-# Testing Enhancement Sprint 1: Epic 1 Completion
+# Testing Enhancement Sprint 1A: Story 1.9 - Team Roster Testing
 
 ## Status: Not Started
 
@@ -6,39 +6,24 @@
 
 ## Story
 
-As a development team, I want focused testing patterns added to Epic 1 user stories (1.8, 1.9, 1.11, 1.12, 1.13) so that coding agents can implement robust tests without getting stuck in testing loops and Epic 1 can be completed with comprehensive test coverage.
+As a development team, I want focused testing patterns added to Story 1.9 (Team Roster) so that coding agents can implement robust drag-drop and transaction tests without getting stuck in testing loops and this story can be completed with comprehensive test coverage.
 
-## Acceptance Criteria (5 Tasks)
+## Acceptance Criteria (6 Tasks)
 
-1. **Research Phase**: Current 2025 testing best practices are researched for each story's specific tech stack (WebSocket real-time, drag-drop UI, data aggregation, statistical analysis, algorithm testing).
-2. **Pain Point Analysis**: Common coding agent testing pain points are identified and documented for each story's unique technical challenges.
-3. **Focused Testing Creation**: Comprehensive testing sections (~100-150 lines each) are created for all 5 stories with practical TypeScript examples and 2025 best practices.
-4. **Documentation Updates**: Changelogs are updated for all 5 stories with testing enhancement entries dated 2025-06-07.
-5. **Quality Validation**: All updated stories are validated for proper integration, formatting, and testing section placement before "Current Implementation References".
+1. **Research Phase**: Current 2025 testing best practices are researched for drag-drop UI, player transactions, and database constraints.
+2. **Pain Point Analysis**: Common coding agent testing pain points are identified and documented for drag-drop and transaction testing challenges.
+3. **Focused Testing Creation**: Comprehensive testing section (~100-150 lines) is created with practical TypeScript examples and 2025 best practices.
+4. **Documentation Updates**: Changelog is updated for Story 1.9 with testing enhancement entry dated 2025-06-07.
+5. **Quality Validation**: Updated story is validated for proper integration, formatting, and testing section placement before "Current Implementation References".
+6. **Testing Completion**: Story 1.9 testing enhancement is marked complete and ready for development implementation.
 
-## Stories in This Sprint
+## Target Story
 
 ### Epic 1 - Core Platform Foundation & League Engagement MVP
 
-1. **Story 1.8 - Live Draft Room** 
-   - Tech Stack: WebSocket real-time updates, snake draft algorithms, state synchronization, concurrent user handling
-   - Status: ✅ Already has comprehensive testing strategy
-
-2. **Story 1.9 - Team Roster**
-   - Tech Stack: Drag-drop UI, player transactions, database constraints, roster management
-   - Focus: React DnD testing, transaction rollback, constraint validation
-
-3. **Story 1.11 - Add/Drop Players**
-   - Tech Stack: Data aggregation, real-time updates, responsive design, player availability
-   - Focus: API integration testing, real-time sync, responsive UI testing
-
-4. **Story 1.12 - Fantasy Scores**
-   - Tech Stack: Head-to-head comparisons, statistical analysis, responsive layouts, score calculations
-   - Focus: Algorithm testing, statistical accuracy, performance testing
-
-5. **Story 1.13 - League Standings**
-   - Tech Stack: Algorithm testing, table testing patterns, sorting/filtering, data visualization
-   - Focus: Algorithm correctness, table component testing, data integrity
+**Story 1.9 - Team Roster**
+- Tech Stack: Drag-drop UI, player transactions, database constraints, roster management
+- Focus Areas: React DnD testing, transaction rollback testing, constraint validation, accessibility testing
 
 ## Tasks / Subtasks
 
