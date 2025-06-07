@@ -2,8 +2,14 @@
 
 ## Introduction
 
-This document defines the user experience goals, information architecture, user flows, and visual design specifications for the Roster Copilot project's user interface.
+This document defines the user experience goals, information architecture, user flows, and visual design specifications for the Roster Copilot project's user interface within the BMAD methodology framework.
 
+### Key Reference Documents
+
+- **Product Requirements Document:** `docs/Prd.md`
+- **Architecture Document:** `docs/Architecture.md`
+- **Frontend Architecture Document:** `docs/Frontend-Architecture.md`
+- **Technical Preferences:** `bmad-agent/data/technical-preferences.md`
 - **Link to Primary Design Files:** {Placeholder for Figma Design File Link}
 - **Link to Deployed Storybook / Design System:** {URL, if applicable}
 
@@ -165,9 +171,8 @@ Key layouts and the AI Copilot panel/overlay will adapt gracefully to these view
 
 ## Change Log
 
-| Change                                           | Date       | Version | Description                                                                                                | Author      |
-| :----------------------------------------------- | :--------- | :------ | :--------------------------------------------------------------------------------------------------------- | :---------- |
-| Initial UI/UX Specification Draft for PoC Created | 2025-05-30 | 0.1     | First complete draft based on user collaboration.                                                          | Jane (DA)   |
-| Archetype Clarification Update                   | 2025-05-31 | 0.2     | Updated "Eager Learner" persona description and onboarding user flow to reflect consolidation of beginner archetypes. | Sarah (PO)  |
-
----
+| Change | Date | Version | Description | Author |
+| ------ | ---- | ------- | ----------- | ------ |
+| Initial UI/UX Specification Draft for PoC Created | 2025-05-30 | 0.1 | First complete draft based on user collaboration | Jane (DA) |
+| Archetype Clarification Update | 2025-05-31 | 0.2 | Updated "Eager Learner" persona description and onboarding user flow to reflect consolidation of beginner archetypes | Sarah (PO) |
+| **BMAD Template Format Update** | 2025-06-06 | 2.0 | **Updated UI/UX Specification to BMAD template format with enhanced introduction and reference documentation** | **BMAD PO Agent** |

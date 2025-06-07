@@ -7,12 +7,12 @@ This index provides a central catalog of key project documents for Roster Copilo
 *   [**Product Requirements Document (PRD)**](./Prd.md) - Outlines the goals, features, and requirements for Roster Copilot.
 *   [**Project Brief**](./Project_Brief.md) - Provides a high-level overview and initial concept for the Roster Copilot project.
 
-## Epics (from PRD)
+## Epics (from PRD) - BMAD Updated
 
-*   [**Epic 1: Core Platform Foundation & League Engagement MVP**](./epic-1.md) - Details the foundational non-AI functionalities.
-*   [**Epic 2: AI Copilot Onboarding & Personalization Foundation MVP**](./epic-2.md) - Covers the AI onboarding and user preference profile system.
-*   [**Epic 3: AI-Powered Draft Assistance MVP (Draft Day Co-Pilot)**](./epic-3.md) - Describes AI-driven guidance for the live draft.
-*   [**Epic 4: AI-Driven In-Season Strategic Guidance MVP**](./epic-4.md) - Outlines AI-powered strategic advice for in-season management.
+*   [**Epic 1: Core Platform Foundation & League Engagement MVP**](./epic-1.md) - Details the foundational non-AI functionalities (Updated 2025-06-06).
+*   [**Epic 2: AI Copilot Onboarding & Personalization Foundation MVP**](./epic-2.md) - Covers the AI onboarding and user preference profile system (Updated 2025-06-06).
+*   [**Epic 3: AI-Powered Draft Assistance MVP (Draft Day Co-Pilot)**](./epic-3.md) - Describes AI-driven guidance for the live draft (Updated 2025-06-06).
+*   [**Epic 4: AI-Driven In-Season Strategic Guidance MVP**](./epic-4.md) - Outlines AI-powered strategic advice for in-season management (Updated 2025-06-06).
 
 ## 🤖 AI-Powered Conversational Intelligence
 
@@ -27,18 +27,18 @@ This index provides a central catalog of key project documents for Roster Copilo
 *   [**AI Chat Interface Design - Frontend Architecture**](./AI_Chat_Interface_Design_Frontend_Architecture.md) - Specific frontend architecture for the AI Chat interface.
 *   [**UI/UX Specification**](./UIUX_Spec.md) - Defines the user interface and user experience specifications.
 
-### Sharded Architecture Documents
+### Sharded Architecture Documents - BMAD Updated
 
-*   [**API Reference**](./api-reference.md) - Details on external and internal APIs.
+*   [**API Reference**](./api-reference.md) - Details on external and internal APIs (Updated 2025-06-06).
 *   [**Component View**](./component-view.md) - Describes system components and adopted design patterns.
-*   [**Data Models**](./data-models.md) - Defines core application entities, API payloads, and database schemas.
+*   [**Data Models**](./data-models.md) - Defines core application entities, API payloads, and database schemas (Current).
 *   [**Environment Variables**](./environment-vars.md) - Documentation for key environment variables.
 *   [**Infrastructure and Deployment Overview**](./infra-deployment.md) - Overview of the PoC infrastructure and deployment strategy.
 *   [**Key Reference Documents**](./key-references.md) - Lists key documents that informed the architecture.
 *   [**Operational Guidelines**](./operational-guidelines.md) - Consolidated guidelines for coding, testing, error handling, and security.
 *   [**Project Structure**](./project-structure.md) - Outlines the project's directory and file structure.
 *   [**Sequence Diagrams**](./sequence-diagrams.md) - Illustrates core system workflows.
-*   [**Technology Stack**](./tech-stack.md) - Lists the definitive technology selections for the project.
+*   [**Technology Stack**](./tech-stack.md) - Lists the definitive technology selections for the project (Current).
 
 #### Frontend Specific Granules
 *   [**Frontend API Interaction**](./front-end-api-interaction.md) - How the frontend interacts with backend APIs.

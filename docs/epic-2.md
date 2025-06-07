@@ -1,27 +1,23 @@
 # Epic 2: AI Copilot Onboarding & Personalization Foundation MVP
 
-* **Goal:** To implement an AI-powered conversational onboarding system using Gemini API that creates engaging, natural conversations for capturing user preferences and establishing a foundational User Preference Profile through dynamic personality-driven interactions.
+Implement the initial AI Copilot onboarding process through a conversational chat interface, allowing the system to capture core user preferences and establish a foundational User Preference Profile that will drive personalized AI advice.
 
-* **High-Level User Story Titles / Objectives:**
+## User Stories
 
-## ✅ **Completed Foundation Stories:**
-    * Story 2.1: Basic Conversational Fantasy Manager Archetype Selection - **COMPLETE**
-    * Story 2.1.1: Express Mode Archetype Selection - **COMPLETE**
-    * Story 2.1.4: Enhanced Interactive Onboarding Experience - **COMPLETE**
+### Story 2.1: Conversational Fantasy Manager Archetype Selection
 
-## 🚀 **NEW: AI-Powered Conversational Intelligence (High Priority):**
-    * **Story 2.5: Gemini API Conversational Intelligence Foundation** - Replace keyword matching with AI-powered conversations
-    * **Story 2.6: AI-Powered Archetype Discovery** - Natural conversation-based archetype discovery instead of list selection
-    * **Story 2.7: Enhanced Conversational Questionnaire (Gemini-Powered)** - Intelligent, adaptive questionnaire flow
+As a new user,
+I want to engage in a natural conversation with the AI Copilot to discover my Fantasy Manager Archetype,
+so that the system can provide personalized advice tailored to my preferences and experience level.
 
-## 📋 **Remaining Epic 2 Stories:**
-    * Story 2.2: Basic Conversational Guided Questionnaire - **SUPERSEDED by Story 2.7**
-    * Story 2.3: "Learn-As-You-Go" Mechanism for User Preference Profile Refinement
-    * Story 2.4: User Preference Profile Display
+#### Acceptance Criteria
 
-## 🎯 **Epic 2 Strategic Focus:**
-**Complete replacement** of rigid keyword-matching conversation system with dynamic AI-powered conversational intelligence using Gemini API. This represents the intended vision from the beginning - natural, engaging conversations that feel like chatting with a knowledgeable fantasy football enthusiast.
-
-**Implementation Priority:** Stories 2.5 → 2.6 → 2.7 (High Priority, Complete Replacement Strategy)
-
-**Updated:** 2025-06-06 by Jack (PM) - Strategic course correction for AI-powered conversational intelligence
+- 1: AI Copilot initiates conversational onboarding upon first login
+- 2: Conversation explains the purpose and benefits of archetype selection
+- 3: AI presents four archetypes through natural dialogue: "Strategic Veteran," "Bold Risk-Taker," "Busy Optimizer," "Eager Learner"
+- 4: Each archetype is explained with personality traits and approach to fantasy football
+- 5: User can ask questions about archetypes and receive clarifying responses
+- 6: AI adapts conversation style based on user responses and engagement level
+- 7: User selects archetype through conversational confirmation
+- 8: Selected archetype is saved to User Preference Profile
+- 9: AI confirms selection and explains next steps

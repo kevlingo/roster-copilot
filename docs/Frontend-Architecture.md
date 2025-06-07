@@ -38,12 +38,16 @@
 
 ## Introduction
 
-This document details the technical architecture specifically for the frontend of Roster Copilot. It complements the main Roster Copilot Architecture Document and the UI/UX Specification. This document details the frontend architecture and **builds upon the foundational decisions** (e.g., overall tech stack, CI/CD, primary testing tools) defined in the main Roster Copilot Architecture Document (`docs/architecture.md` or linked equivalent). **Frontend-specific elaborations or deviations from general patterns must be explicitly noted here.** The goal is to provide a clear blueprint for frontend development, ensuring consistency, maintainability, and alignment with the overall system design and user experience goals.
+This document details the technical architecture specifically for the frontend of Roster Copilot within the BMAD methodology framework. It complements the main Roster Copilot Architecture Document and the UI/UX Specification, providing comprehensive guidance for AI-driven frontend development.
 
-  - **Link to Main Architecture Document (REQUIRED):** `docs/architecture.md`
-  - **Link to UI/UX Specification (REQUIRED if exists):** `docs/front-end-spec.md`
-  - **Link to Primary Design Files (Figma, Sketch, etc.) (REQUIRED if exists):** {From UI/UX Spec}
-  - **Link to Deployed Storybook / Component Showcase (if applicable):** {URL}
+This document builds upon the foundational decisions (overall tech stack, CI/CD, primary testing tools) defined in the main Roster Copilot Architecture Document (`docs/Architecture.md`). Frontend-specific elaborations or deviations from general patterns are explicitly noted here. The goal is to provide a clear blueprint for frontend development, ensuring consistency, maintainability, and alignment with the overall system design and user experience goals.
+
+### Key Reference Documents
+
+- **Main Architecture Document:** `docs/Architecture.md`
+- **UI/UX Specification:** `docs/front-end-spec.md`
+- **Technical Preferences:** `bmad-agent/data/technical-preferences.md`
+- **Product Requirements Document:** `docs/Prd.md`
 
 ## Overall Frontend Philosophy & Patterns
 
@@ -367,9 +371,8 @@ The web application must be fully responsive.
 
 ## Change Log
 
-| Change                                                          | Date       | Version | Description                                                     | Author      |
-| :-------------------------------------------------------------- | :--------- | :------ | :-------------------------------------------------------------- | :---------- |
-| Initial Frontend Architecture Document Draft for PoC Created    | 2025-05-30 | 0.1     | First complete draft based on user collaboration.             | Jane (DA)   |
-| Conversational Onboarding & Chat Persistence Architecture Added | 2025-06-06 | 0.2     | Added architecture patterns for conversational onboarding and comprehensive chat history persistence system. | Curly (PO)  |
-
------
+| Change | Date | Version | Description | Author |
+| ------ | ---- | ------- | ----------- | ------ |
+| Initial Frontend Architecture Document Draft for PoC Created | 2025-05-30 | 0.1 | First complete draft based on user collaboration | Jane (DA) |
+| Conversational Onboarding & Chat Persistence Architecture Added | 2025-06-06 | 0.2 | Added architecture patterns for conversational onboarding and comprehensive chat history persistence system | Curly (PO) |
+| **BMAD Template Format Update** | 2025-06-06 | 2.0 | **Updated Frontend Architecture Document to BMAD template format with enhanced introduction and reference documentation** | **BMAD PO Agent** |

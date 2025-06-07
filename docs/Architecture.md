@@ -1,9 +1,11 @@
-# Roster Copilot Architecture Document (Proof-of-Concept)
+# Roster Copilot Architecture Document
 
 ## Introduction / Preamble
 
-This document outlines the overall project architecture for the **Roster Copilot Proof-of-Concept (PoC)**, including backend systems, frontend structure, key components, technology choices, and architectural patterns. Its primary goal is to serve as the guiding architectural blueprint for AI-driven development for a one-month hackathon, ensuring consistency and adherence to chosen patterns and technologies.
-**Relationship to Frontend Architecture:** As this project includes a significant user interface, a more detailed Frontend Architecture Document would typically be created (potentially by a Design Architect using the prompt at the end of this document) to elaborate on frontend-specific design and must be used in conjunction with this overall system architecture. Core technology stack choices documented herein (see "Definitive Tech Stack Selections") are definitive for the entire project.
+This document outlines the overall project architecture for the **Roster Copilot Proof-of-Concept (PoC)**, including backend systems, shared services, and non-UI specific concerns. Its primary goal is to serve as the guiding architectural blueprint for AI-driven development, ensuring consistency and adherence to chosen patterns and technologies.
+
+**Relationship to Frontend Architecture:**
+As this project includes a significant user interface, a separate Frontend Architecture Document (located at `docs/Frontend-Architecture.md`) details the frontend-specific design and MUST be used in conjunction with this document. Core technology stack choices documented herein (see "Definitive Tech Stack Selections") are definitive for the entire project, including all frontend components.
 
 ## Table of Contents
 * Technical Summary
@@ -26,19 +28,21 @@ This document outlines the overall project architecture for the **Roster Copilot
 
 ## Technical Summary
 
-Roster Copilot, for its Proof-of-Concept (PoC) stage, will be developed as a web-based application utilizing a full-stack Next.js framework (TypeScript, Node.js) to ensure rapid development for a one-month hackathon. The core innovation is its AI Copilot, powered by Google Gemini AI, which will provide personalized user onboarding (via archetypes and a learning profile), "Draft Day Co-Pilot" assistance, and "In-Season Strategic Guidance" (through a weekly digest and critical alerts), all with preference-driven explanations. The frontend will be built with React (via Next.js) and styled using Tailwind CSS with DaisyUI to achieve a modern, clean, and responsive user interface that "pops," particularly for new fantasy football players. For the PoC, all NFL-related data (player stats, scores, news) will be static/synthetic, accessed via a provider model designed for future live data integration, with basic persistence for user profiles managed by a local SQLite database. Emails (verification, password reset) will be handled via Resend. The application will be deployed on Netlify. The architecture prioritizes demonstrating the AI Copilot's unique value and ease of use, aligning with the primary goal of making fantasy football more accessible and strategically rewarding.
+Roster Copilot is developed as a web-based application utilizing a full-stack Next.js framework (TypeScript, Node.js) for rapid development within a one-month hackathon timeline. The core innovation is its AI Copilot, powered by Google Gemini AI, providing personalized user onboarding through conversational archetype discovery, real-time "Draft Day Co-Pilot" assistance, and intelligent "In-Season Strategic Guidance" via weekly digests and critical alerts, all with preference-driven explanations adapted to user expertise levels.
+
+The frontend leverages React (via Next.js) styled with Tailwind CSS and DaisyUI to achieve a modern, clean, responsive interface that "pops" for users of all experience levels. The architecture employs a provider model for data access, using static/synthetic NFL data for the PoC while maintaining extensibility for future live data integration. User profiles and preferences are persisted in SQLite, with transactional emails handled via Resend. The application deploys on Netlify as serverless functions, prioritizing demonstration of the AI Copilot's unique value in making fantasy football more accessible and strategically rewarding.
 
 ## High-Level Overview
 
-Roster Copilot, for its Proof-of-Concept (PoC) deployment, will be architected as an **Integrated Full-Stack Web Application** utilizing the Next.js framework. Next.js will serve both the frontend user interface (React components) and the backend API routes (as serverless functions when deployed on Netlify). This approach prioritizes development speed and a unified codebase for the hackathon.
+Roster Copilot is architected as an **Integrated Full-Stack Web Application** utilizing the Next.js framework. This architectural style reflects the decision made in the PRD for rapid development within the hackathon timeline. Next.js serves both the frontend user interface (React components) and backend API routes (as serverless functions when deployed on Netlify), prioritizing development speed and unified codebase management.
 
-The application will reside in a **single Git repository**, simplifying version control and deployment for the PoC.
+The repository structure follows a **Monorepo** approach, housing the entire application in a single Git repository to simplify version control and deployment for the PoC.
 
-The primary user interaction and data flow is conceptualized as follows:
-1.  A **User** interacts with the Roster Copilot frontend via a web browser.
-2.  User actions (e.g., onboarding choices, draft picks, requests for advice) are sent to **Next.js API Routes**.
-3.  These API routes handle business logic, interact with a local **SQLite database** (for User Profile data persistence in the PoC), access **Static NFL Data files** (for game/player information, which will also be loaded into SQLite), make calls to the external **Google Gemini AI Service** for generating personalized insights and explanations, and interact with **Resend** for transactional emails.
-4.  The API routes then return processed information or AI-generated advice to the Next.js frontend, which presents it to the user through the AI Copilot interface elements (panel, digest, alerts).
+The primary user interaction and data flow operates as follows:
+1. A **User** interacts with the Roster Copilot frontend via web browser
+2. User actions (onboarding choices, draft picks, AI advice requests) are sent to **Next.js API Routes**
+3. API routes orchestrate business logic, interact with **SQLite database** for User Profile persistence, access **Static NFL Data** (loaded into SQLite), invoke **Google Gemini AI Service** for personalized insights, and utilize **Resend** for transactional emails
+4. API routes return processed information or AI-generated advice to the frontend, presented through AI Copilot interface elements (panel, digest, alerts)
 
 Below is a simplified System Context diagram illustrating these interactions:
 
@@ -53,44 +57,35 @@ graph TD
 
 ## Architectural / Design Patterns Adopted
 
-1.  **Integrated Full-Stack Application (via Next.js):** Utilizing Next.js to handle both frontend (React components) and backend (API routes) within a single, cohesive project structure. *Rationale:* Simplifies development, deployment (Netlify), and tooling for the PoC; leverages user familiarity.
-2.  **Provider Model / Repository Pattern (for Data Access):** Abstracting data access logic for SQLite (both User Profile and Static NFL Data for PoC). *Rationale:* Supports NFR for Maintainability/Extensibility, making future swaps to live databases/APIs much simpler with minimal changes to core application logic.
-3.  **API-Driven AI Integration (for Google Gemini AI):** All interactions with Google Gemini AI are encapsulated and managed through dedicated backend services/API routes. *Rationale:* Centralizes AI interaction logic, manages API key security, allows prompt optimization, and keeps the frontend focused on presentation.
-4.  **Component-Based Architecture (for Frontend - via React/Next.js):** The UI will be built as a collection of reusable React components, styled with Tailwind CSS and DaisyUI. *Rationale:* Standard for modern web development with React; promotes UI reusability, maintainability, testability, and aligns with chosen UI libraries.
-5.  **Serverless Functions (for API Backend - via Netlify/Next.js):** Next.js API routes will be deployed as serverless functions on Netlify. *Rationale:* Scalable, cost-effective for PoC, simplifies backend infrastructure management; Next.js handles the abstraction.
-6.  **External Email Service Integration (Resend):** Transactional emails (e.g., verification, password reset) are handled via Resend. *Rationale:* Reliable email delivery without managing email server infrastructure; common practice for web applications.
+- **Integrated Full-Stack Application (via Next.js):** Utilizing Next.js to handle both frontend (React components) and backend (API routes) within a single, cohesive project structure. *Rationale:* Simplifies development, deployment (Netlify), and tooling for the PoC; leverages user familiarity and rapid development capabilities.
+
+- **Provider Model / Repository Pattern (for Data Access):** Abstracting data access logic for SQLite (both User Profile and Static NFL Data for PoC). *Rationale:* Supports NFR for Maintainability/Extensibility, making future swaps to live databases/APIs much simpler with minimal changes to core application logic.
+
+- **API-Driven AI Integration (for Google Gemini AI):** All interactions with Google Gemini AI are encapsulated and managed through dedicated backend services/API routes. *Rationale:* Centralizes AI interaction logic, manages API key security, allows prompt optimization, and keeps the frontend focused on presentation.
+
+- **Component-Based Architecture (for Frontend - via React/Next.js):** The UI is built as a collection of reusable React components, styled with Tailwind CSS and DaisyUI. *Rationale:* Standard for modern web development with React; promotes UI reusability, maintainability, testability, and aligns with chosen UI libraries.
+
+- **Serverless Functions (for API Backend - via Netlify/Next.js):** Next.js API routes deployed as serverless functions on Netlify. *Rationale:* Scalable, cost-effective for PoC, simplifies backend infrastructure management; Next.js handles the abstraction.
+
+- **External Email Service Integration (Resend):** Transactional emails (verification, password reset) handled via Resend. *Rationale:* Reliable email delivery without managing email server infrastructure; common practice for web applications.
 
 ## Component View
 
-The Roster Copilot PoC comprises the following key logical components:
+The Roster Copilot PoC comprises the following key logical components, reflecting the decided overall architecture and architectural patterns adopted:
 
-1.  **Frontend UI (Next.js/React)**
-    * **Description & Responsibilities:** Renders the user interface (UI/UX Specification), handles user input, manages client-side state (React Context/hooks or Zustand), communicates with the Backend API, displays information including AI Copilot insights, and implements the persistent "AI Copilot Panel/Icon." Built with React, Tailwind CSS, and DaisyUI.
-    * **Key Interactions:** User (direct interaction), Backend API (HTTP requests/responses), Client-Side State Management.
+- **Frontend UI (Next.js/React):** Renders the user interface per UI/UX Specification, handles user input, manages client-side state (React Context/hooks or Zustand), communicates with Backend API, displays AI Copilot insights, and implements persistent "AI Copilot Panel/Icon." Built with React, Tailwind CSS, and DaisyUI.
 
-2.  **Backend API (Next.js API Routes)**
-    * **Description & Responsibilities:** Exposes HTTP endpoints for the Frontend UI, handles requests, orchestrates calls to the "AI Copilot Service," "Data Access Layer (DAL)," and "Notification Service (for email)," manages basic user sessions, formats responses. Deployed as serverless functions on Netlify.
-    * **Key Interactions:** Frontend UI (receives requests, sends responses), AI Copilot Service (invokes for AI logic), Data Access Layer (DAL) (for data operations), Notification Service (for sending emails).
+- **Backend API (Next.js API Routes):** Exposes HTTP endpoints for Frontend UI, handles requests, orchestrates calls to AI Copilot Service, Data Access Layer (DAL), and Notification Service, manages user sessions, formats responses. Deployed as serverless functions on Netlify.
 
-3.  **AI Copilot Service (Backend Logic within Next.js)**
-    * **Description & Responsibilities:** Central "brain" for AI features. Processes requests for AI insights, manages/interprets User Preference Profile (via DAL), accesses Static NFL Data (via DAL), constructs prompts for and communicates with Google Gemini AI Service (via SDK), processes Gemini responses (applying preference-driven explanation style), and supports "Learn-As-You-Go" mechanism.
-    * **Key Interactions:** Backend API (receives requests, returns advice/content), Data Access Layer (DAL) (for User Profile & Static NFL Data), Google Gemini AI Service (External) (sends prompts, receives responses).
+- **AI Copilot Service (Backend Logic within Next.js):** Central "brain" for AI features. Processes AI insight requests, manages User Preference Profile interpretation (via DAL), accesses Static NFL Data (via DAL), constructs prompts for Google Gemini AI Service (via SDK), processes Gemini responses applying preference-driven explanation style, supports "Learn-As-You-Go" mechanism.
 
-4.  **Data Access Layer (DAL) (Backend Logic within Next.js - Revised)**
-    * **Description & Responsibilities:** Implements the "Provider Model / Repository Pattern" abstracting SQLite-specific logic. Provides a stable interface for CRUD operations on User Profile & Preferences data and for reading/querying Static NFL Data (both stored in the PoC SQLite database). Internally executes direct SQL queries via a lightweight Node.js SQLite library. Manages SQLite connection and initial data seeding for PoC.
-    * **Key Interactions:** AI Copilot Service & Backend API (primary consumers, via abstract interface functions), SQLite Database (executes SQL queries).
+- **Data Access Layer (DAL) (Backend Logic within Next.js):** Implements Provider Model / Repository Pattern abstracting SQLite-specific logic. Provides stable interface for CRUD operations on User Profile & Preferences data and reading/querying Static NFL Data (both stored in PoC SQLite database). Executes direct SQL queries via lightweight Node.js SQLite library, manages SQLite connection and initial data seeding.
 
-5.  **Notification Service (Backend Logic within Next.js - for Email)**
-    * **Description & Responsibilities:** Handles sending transactional emails (e.g., account verification, password reset) via the Resend API. Encapsulates email formatting and interaction with Resend.
-    * **Key Interactions:** Backend API (receives requests to send emails), Resend API (External) (sends email delivery requests).
+- **Notification Service (Backend Logic within Next.js):** Handles transactional email sending (account verification, password reset) via Resend API. Encapsulates email formatting and Resend interaction.
 
-6.  **Google Gemini AI Service (External)**
-    * **Description & Responsibilities:** External third-party service by Google. Receives prompts from Roster Copilot's "AI Copilot Service" (via Google AI SDK) and returns generative AI responses for advice, explanations, and insights. Appropriate Gemini models (e.g., Flash, Pro) will be selected for PoC needs.
-    * **Key Interactions:** AI Copilot Service (sends prompts, receives responses), Internet (for backend to reach Google APIs).
+- **Google Gemini AI Service (External):** External third-party service by Google. Receives prompts from AI Copilot Service (via Google AI SDK) and returns generative AI responses for advice, explanations, and insights. Utilizes appropriate Gemini models (Flash, Pro) for PoC needs.
 
-7.  **Resend API (External)**
-    * **Description & Responsibilities:** External third-party service for sending transactional emails. Receives requests from Roster Copilot's "Notification Service."
-    * **Key Interactions:** Notification Service (sends email requests).
+- **Resend API (External):** External third-party service for transactional email delivery. Receives email requests from Notification Service.
 
 **Component Interaction Diagram (PoC):**
 ```mermaid
@@ -103,7 +98,7 @@ graph TD
         API --- NS["Notification Service\n(Email via Resend)"]
         AIM --- DAL["Data Access Layer (DAL)\n(Provider Pattern)"]
         DAL --- DB["PoC Database\n(SQLite: User Profiles + Static NFL Data)"]
-        
+
         %% Defining interactions clearly
         FE  -->|HTTP Requests| API
         API -->|Service Calls| AIM
@@ -115,7 +110,7 @@ graph TD
 
     AIM -->|API Calls via SDK| ExtAI["Google Gemini AI Service\n(External API)"]
     NS -->|API Calls| ExtEmail["Resend API\n(External API for Email)"]
-    
+
     %% Styling for clarity with more subdued colors and black text
     style U fill:#ddeeff,stroke:#333,stroke-width:2px,color:#000
     style ExtAI fill:#e6e6e6,stroke:#333,stroke-width:2px,color:#000
@@ -192,13 +187,18 @@ roster-copilot/
 ├── tsconfig.json               # TypeScript configuration file
 └── README.md                   # Project overview, setup, and development instructions
 ```
-**Key Directory Descriptions:**
-* **`app/`**: Core Next.js application using App Router (UI pages, layouts, API routes). `app/onboarding/page.tsx` serves as a host for the panel-driven conversational onboarding.
-* **`components/`**: Reusable React UI components, including those for the AI Copilot panel (`ai-copilot/`) and onboarding UI elements (`onboarding/`).
-* **`data/`**: Contains static JSON data (to be loaded into SQLite) and the SQLite database file for the PoC.
-* **`lib/`**: Houses shared backend logic: `lib/ai/` for AI Copilot Service, `lib/dal/` for Data Access Layer, `lib/services/` for other services like NotificationService.
-* **`public/`**: For static assets like images.
-* **`scripts/`**: For utility/developer scripts like database seeding.
+### Key Directory Descriptions
+
+- **`app/`**: Core Next.js application using App Router (UI pages, layouts, API routes). `app/onboarding/page.tsx` serves as a host for the panel-driven conversational onboarding.
+- **`components/`**: Reusable React UI components, including those for the AI Copilot panel (`ai-copilot/`) and onboarding UI elements (`onboarding/`).
+- **`data/`**: Contains static JSON data (to be loaded into SQLite) and the SQLite database file for the PoC.
+- **`lib/`**: Houses shared backend logic: `lib/ai/` for AI Copilot Service, `lib/dal/` for Data Access Layer, `lib/services/` for other services like NotificationService.
+- **`public/`**: For static assets like images.
+- **`scripts/`**: For utility/developer scripts like database seeding.
+
+### Notes
+
+The project structure prioritizes rapid development for the hackathon timeline while maintaining clear separation of concerns. The Next.js App Router provides both UI routing and API endpoint management within a unified structure.
 
 ## AI-Powered Conversational Intelligence Architecture
 
@@ -585,6 +585,18 @@ sequenceDiagram
 
 ## Definitive Tech Stack Selections
 
+This section outlines the definitive technology choices for the project. These selections have been made after thorough understanding of the project's requirements, components, data models, and core workflows. These choices are justified by the hackathon timeline, AI-assisted development approach, and need to demonstrate core AI features effectively.
+
+This table is the **single source of truth** for all technology selections. The Frontend Architecture document refers to these choices and elaborates on their specific application.
+
+Key decisions finalized and documented in the detailed stack table below include:
+- Preferred Starter Template Frontend: Next.js App Router with TypeScript
+- Preferred Starter Template Backend: Next.js API Routes (integrated)
+- Primary Language & Version: TypeScript 5.x
+- Primary Runtime & Version: Node.js 22.x
+
+All selections are definitive; exact versions are specified to avoid unexpected breaking changes during AI-assisted development.
+
 | Category             | Technology                | Version / Details                       | Description / Purpose                                      | Justification (User Input + Architectural Alignment)                                                                        |
 | :------------------- | :------------------------ | :-------------------------------------- | :--------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------- |
 | **Languages** | TypeScript                | ~5.x (e.g., 5.3.3) | Primary language for both backend API and frontend UI logic. | User familiarity, type safety, single language across the stack for PoC efficiency.                                  |
@@ -699,36 +711,8 @@ The following documents provide essential context and requirements that have inf
 
 ## Change Log
 
-| Change                                                | Date       | Version | Description                                                                                                | Author      |
-| :---------------------------------------------------- | :--------- | :------ | :--------------------------------------------------------------------------------------------------------- | :---------- |
-| Initial Architecture Document Draft for PoC Created | 2025-05-30 | 0.1     | First complete draft based on user collaboration.                                                        | Fred (Arch) |
-| Archetype & Email Service Update                     | 2025-05-31 | 0.2     | Updated UserProfile model for consolidated "Eager Learner" archetype. Added Resend as email service and updated relevant sections (External APIs, Tech Stack, Component Diagram, Project Structure for API keys). | Sarah (PO)  |
-
----
-Below, Prompt for Design Architect (If Project has UI) To Produce Front End Architecture
----
-
-**Prompt for Design Architect (Frontend Architecture Mode - Post System Architecture)**
-
-**Objective:** To define the detailed technical architecture specifically for the frontend of the Roster Copilot PoC, building upon this overall System Architecture Document and the previously created UI/UX Specification.
-**Mode:** Frontend Architecture Mode (using `tasks#create-frontend-architecture` and `front-end-architecture-tmpl`).
-**Inputs:**
-* This completed Roster Copilot System Architecture Document (PoC v0.2).
-* The Roster Copilot UI/UX Specification (PoC v0.1).
-* The Roster Copilot Product Requirements Document (PRD - PoC v0.2).
-**Key Tasks for Design Architect (Jane):**
-1.  Review this System Architecture, particularly the "Definitive Tech Stack Selections" (Next.js, React, TypeScript, Tailwind CSS, DaisyUI), "Component View" (Frontend UI component), "Project Structure" (frontend related directories like `app/`, `components/`), and relevant NFRs.
-2.  Review the UI/UX Specification for screen designs (from Figma link), user flows, IA, and key UI components.
-3.  Collaboratively populate the `front-end-architecture-tmpl.txt` document, detailing:
-    * Overall Frontend Philosophy & Patterns (elaborating on React/Next.js usage).
-    * Detailed Frontend Directory Structure (refining `app/` and `components/` structure).
-    * Component Breakdown & Implementation Details (defining conventions, template for component spec).
-    * State Management In-Depth (React Context/hooks, Zustand if needed for PoC).
-    * API Interaction Layer (how frontend components will call Next.js API routes).
-    * Routing Strategy (Next.js App Router specifics).
-    * Build, Bundling, and Deployment (Next.js/Netlify specifics for frontend assets).
-    * Frontend Testing Strategy (elaborating on Jest/RTL for components).
-    * Accessibility Implementation Details (technical aspects for frontend).
-    * Performance Considerations (frontend specific).
-    * (Theming with Tailwind/DaisyUI will be a key part of styling).
-4.  Ensure the Frontend Architecture aligns with the overall system architecture and supports the UI/UX vision within the hackathon PoC constraints.
+| Change | Date | Version | Description | Author |
+| ------ | ---- | ------- | ----------- | ------ |
+| Initial Architecture Document Draft for PoC Created | 2025-05-30 | 0.1 | First complete draft based on user collaboration | Fred (Arch) |
+| Archetype & Email Service Update | 2025-05-31 | 0.2 | Updated UserProfile model for consolidated "Eager Learner" archetype. Added Resend as email service and updated relevant sections | Sarah (PO) |
+| **BMAD Template Format Update** | 2025-06-06 | 2.0 | **Updated Architecture Document to new BMAD template format with structured sections, definitive tech stack table, coding standards, and security best practices** | **BMAD PO Agent** |

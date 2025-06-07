@@ -8,18 +8,18 @@ This creates a gap for an intelligent solution that not only demystifies fantasy
 
 ## Vision & Goals
 
-* **Vision:** To be the indispensable AI companion that empowers fantasy football players of all levels to learn, strategize, and succeed with personalized, intelligent, and effortless guidance.
-* **Primary Goals (for MVP):**
-    1.  Implement the core "AI Copilot Onboarding Interview" to effectively capture user preferences (experience, risk tolerance, play style) and create a foundational "User Preference Profile."
-    2.  Provide personalized, AI-driven assistance for key in-season decisions, including weekly waiver wire pickups and matchup-focused start/sit suggestions that consider the user's specific opponent, leveraging the User Preference Profile.
-    3.  Offer a simplified and guided "Draft Day Co-Pilot" experience that helps new users understand the draft process and make informed player selections based on their learned preferences and basic roster construction needs.
-    4.  Ensure a clean, intuitive, and easy-to-navigate user interface that allows users to easily access core fantasy management functions and AI Copilot insights.
-* **Success Metrics (Initial Ideas):**
-    * Demonstrable user interest and value perception, indicated by a steady growth in sign-ups and a high completion rate (e.g., >70-80%) for the AI Copilot Onboarding Interview.
-    * Strong engagement with core AI Copilot features (waiver/start-sit advice, Draft Day Co-Pilot), with users frequently interacting with and accepting/rating suggestions positively.
-    * Positive qualitative feedback from early users (especially via surveys and interviews) highlighting the AI Copilot's helpfulness, ease of use, and its unique, personalized approach.
-    * Evidence that Roster Copilot significantly lowers the barrier to entry for new fantasy football players, as indicated by their feedback on confidence levels and successful season navigation.
-    * Healthy user retention throughout a fantasy season, suggesting ongoing value delivery.
+- **Vision:** To be the indispensable AI companion that empowers fantasy football players of all levels to learn, strategize, and succeed with personalized, intelligent, and effortless guidance.
+- **Primary Goals:**
+  - Goal 1: Implement the core "AI Copilot Onboarding Interview" to effectively capture user preferences (experience, risk tolerance, play style) and create a foundational "User Preference Profile."
+  - Goal 2: Provide personalized, AI-driven assistance for key in-season decisions, including weekly waiver wire pickups and matchup-focused start/sit suggestions that consider the user's specific opponent, leveraging the User Preference Profile.
+  - Goal 3: Offer a simplified and guided "Draft Day Co-Pilot" experience that helps new users understand the draft process and make informed player selections based on their learned preferences and basic roster construction needs.
+  - Goal 4: Ensure a clean, intuitive, and easy-to-navigate user interface that allows users to easily access core fantasy management functions and AI Copilot insights.
+- **Success Metrics (Initial Ideas):**
+  - Demonstrable user interest and value perception, indicated by a steady growth in sign-ups and a high completion rate (>70-80%) for the AI Copilot Onboarding Interview
+  - Strong engagement with core AI Copilot features (waiver/start-sit advice, Draft Day Co-Pilot), with users frequently interacting with and accepting/rating suggestions positively
+  - Positive qualitative feedback from early users highlighting the AI Copilot's helpfulness, ease of use, and its unique, personalized approach
+  - Evidence that Roster Copilot significantly lowers the barrier to entry for new fantasy football players, as indicated by their feedback on confidence levels and successful season navigation
+  - Healthy user retention throughout a fantasy season, suggesting ongoing value delivery
 
 ## Target Audience / Users
 
@@ -32,76 +32,60 @@ This dual approach ensures Roster Copilot is an indispensable tool for anyone lo
 
 ## Key Features / Scope (High-Level Ideas for MVP)
 
-**A. Standard Fantasy League Core Functionality (Baseline for MVP):**
-
-* User account creation and management.
-* Ability to create new fantasy leagues with basic customization options.
-* Functionality to join existing leagues.
-* A standard live online draft room (e.g., supporting snake drafts).
-* Team roster management capabilities: setting weekly lineups, adding/dropping players (waiver wire system).
-* Real-time display of fantasy scores during NFL games.
-* League standings and schedule viewing.
-* Access to basic player statistics and relevant NFL news feeds.
-
-**B. Roster Copilot AI-Powered Features (MVP Differentiators):**
-
-* **AI Copilot Onboarding System:** An interactive interview process to establish a "User Preference Profile" (capturing experience, risk tolerance, play style, etc.).
-* **"Draft Day Co-Pilot":**
-    * Real-time, personalized player recommendations during live drafts, tailored by the User Preference Profile and evolving team needs.
-    * Simplified guidance and explanations for new users throughout the draft event.
-* **Personalized In-Season AI Guidance:**
-    * AI-generated, matchup-aware start/sit suggestions for weekly lineups, with clear, concise reasoning.
-    * Targeted waiver wire pickup recommendations based on individual team needs and user preferences.
-* **Basic "Explain My Advice" Feature:** For key AI-generated suggestions (e.g., draft pick, waiver add), the AI Copilot will provide a brief rationale, potentially referencing a user preference or a high-level insight from its analysis.
+- Feature Idea 1: User account creation and management with email verification
+- Feature Idea 2: Fantasy league creation with basic customization options
+- Feature Idea 3: Join existing leagues functionality
+- Feature Idea 4: Live online draft room supporting snake drafts
+- Feature Idea 5: Team roster management with weekly lineup setting and waiver wire system
+- Feature Idea 6: Real-time fantasy score display during NFL games
+- Feature Idea 7: League standings and schedule viewing
+- Feature Idea 8: Access to basic player statistics and NFL news feeds
+- Feature Idea 9: AI Copilot Onboarding System with interactive interview process to establish User Preference Profile
+- Feature Idea 10: Draft Day Co-Pilot with real-time, personalized player recommendations and simplified guidance for new users
+- Feature Idea 11: Personalized In-Season AI Guidance with matchup-aware start/sit suggestions and targeted waiver wire recommendations
+- Feature Idea 12: Basic "Explain My Advice" Feature providing clear rationale for AI-generated suggestions
 
 ## Post MVP Features / Scope and Ideas
 
-* **Advanced AI Simulation Capabilities:**
-    * Detailed individual player performance simulations (e.g., outcome distributions).
-    * Full-season roster simulations for strategic planning and "what-if" scenarios.
-* **Enhanced Dynasty & Keeper League Support:**
-    * AI-driven rookie draft advice.
-    * Future draft pick valuation and trade analysis tools.
-    * Tools for assessing and rebuilding "orphan" dynasty teams.
-* **"Advanced Stats Demystifier" Features:**
-    * Translation of complex football analytics into simple, actionable insights personalized for the user.
-    * Identification of players overperforming/underperforming their underlying metrics.
-* **"Behavioral Coach" / "Tilt-Control" Copilot:**
-    * Gentle AI-driven guidance to help manage impulsive decisions or emotional reactions to game outcomes.
-    * Reminders of the user's pre-stated strategic principles.
-* **League Engagement & Commissioner Tools:**
-    * AI-assisted creation of entertaining league recaps or power rankings.
-    * Suggestions for fun league rules, traditions, or side bets.
-    * Advanced tools to help commissioners manage and customize their leagues.
-* **Deeper Matchup & Opponent Analysis:**
-    * More granular analysis of individual player-on-player matchups.
-    * AI insights into opposing teams' tendencies or roster vulnerabilities.
-* **Expanded AI Copilot Learning & Personalization:**
-    * Continuous refinement of the User Preference Profile based on ongoing user interactions, decisions, and feedback.
-    * Deeper learning of league-specific dynamics and historical trends.
+- Feature Idea 1: Advanced AI Simulation Capabilities with detailed individual player performance simulations and outcome distributions
+- Feature Idea 2: Full-season roster simulations for strategic planning and "what-if" scenarios
+- Feature Idea 3: Enhanced Dynasty & Keeper League Support with AI-driven rookie draft advice
+- Feature Idea 4: Future draft pick valuation and trade analysis tools
+- Feature Idea 5: Tools for assessing and rebuilding "orphan" dynasty teams
+- Feature Idea 6: "Advanced Stats Demystifier" Features translating complex football analytics into simple, actionable insights
+- Feature Idea 7: Identification of players overperforming/underperforming their underlying metrics
+- Feature Idea 8: "Behavioral Coach" / "Tilt-Control" Copilot with gentle AI-driven guidance for impulsive decisions
+- Feature Idea 9: Reminders of user's pre-stated strategic principles and risk tolerance
+- Feature Idea 10: League Engagement & Commissioner Tools with AI-assisted creation of entertaining league recaps
+- Feature Idea 11: Suggestions for fun league rules, traditions, or side bets
+- Feature Idea 12: Advanced commissioner tools for league management and customization
+- Feature Idea 13: Deeper Matchup & Opponent Analysis with granular player-on-player matchup analysis
+- Feature Idea 14: AI insights into opposing teams' tendencies or roster vulnerabilities
+- Feature Idea 15: Expanded AI Copilot Learning & Personalization with continuous User Preference Profile refinement
+- Feature Idea 16: Deeper learning of league-specific dynamics and historical trends
 
 ## Known Technical Constraints or Preferences
 
-* **Constraints:**
-    * Primary Nature: This project is a **Proof-of-Concept (PoC)** specifically for a **hackathon entry**.
-    * Timeline: The core application MVP *must* be developed within a **one-month timeframe**.
-    * Development Methodology: Heavy reliance on **AI tools and assistance** is planned to achieve this rapid development.
-    * Budget: Assumed to be very lean, typical for a hackathon (focus on core functionality, marketing site is secondary).
-    * Scope: Must be tightly controlled to be achievable within one month as a PoC.
-* **Initial Architectural Preferences (if any):**
-    * Platform: For a one-month PoC, a **web-based application** is likely the most feasible approach.
-    * Technology Choices: Lean towards technologies known for **rapid development, strong AI library support, and ease of deployment**.
-* **Risks:**
-    * The **extremely tight one-month timeline** for delivering a functional PoC with novel AI features.
-    * **Scope Creep** during development.
-    * **AI Development Efficiency:** The actual time to generate, integrate, test, and debug AI-generated code can be unpredictable.
-    * **Data Requirements:** Sourcing, integrating, and processing NFL data within the month.
-    * **PoC Limitations:** The output will be a Proof of Concept and will need clear expectation management for hackathon demonstration.
-* **User Preferences (as project visionary for this hackathon PoC):**
-    * The app must **clearly and effectively demonstrate the core unique AI Copilot capabilities** outlined for the MVP.
-    * It should be **functional enough** for a compelling demonstration of these core AI features.
-    * **Aesthetics & User Experience:** The application must possess a **modern, clean, and visually appealing user interface** that "pops." It should also be **responsive**. While comprehensive functional polish might be adjusted due to the hackathon timeline, the core user experience and visual presentation for demonstrated features should be high quality.
-    * Overall, **speed of development and ease of showcasing the AI's unique value** are primary drivers, balanced with a compelling and intuitive UI for the core demo path.
+- **Constraints:**
+  - Primary Nature: This project is a Proof-of-Concept (PoC) specifically for a hackathon entry
+  - Timeline: The core application MVP must be developed within a one-month timeframe
+  - Development Methodology: Heavy reliance on AI tools and assistance is planned to achieve this rapid development
+  - Budget: Assumed to be very lean, typical for a hackathon (focus on core functionality, marketing site is secondary)
+  - Scope: Must be tightly controlled to be achievable within one month as a PoC
+- **Initial Architectural Preferences (if any):**
+  - Platform: For a one-month PoC, a web-based application is likely the most feasible approach
+  - Technology Choices: Lean towards technologies known for rapid development, strong AI library support, and ease of deployment
+- **Risks:**
+  - The extremely tight one-month timeline for delivering a functional PoC with novel AI features
+  - Scope Creep during development
+  - AI Development Efficiency: The actual time to generate, integrate, test, and debug AI-generated code can be unpredictable
+  - Data Requirements: Sourcing, integrating, and processing NFL data within the month
+  - PoC Limitations: The output will be a Proof of Concept and will need clear expectation management for hackathon demonstration
+- **User Preferences:**
+  - The app must clearly and effectively demonstrate the core unique AI Copilot capabilities outlined for the MVP
+  - It should be functional enough for a compelling demonstration of these core AI features
+  - Aesthetics & User Experience: The application must possess a modern, clean, and visually appealing user interface that "pops." It should also be responsive
+  - Overall, speed of development and ease of showcasing the AI's unique value are primary drivers, balanced with a compelling and intuitive UI for the core demo path
 
 ## Relevant Research (Optional)
 
@@ -112,3 +96,14 @@ Initial market exploration was conducted to understand the existing fantasy foot
 * **Current AI Application Landscape:** While sophisticated algorithms and data analytics are widely used for player projections, rankings, and decision-support tools (e.g., by ESPN leveraging IBM Watson, and specialized advice sites like Draft Sharks and FantasyPros), explicitly marketed, deeply personalized, and continuously learning "AI Copilot" functionalities as envisioned for Roster Copilot are not a dominant feature in mainstream league hosting platforms. This presents a significant opportunity for differentiation by offering a truly intelligent, adaptive, and user-centric assistant.
 
 This research underpins the strategy for Roster Copilot to provide both essential core functionalities and innovative, AI-driven copilotship to carve out a unique position in the market.
+
+## PM Prompt
+
+This Project Brief provides the full context for Roster Copilot. Please start in 'PRD Generation Mode', review the brief thoroughly to work with the user to create the PRD section by section as the template indicates, asking for any necessary clarification or suggesting improvements as your mode 1 programming allows.
+
+## Change Log
+
+| Change | Date | Version | Description | Author |
+| ------ | ---- | ------- | ----------- | ------ |
+| Initial Project Brief Created | 2025-05-30 | 0.1 | First complete draft based on user collaboration and market research | Project Team |
+| **BMAD Template Format Update** | 2025-06-06 | 2.0 | **Updated Project Brief to new BMAD template format with structured goals, features, and constraints** | **BMAD PO Agent** |
