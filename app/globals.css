@@ -1,7 +1,16 @@
-@config "./tailwind.config.js";
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  /* DaisyUI themes configuration */
+  --color-primary: oklch(49.12% 0.3096 275.75);
+  --color-secondary: oklch(69.71% 0.329 342.55);
+  --color-accent: oklch(76.76% 0.184 183.61);
+  --color-neutral: oklch(32.18% 0.02 197.78);
+  --color-base-100: oklch(100% 0 0);
+  --color-base-200: oklch(96.14% 0 0);
+  --color-base-300: oklch(94.51% 0 0);
+  --color-base-content: oklch(13.18% 0.02 197.78);
+}
 
 @layer base {
 :root {
