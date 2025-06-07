@@ -19,7 +19,7 @@ import {
 } from '@/lib/dal/user.dal';
 // import { notificationService } from '@/lib/services/NotificationService';
 
-async function resetPasswordHandler(req: NextRequest): Promise<NextResponse> {
+async function resetPasswordHandler(req: NextRequest, context: {}): Promise<NextResponse> {
   await initializeDatabase(); // Ensure DB is initialized before handling request
 
   if (req.method !== 'POST') {
@@ -46,7 +46,7 @@ async function resetPasswordHandler(req: NextRequest): Promise<NextResponse> {
   // Find and validate reset token
   let resetToken;
   try {
-    resetToken = await findResetToken(resetPasswordDto.token);
+    resetToken = findResetToken(resetPasswordDto.token);
   } catch (dbError) {
     console.error('[DB Error Finding Reset Token]', dbError);
     return NextResponse.json({ error: 'Error validating reset token. Please try again.' }, { status: 500 });
@@ -71,7 +71,7 @@ async function resetPasswordHandler(req: NextRequest): Promise<NextResponse> {
   // Get user details
   let user;
   try {
-    user = await findUserById(resetToken.userId);
+    user = findUserById(resetToken.userId);
   } catch (dbError) {
     console.error('[DB Error Finding User for Password Reset]', dbError);
     return NextResponse.json({ error: 'Error processing password reset. Please try again.' }, { status: 500 });
@@ -93,7 +93,7 @@ async function resetPasswordHandler(req: NextRequest): Promise<NextResponse> {
 
   // Update user's password
   try {
-    await updateUserPassword(user.userId, hashedPassword);
+    updateUserPassword(user.userId, hashedPassword);
   } catch (dbError) {
     console.error('[DB Error Updating Password]', dbError);
     return NextResponse.json({ error: 'Failed to update password. Please try again.' }, { status: 500 });
@@ -101,7 +101,7 @@ async function resetPasswordHandler(req: NextRequest): Promise<NextResponse> {
 
   // Mark reset token as used
   try {
-    await markResetTokenAsUsed(resetPasswordDto.token);
+    markResetTokenAsUsed(resetPasswordDto.token);
   } catch (dbError) {
     console.error('[DB Error Marking Token as Used]', dbError);
     // Password was updated successfully, so we'll continue despite this error
@@ -122,8 +122,6 @@ async function resetPasswordHandler(req: NextRequest): Promise<NextResponse> {
   });
 }
 
-export const POST = composeWrappers(
-  withRateLimiting, // Rate limiting to prevent abuse
-  withRequestLogging,
-  withErrorHandling,
-)(resetPasswordHandler);
+export async function POST(request: NextRequest) {
+  return resetPasswordHandler(request, {});
+}

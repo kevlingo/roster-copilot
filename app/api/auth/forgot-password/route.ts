@@ -17,7 +17,7 @@ import {
 } from '@/lib/dal/user.dal';
 import { notificationService } from '@/lib/services/NotificationService';
 
-async function forgotPasswordHandler(req: NextRequest): Promise<NextResponse> {
+async function forgotPasswordHandler(req: NextRequest, context: {}): Promise<NextResponse> {
   await initializeDatabase(); // Ensure DB is initialized before handling request
 
   if (req.method !== 'POST') {
@@ -92,8 +92,6 @@ async function forgotPasswordHandler(req: NextRequest): Promise<NextResponse> {
   return NextResponse.json({ message: genericMessage });
 }
 
-export const POST = composeWrappers(
-  withRateLimiting, // Rate limiting to prevent abuse
-  withRequestLogging,
-  withErrorHandling,
-)(forgotPasswordHandler);
+export async function POST(request: NextRequest) {
+  return forgotPasswordHandler(request, {});
+}

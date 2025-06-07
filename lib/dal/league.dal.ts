@@ -10,12 +10,12 @@ import { League_PoC, FantasyTeam_PoC, WeeklyLineup_PoC, DEFAULT_ROSTER_SETTINGS 
 /**
  * Creates a new league in the database
  */
-export async function createLeague(
+export function createLeague(
   leagueName: string,
   commissionerUserId: string,
   numberOfTeams: 8 | 10 | 12,
   scoringType: "Standard" | "PPR"
-): Promise<League_PoC> {
+): League_PoC {
   const leagueId = uuidv4();
   const createdAt = new Date().toISOString();
   const currentSeasonWeek = 1;
@@ -43,7 +43,7 @@ export async function createLeague(
     createdAt
   ];
 
-  await run(sql, params);
+  run(sql, params);
 
   return {
     leagueId,

@@ -82,7 +82,6 @@ interface MockableNextRequest {
     get: (key: string) => string | null;
   };
   url: string;
-  ip?: string;
   json?: () => Promise<unknown>;
   text?: () => Promise<string>;
   // Add other properties/methods if your handlers/wrappers use them
@@ -98,8 +97,7 @@ interface MockableNextResponse {
 const createMockRequest = (
   urlPath = '/api/test',
   method = 'GET',
-  headers: Record<string, string> = {},
-  ip?: string
+  headers: Record<string, string> = {}
 ): MockableNextRequest => {
   const fullUrl = `http://localhost${urlPath}`;
   return {
@@ -111,7 +109,6 @@ const createMockRequest = (
       get: (key: string) => headers[key.toLowerCase()] || null,
     },
     url: fullUrl,
-    ip: ip,
   };
 };
 
@@ -189,7 +186,10 @@ describe('API Route Handler Wrappers', () => {
 
   describe('withRequestLogging', () => {
     it('should log request and response details on success', async () => {
-      const req = createMockRequest('/api/log-test', 'POST', {'user-agent': 'TestAgent/1.0'}, '123.0.0.1');
+      const req = createMockRequest('/api/log-test', 'POST', {
+        'user-agent': 'TestAgent/1.0',
+        'x-forwarded-for': '123.0.0.1'
+      });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const mockSuccessHandlerWithMockResponse: ApiRouteHandler = async () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -226,7 +226,10 @@ describe('API Route Handler Wrappers', () => {
     });
 
     it('should log request and error details if handler throws', async () => {
-        const req = createMockRequest('/api/log-error', 'GET', {'user-agent': 'ErrorAgent/1.0'}, '127.0.0.1');
+        const req = createMockRequest('/api/log-error', 'GET', {
+          'user-agent': 'ErrorAgent/1.0',
+          'x-forwarded-for': '127.0.0.1'
+        });
         const wrappedHandler = withRequestLogging(mockErrorHandler);
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

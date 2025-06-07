@@ -21,7 +21,7 @@ import {
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { leagueId: string } }
+  { params }: { params: Promise<{ leagueId: string }> }
 ) {
   try {
     // Initialize database connection
@@ -36,7 +36,7 @@ export async function GET(
       );
     }
 
-    const { leagueId } = params;
+    const { leagueId } = await params;
     const { searchParams } = new URL(request.url);
     const weekParam = searchParams.get('week');
     

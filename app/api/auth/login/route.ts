@@ -14,7 +14,7 @@ import {
 import { withRateLimiting } from '@/lib/api/middleware/rate-limiter';
 
 
-async function loginHandler(req: NextRequest): Promise<NextResponse> {
+async function loginHandler(req: NextRequest, context: {}): Promise<NextResponse> {
   await initializeDatabase();
 
   if (req.method !== 'POST') {
@@ -41,7 +41,7 @@ async function loginHandler(req: NextRequest): Promise<NextResponse> {
 
   const { email, password } = loginDto;
 
-  const user = await findUserByEmail(email);
+  const user = findUserByEmail(email);
 
   if (!user) {
     return NextResponse.json(
@@ -95,8 +95,6 @@ async function loginHandler(req: NextRequest): Promise<NextResponse> {
   });
 }
 
-export const POST = composeWrappers(
-  withRateLimiting, // Added rate limiting
-  withRequestLogging,
-  withErrorHandling,
-)(loginHandler);
+export async function POST(request: NextRequest) {
+  return loginHandler(request, {});
+}

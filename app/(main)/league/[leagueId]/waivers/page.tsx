@@ -43,13 +43,13 @@ const mockRoster: RosterPlayer[] = [
 ];
 
 interface PageProps {
-  params: {
+  params: Promise<{
     leagueId: string;
-  };
+  }>;
 }
 
-export default function WaiversPage({ params }: PageProps) {
-  const { leagueId } = params;
+export default async function WaiversPage({ params }: PageProps) {
+  const { leagueId } = await params;
   //const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [availablePlayers, setAvailablePlayers] = useState<NFLPlayer[]>([]);

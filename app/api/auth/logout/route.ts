@@ -15,7 +15,7 @@ import {
  * 
  * The actual session termination happens client-side by discarding the JWT token.
  */
-async function logoutHandler(req: NextRequest): Promise<NextResponse> {
+async function logoutHandler(req: NextRequest, context: {}): Promise<NextResponse> {
   // For PoC, we don't need to validate the token since logout should always succeed
   // In a production system, you might want to:
   // 1. Validate the JWT token
@@ -40,8 +40,6 @@ async function logoutHandler(req: NextRequest): Promise<NextResponse> {
   });
 }
 
-// Apply middleware: error handling and request logging
-export const POST = composeWrappers(
-  withRequestLogging,
-  withErrorHandling,
-)(logoutHandler);
+export async function POST(request: NextRequest) {
+  return logoutHandler(request, {});
+}

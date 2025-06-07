@@ -53,13 +53,13 @@ interface LineupPlayerDto {
 
 
 interface PageProps {
-  params: {
+  params: Promise<{
     leagueId: string;
-  };
+  }>;
 }
 
-export default function LineupPage({ params }: PageProps) {
-  const { leagueId } = params;
+export default async function LineupPage({ params }: PageProps) {
+  const { leagueId } = await params;
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [roster, setRoster] = useState<RosterPlayer[]>([]);

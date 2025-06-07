@@ -4,13 +4,13 @@ import React, { useState, useEffect } from 'react';
 import { GetScheduleResponseDto, ScheduleMatchupDto } from '@/lib/dtos/schedule.dto';
 
 interface PageProps {
-  params: {
+  params: Promise<{
     leagueId: string;
-  };
+  }>;
 }
 
-export default function SchedulePage({ params }: PageProps) {
-  const { leagueId } = params;
+export default async function SchedulePage({ params }: PageProps) {
+  const { leagueId } = await params;
   const [isLoading, setIsLoading] = useState(true);
   const [scheduleData, setScheduleData] = useState<GetScheduleResponseDto | null>(null);
   const [error, setError] = useState<string | null>(null);

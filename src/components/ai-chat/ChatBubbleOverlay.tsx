@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useLayoutEffect, useRef } from 'react';
 import { MessageObject } from '../../types/chat';
 import ChatMessageBubble from './ChatMessageBubble';

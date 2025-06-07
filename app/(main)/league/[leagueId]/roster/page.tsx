@@ -40,13 +40,13 @@ interface RosterData {
 }
 
 interface PageProps {
-  params: {
+  params: Promise<{
     leagueId: string;
-  };
+  }>;
 }
 
-export default function RosterPage({ params }: PageProps) {
-  const { leagueId } = params;
+export default async function RosterPage({ params }: PageProps) {
+  const { leagueId } = await params;
   const [rosterData, setRosterData] = useState<RosterData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

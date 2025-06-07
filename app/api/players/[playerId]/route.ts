@@ -14,7 +14,7 @@ import { getNFLPlayerById } from '@/lib/dal/player.dal';
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { playerId: string } }
+  { params }: { params: Promise<{ playerId: string }> }
 ) {
   try {
     // Initialize database connection
@@ -29,7 +29,7 @@ export async function GET(
       );
     }
 
-    const { playerId } = params;
+    const { playerId } = await params;
 
     // Validate playerId parameter
     if (!playerId || typeof playerId !== 'string' || playerId.trim().length === 0) {

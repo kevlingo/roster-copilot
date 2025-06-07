@@ -142,7 +142,7 @@ describe('POST /api/auth/login', () => {
       passwordHash: 'hashedPassword',
       emailVerified: true,
     };
-    mockedFindUserByEmail.mockResolvedValue(mockUser);
+    mockedFindUserByEmail.mockReturnValue(mockUser);
     mockedBcryptCompare.mockResolvedValue(false); // Password mismatch
 
     const response = await loginRouteHandler(mockRequest);
@@ -158,7 +158,7 @@ describe('POST /api/auth/login', () => {
       passwordHash: 'hashedPassword',
       emailVerified: false, // Email not verified
     };
-    mockedFindUserByEmail.mockResolvedValue(mockUser);
+    mockedFindUserByEmail.mockReturnValue(mockUser);
     mockedBcryptCompare.mockResolvedValue(true);
 
     const response = await loginRouteHandler(mockRequest);
@@ -179,7 +179,7 @@ describe('POST /api/auth/login', () => {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    mockedFindUserByEmail.mockResolvedValue(mockUser);
+    mockedFindUserByEmail.mockReturnValue(mockUser);
     mockedBcryptCompare.mockResolvedValue(true);
 
     const response = await loginRouteHandler(mockRequest);
@@ -200,7 +200,7 @@ describe('POST /api/auth/login', () => {
       updatedAt: new Date().toISOString(),
     };
     const expectedToken = 'mocked.jwt.token';
-    mockedFindUserByEmail.mockResolvedValue(mockUser);
+    mockedFindUserByEmail.mockReturnValue(mockUser);
     mockedBcryptCompare.mockResolvedValue(true);
     mockedJwtSign.mockReturnValue(expectedToken);
 
@@ -232,7 +232,7 @@ describe('POST /api/auth/login', () => {
       updatedAt: new Date().toISOString(),
     };
     const expectedToken = 'mocked.jwt.token.default.expiry';
-    mockedFindUserByEmail.mockResolvedValue(mockUser);
+    mockedFindUserByEmail.mockReturnValue(mockUser);
     mockedBcryptCompare.mockResolvedValue(true);
     mockedJwtSign.mockReturnValue(expectedToken);
 

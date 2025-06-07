@@ -11,15 +11,16 @@ interface ResetPasswordFormInputs {
 }
 
 interface ResetPasswordPageProps {
-  params: {
+  params: Promise<{
     token: string;
-  };
+  }>;
 }
 
 // Password complexity regex - same as in auth.dto.ts
 const PASSWORD_REGEX = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*\-_+=<>{}[\]|\\:";'.,/~`]).{8,}$/;
 
-export default function ResetPasswordPage({ params }: ResetPasswordPageProps) {
+export default async function ResetPasswordPage({ params }: ResetPasswordPageProps) {
+  const { token } = await params;
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -46,7 +47,7 @@ export default function ResetPasswordPage({ params }: ResetPasswordPageProps) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          token: params.token,
+          token: token,
           newPassword: data.newPassword,
           confirmNewPassword: data.confirmNewPassword,
         }),

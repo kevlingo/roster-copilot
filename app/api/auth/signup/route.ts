@@ -23,7 +23,7 @@ import { UserProfile } from '@/lib/models/user.models'; // EmailVerificationToke
 
 // Database initialization will be awaited in the handler
 
-async function signupHandler(req: NextRequest): Promise<NextResponse> {
+async function signupHandler(req: NextRequest, context: {}): Promise<NextResponse> {
   await initializeDatabase(); // Ensure DB is initialized before handling request
 
   if (req.method !== 'POST') {
@@ -52,7 +52,7 @@ async function signupHandler(req: NextRequest): Promise<NextResponse> {
   // --- Business Logic ---
 
   // 1. Check for username uniqueness
-  const existingUserByUsername = await findUserByUsername(signUpDto.username);
+  const existingUserByUsername = findUserByUsername(signUpDto.username);
   if (existingUserByUsername) {
     return NextResponse.json(
       { errors: [{ property: 'username', message: 'Username already taken' }] },
@@ -61,7 +61,7 @@ async function signupHandler(req: NextRequest): Promise<NextResponse> {
   }
 
   // 2. Check for email uniqueness
-  const existingUserByEmail = await findUserByEmail(signUpDto.email);
+  const existingUserByEmail = findUserByEmail(signUpDto.email);
   if (existingUserByEmail) {
     return NextResponse.json(
       { errors: [{ property: 'email', message: 'Email already registered' }] },
@@ -76,7 +76,7 @@ async function signupHandler(req: NextRequest): Promise<NextResponse> {
   // 4. Create UserProfile record
   let newUser: UserProfile;
   try {
-    newUser = await createUserProfile({
+    newUser = createUserProfile({
       username: signUpDto.username,
       email: signUpDto.email,
       passwordHash: hashedPassword,
@@ -85,14 +85,14 @@ async function signupHandler(req: NextRequest): Promise<NextResponse> {
     console.error('[DB Error Creating User]', dbError);
     return NextResponse.json({ error: 'Failed to create user account. Please try again.' }, { status: 500 });
   }
-  
+
   // 5. Generate unique verification token and store
   const verificationToken = crypto.randomBytes(32).toString('hex');
   const expiryDate = new Date();
   expiryDate.setHours(expiryDate.getHours() + 24); // Token expires in 24 hours
 
   try {
-    await createEmailVerificationToken({
+    createEmailVerificationToken({
       userId: newUser.userId,
       token: verificationToken,
       email: newUser.email,
@@ -128,8 +128,6 @@ async function signupHandler(req: NextRequest): Promise<NextResponse> {
   );
 }
 
-export const POST = composeWrappers(
-  withRequestLogging,
-  withErrorHandling,
-  // withAuth, // Auth not needed for signup
-)(signupHandler);
+export async function POST(request: NextRequest) {
+  return signupHandler(request, {});
+}

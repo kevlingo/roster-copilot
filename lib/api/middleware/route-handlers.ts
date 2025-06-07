@@ -4,7 +4,7 @@ import * as jwt from 'jsonwebtoken';
 // Define a type for our API Route Handlers for better type safety
 export type ApiRouteHandler = (
   req: NextRequest,
-  params?: { [key: string]: string | string[] | undefined },
+  context?: unknown,
 ) => Promise<NextResponse> | NextResponse;
 
 /**
@@ -26,7 +26,7 @@ export interface AuthenticatedRequest extends NextRequest {
  */
 export type AuthenticatedApiRouteHandler = (
   req: AuthenticatedRequest,
-  params?: { [key: string]: string | string[] | undefined },
+  context?: unknown,
 ) => Promise<NextResponse> | NextResponse;
 
 /**
@@ -38,9 +38,9 @@ export type AuthenticatedApiRouteHandler = (
  * @returns A new handler function with error handling.
  */
 export function withErrorHandling(handler: ApiRouteHandler): ApiRouteHandler {
-  return async (req, params) => {
+  return async (req, context) => {
     try {
-      return await handler(req, params);
+      return await handler(req, context);
     } catch (error) {
       console.error('[API Error]', {
         timestamp: new Date().toISOString(),
@@ -68,21 +68,21 @@ export function withErrorHandling(handler: ApiRouteHandler): ApiRouteHandler {
  * @returns A new handler function with request logging.
  */
 export function withRequestLogging(handler: ApiRouteHandler): ApiRouteHandler {
-  return async (req, params) => {
+  return async (req, context) => {
     const startTime = Date.now();
     const requestDetails = {
       timestamp: new Date().toISOString(),
       method: req.method,
       path: req.nextUrl.pathname,
       userAgent: req.headers.get('user-agent'),
-      ip: req.ip || req.headers.get('x-forwarded-for'), // Best effort for IP
+      ip: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown', // Best effort for IP
     };
 
     console.log('[API Request]', requestDetails);
 
     let response: NextResponse;
     try {
-      response = await handler(req, params);
+      response = await handler(req, context);
     } catch (error) {
       // This error will be caught by withErrorHandling if composed correctly,
       // but we log here to ensure we capture the intended status for the log.
@@ -116,7 +116,7 @@ export function withRequestLogging(handler: ApiRouteHandler): ApiRouteHandler {
  * @returns A new handler function with authentication check.
  */
 export function withAuth(handler: AuthenticatedApiRouteHandler): ApiRouteHandler {
-  return async (req, params) => {
+  return async (req, context) => {
     const authHeader = req.headers.get('authorization');
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -146,7 +146,7 @@ export function withAuth(handler: AuthenticatedApiRouteHandler): ApiRouteHandler
         username: decoded.username,
       };
 
-      return handler(authenticatedReq, params);
+      return handler(authenticatedReq, context);
     } catch (error) {
       console.error('[Auth] JWT verification failed:', error);
       return NextResponse.json({ error: 'Unauthorized - Invalid token' }, { status: 401 });

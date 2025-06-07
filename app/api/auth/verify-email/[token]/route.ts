@@ -18,7 +18,7 @@ import { EmailVerificationToken_PoC, UserProfile } from '@/lib/models/user.model
 
 async function verifyEmailHandler(
   req: NextRequest,
-  context?: { params?: { token?: string | string[] } }, // Corrected type for context/params
+  context: { params: Promise<{ token: string }> },
 ): Promise<NextResponse> {
   await initializeDatabase(); // Ensure DB is initialized
 
@@ -26,9 +26,8 @@ async function verifyEmailHandler(
     return NextResponse.json({ error: 'Method Not Allowed' }, { status: 405 });
   }
 
-  // Ensure token is a single string
-  const tokenValue = context?.params?.token;
-  const token = Array.isArray(tokenValue) ? tokenValue[0] : tokenValue;
+  // Get token from params
+  const { token } = await context.params;
 
 
   if (!token) {
@@ -38,7 +37,7 @@ async function verifyEmailHandler(
   // 1. Validate token
   let verificationToken: EmailVerificationToken_PoC | undefined;
   try {
-    verificationToken = await findVerificationToken(token);
+    verificationToken = findVerificationToken(token);
   } catch (dbError) {
     console.error('[DB Error Finding Token]', dbError);
     return NextResponse.json({ error: 'Error validating token. Please try again.' }, { status: 500 });
@@ -65,7 +64,7 @@ async function verifyEmailHandler(
   // 2. Update UserProfile.emailVerified to true
   //    The token stores userId, so we can update directly.
   try {
-    await updateUserEmailVerificationStatus(verificationToken.userId, true);
+    updateUserEmailVerificationStatus(verificationToken.userId, true);
   } catch (dbError) {
     console.error('[DB Error Updating User Verification Status]', dbError);
     return NextResponse.json({ error: 'Failed to update email verification status.' }, { status: 500 });
@@ -73,7 +72,7 @@ async function verifyEmailHandler(
 
   // 3. Invalidate the token (mark as used)
   try {
-    await markTokenAsUsed(token);
+    markTokenAsUsed(token);
   } catch (dbError) {
     console.error('[DB Error Marking Token Used]', dbError);
     // This is less critical if user status is updated, but should be logged.
@@ -88,7 +87,7 @@ async function verifyEmailHandler(
   try {
     // Assuming verificationToken.email holds the user's email
     // or verificationToken.userId can be used with findUserById
-    user = await findUserByEmail(verificationToken.email); // Or findUserById(verificationToken.userId)
+    user = findUserByEmail(verificationToken.email); // Or findUserById(verificationToken.userId)
   } catch (dbError) {
     console.error('[DB Error Finding User Post-Verification]', dbError);
     // User is verified, but we can't fetch them for login redirect details.
@@ -108,8 +107,6 @@ async function verifyEmailHandler(
   // return NextResponse.json({ message: 'Email verified successfully. Please log in.' }, { status: 200 });
 }
 
-export const GET = composeWrappers(
-  withRequestLogging,
-  withErrorHandling,
-  // withAuth, // Auth not typically needed for a verification link click
-)(verifyEmailHandler);
+export async function GET(request: NextRequest, context: { params: Promise<{ token: string }> }) {
+  return verifyEmailHandler(request, context);
+}

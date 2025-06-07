@@ -13,7 +13,7 @@ const MAX_REQUESTS_PER_WINDOW = 10; // Max 10 requests per IP per window for log
 
 export function withRateLimiting(handler: ApiRouteHandler): ApiRouteHandler {
   return async (req, params) => {
-    const ip = req.ip || req.headers.get('x-forwarded-for') || 'unknown';
+    const ip = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
 
     // Clean up expired entries (simple approach, could be optimized for very high traffic)
     const now = Date.now();

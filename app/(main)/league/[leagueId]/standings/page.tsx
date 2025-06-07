@@ -4,13 +4,13 @@ import React, { useState, useEffect } from 'react';
 import { GetStandingsResponseDto, TeamStandingDto } from '@/lib/dtos/standings.dto';
 
 interface PageProps {
-  params: {
+  params: Promise<{
     leagueId: string;
-  };
+  }>;
 }
 
-export default function StandingsPage({ params }: PageProps) {
-  const { leagueId } = params;
+export default async function StandingsPage({ params }: PageProps) {
+  const { leagueId } = await params;
   const [isLoading, setIsLoading] = useState(true);
   const [standings, setStandings] = useState<TeamStandingDto[]>([]);
   const [leagueInfo, setLeagueInfo] = useState<GetStandingsResponseDto['leagueInfo'] | null>(null);

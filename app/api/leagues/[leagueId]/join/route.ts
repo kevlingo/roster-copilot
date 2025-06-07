@@ -19,7 +19,7 @@ import { initializeDatabase } from '@/lib/dal/db';
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: { leagueId: string } }
+  { params }: { params: Promise<{ leagueId: string }> }
 ) {
   try {
     // Initialize database connection
@@ -34,7 +34,7 @@ export async function POST(
       );
     }
 
-    const { leagueId } = params;
+    const { leagueId } = await params;
 
     // Validate leagueId parameter
     if (!leagueId || typeof leagueId !== 'string' || leagueId.trim().length === 0) {

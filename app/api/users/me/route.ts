@@ -1,8 +1,9 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
+import * as jwt from 'jsonwebtoken';
 
 import { UpdateProfileDto, ChangePasswordDto } from '@/lib/dtos/auth.dto';
 import {
@@ -28,10 +29,10 @@ import { notificationService } from '@/lib/services/NotificationService';
  * GET /api/users/me - Get current user profile
  */
 const getUserProfileHandler: AuthenticatedApiRouteHandler = async (req: AuthenticatedRequest): Promise<NextResponse> => {
-  await initializeDatabase();
+  initializeDatabase();
 
-  const user = await findUserById(req.user.userId);
-  
+  const user = findUserById(req.user.userId);
+
   if (!user) {
     return NextResponse.json({ error: 'User not found' }, { status: 404 });
   }
@@ -39,7 +40,7 @@ const getUserProfileHandler: AuthenticatedApiRouteHandler = async (req: Authenti
   // Remove sensitive information before sending to client
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { passwordHash: _, ...userProfile } = user;
-  
+
   return NextResponse.json({ user: userProfile });
 };
 
@@ -47,7 +48,7 @@ const getUserProfileHandler: AuthenticatedApiRouteHandler = async (req: Authenti
  * PUT /api/users/me - Update user profile (username, email, or password)
  */
 const updateUserProfileHandler: AuthenticatedApiRouteHandler = async (req: AuthenticatedRequest): Promise<NextResponse> => {
-  await initializeDatabase();
+  initializeDatabase();
 
   let body;
   try {
@@ -84,8 +85,8 @@ async function handleProfileUpdate(req: AuthenticatedRequest, body: { username: 
   }
 
   const { username, email } = updateDto;
-  const currentUser = await findUserById(req.user.userId);
-  
+  const currentUser = findUserById(req.user.userId);
+
   if (!currentUser) {
     return NextResponse.json({ error: 'User not found' }, { status: 404 });
   }
@@ -95,33 +96,33 @@ async function handleProfileUpdate(req: AuthenticatedRequest, body: { username: 
   // Check if username is being changed
   if (username !== currentUser.username) {
     // Check if new username is already taken
-    const existingUser = await findUserByUsername(username);
+    const existingUser = findUserByUsername(username);
     if (existingUser && existingUser.userId !== req.user.userId) {
       return NextResponse.json({ error: 'Username is already taken' }, { status: 409 });
     }
-    
-    await updateUserUsername(req.user.userId, username);
+
+    updateUserUsername(req.user.userId, username);
     updatedFields.push('username');
   }
 
   // Check if email is being changed
   if (email !== currentUser.email) {
     // Check if new email is already taken
-    const existingUser = await findUserByEmail(email);
+    const existingUser = findUserByEmail(email);
     if (existingUser && existingUser.userId !== req.user.userId) {
       return NextResponse.json({ error: 'Email is already taken' }, { status: 409 });
     }
-    
+
     // Update email and set emailVerified to false
-    await updateUserEmail(req.user.userId, email);
+    updateUserEmail(req.user.userId, email);
     updatedFields.push('email');
 
     // Generate and send email verification token for the new email
     try {
       const token = crypto.randomUUID();
       const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(); // 24 hours
-      
-      await createEmailVerificationToken({
+
+      createEmailVerificationToken({
         userId: req.user.userId,
         token,
         email,
@@ -171,15 +172,15 @@ async function handlePasswordChange(req: AuthenticatedRequest, body: { currentPa
     return NextResponse.json({ error: 'New passwords do not match' }, { status: 400 });
   }
 
-  const currentUser = await findUserById(req.user.userId);
-  
+  const currentUser = findUserById(req.user.userId);
+
   if (!currentUser) {
     return NextResponse.json({ error: 'User not found' }, { status: 404 });
   }
 
   // Verify current password
   const isCurrentPasswordValid = await bcrypt.compare(currentPassword, currentUser.passwordHash);
-  
+
   if (!isCurrentPasswordValid) {
     return NextResponse.json({ error: 'Current password is incorrect' }, { status: 400 });
   }
@@ -187,21 +188,78 @@ async function handlePasswordChange(req: AuthenticatedRequest, body: { currentPa
   // Hash new password and update
   const saltRounds = 12;
   const newPasswordHash = await bcrypt.hash(newPassword, saltRounds);
-  
-  await updateUserPassword(req.user.userId, newPasswordHash);
+
+  updateUserPassword(req.user.userId, newPasswordHash);
 
   return NextResponse.json({ message: 'Password changed successfully' });
 }
 
-// Export the handlers with middleware applied
-export const GET = withRequestLogging(
-  withErrorHandling(
-    withAuth(getUserProfileHandler)
-  )
-);
+export async function GET(request: NextRequest) {
+  // Check authentication
+  const authHeader = request.headers.get('authorization');
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return NextResponse.json({ error: 'Unauthorized - Missing or invalid authorization header' }, { status: 401 });
+  }
 
-export const PUT = withRequestLogging(
-  withErrorHandling(
-    withAuth(updateUserProfileHandler)
-  )
-);
+  const token = authHeader.substring(7);
+  try {
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) {
+      console.error('JWT_SECRET is not defined in environment variables.');
+      return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    }
+
+    const decoded = jwt.verify(token, jwtSecret) as jwt.JwtPayload & {
+      userId: string;
+      email: string;
+      username: string;
+    };
+
+    const authenticatedReq = request as AuthenticatedRequest;
+    authenticatedReq.user = {
+      userId: decoded.userId,
+      email: decoded.email,
+      username: decoded.username,
+    };
+
+    return getUserProfileHandler(authenticatedReq, {});
+  } catch (error) {
+    console.error('[Auth] JWT verification failed:', error);
+    return NextResponse.json({ error: 'Unauthorized - Invalid token' }, { status: 401 });
+  }
+}
+
+export async function PUT(request: NextRequest) {
+  // Check authentication
+  const authHeader = request.headers.get('authorization');
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return NextResponse.json({ error: 'Unauthorized - Missing or invalid authorization header' }, { status: 401 });
+  }
+
+  const token = authHeader.substring(7);
+  try {
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) {
+      console.error('JWT_SECRET is not defined in environment variables.');
+      return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    }
+
+    const decoded = jwt.verify(token, jwtSecret) as jwt.JwtPayload & {
+      userId: string;
+      email: string;
+      username: string;
+    };
+
+    const authenticatedReq = request as AuthenticatedRequest;
+    authenticatedReq.user = {
+      userId: decoded.userId,
+      email: decoded.email,
+      username: decoded.username,
+    };
+
+    return updateUserProfileHandler(authenticatedReq, {});
+  } catch (error) {
+    console.error('[Auth] JWT verification failed:', error);
+    return NextResponse.json({ error: 'Unauthorized - Invalid token' }, { status: 401 });
+  }
+}

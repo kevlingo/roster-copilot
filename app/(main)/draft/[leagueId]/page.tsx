@@ -26,13 +26,13 @@ interface DraftPick {
 }
 
 interface PageProps {
-  params: {
+  params: Promise<{
     leagueId: string;
-  };
+  }>;
 }
 
-export default function DraftPage({ params }: PageProps) {
-  const { leagueId } = params;
+export default async function DraftPage({ params }: PageProps) {
+  const { leagueId } = await params;
   const [positionFilter, setPositionFilter] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isPickingPlayer, setIsPickingPlayer] = useState(false);

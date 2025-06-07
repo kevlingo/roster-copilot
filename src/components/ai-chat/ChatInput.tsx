@@ -1,3 +1,5 @@
+'use client';
+
 import React, { forwardRef } from 'react';
 import { SendHorizontal } from 'lucide-react'; // Removed X and Settings
 import HideChatButton from './buttons/HideChatButton';
