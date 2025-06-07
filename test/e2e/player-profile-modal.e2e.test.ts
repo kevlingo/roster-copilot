@@ -95,7 +95,7 @@ test.describe('Player Profile Modal E2E Tests', () => {
     
     // Check for player attributes section (if player has attributes)
     const attributesSection = page.locator('.modal-content').locator('text=Player Attributes');
-    if (await attributesSection.count() > 0) {
+    if ((await attributesSection.count()) > 0) {
       await expect(page.locator('.modal-content')).toContainText('Consistency');
       await expect(page.locator('.modal-content')).toContainText('Upside Potential');
       await expect(page.locator('.modal-content')).toContainText('Role');

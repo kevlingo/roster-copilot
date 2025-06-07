@@ -54,16 +54,16 @@ jest.mock('./ChatBubbleOverlay', () => {
     const MockedChatBubbleOverlay: React.FC<MockChatBubbleOverlayProps> = ({ messages, isVisible }) => {
         if (!isVisible) return null;
         return (
-            // The actual ChatBubbleOverlay does not have hide/clear buttons anymore
-            <div data-testid="chat-bubble-overlay">
-                <div data-testid="message-list">
-                    {messages.map((msg: MessageObject) => (
-                        <div key={msg.id} data-testid={`message-${msg.id}`}>
-                            {msg.text} ({msg.sender})
-                        </div>
-                    ))}
-                </div>
+          // The actual ChatBubbleOverlay does not have hide/clear buttons anymore
+          <div data-testid="chat-bubble-overlay">
+            <div data-testid="message-list">
+                {messages.map((msg: MessageObject) => (
+                    <div key={msg.id} data-testid={`message-${msg.id}`}>
+                        {msg.text} ({msg.sender})
+                    </div>
+                ))}
             </div>
+          </div>
         );
     };
     MockedChatBubbleOverlay.displayName = 'ChatBubbleOverlay';

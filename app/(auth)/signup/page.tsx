@@ -77,13 +77,11 @@ export default function SignupPage() {
   return (
     <div className="space-y-6">
       <h2 className="text-xl font-semibold text-center">Create Account</h2>
-
       {formMessage && (
         <div className={`alert ${formMessage.type === 'error' ? 'alert-error' : 'alert-success'} text-sm`}>
           {formMessage.message}
         </div>
       )}
-
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div className="form-control">
           <label htmlFor="usernameInput" className="label">
@@ -192,7 +190,6 @@ export default function SignupPage() {
           {isLoading ? 'Creating account...' : 'Sign Up'}
         </button>
       </form>
-
       <div className="text-center">
         <p className="text-sm">
           Already have an account?{' '}

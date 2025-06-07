@@ -18,11 +18,13 @@ interface NavItemProps {
 
 const NavItem: React.FC<NavItemProps> = ({ href, icon, text, active }) => {
   return (
-    <Link href={href} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-      active 
-        ? 'bg-primary text-primary-content' 
-        : 'hover:bg-base-200'
-    }`}>
+    <Link
+      href={href}
+      className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+        active
+          ? 'bg-primary text-primary-content'
+          : 'hover:bg-base-200'
+      }`}>
       <div className="w-5 h-5">{icon}</div>
       <span className="font-medium">{text}</span>
     </Link>

@@ -111,10 +111,8 @@ export default function LoginPage() {
           </label>
           <div className="text-sm">
             {/* TODO: Subtask 2.9: Implement "Forgot Password?" link (pointing to Story 1.5 route) */}
-            <Link href="/forgot-password" legacyBehavior>
-              <a className="link link-primary hover:link-secondary">
-                Forgot password?
-              </a>
+            <Link href="/forgot-password" className="link link-primary hover:link-secondary">
+              Forgot password?
             </Link>
           </div>
         </div>
@@ -157,10 +155,8 @@ export default function LoginPage() {
 
       <p className="mt-6 text-center text-sm">
         Don&apos;t have an account?{' '}
-        <Link href="/signup" legacyBehavior>
-          <a className="link link-primary hover:link-secondary">
-            Sign Up
-          </a>
+        <Link href="/signup" className="link link-primary hover:link-secondary">
+          Sign Up
         </Link>
       </p>
     </div>

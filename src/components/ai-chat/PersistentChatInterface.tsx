@@ -115,7 +115,6 @@ const PersistentChatInterface: React.FC = () => {
         isVisible={isOverlayVisible}
         // onHideOverlay and onClearHistory removed from here
       />
-
       {/* Wrapper for ChatInput to re-enable pointer events */}
       <div className="mt-auto pointer-events-auto">
         <ChatInput

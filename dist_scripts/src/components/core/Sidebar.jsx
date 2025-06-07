@@ -4,12 +4,17 @@ import { usePathname } from 'next/navigation';
 import { LayoutDashboard, Users, UserCircle, Trophy, Brain, } from 'lucide-react';
 var NavItem = function (_a) {
     var href = _a.href, icon = _a.icon, text = _a.text, active = _a.active;
-    return (<Link href={href} className={"flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ".concat(active
-            ? 'bg-primary text-primary-content'
-            : 'hover:bg-base-200')}>
-      <div className="w-5 h-5">{icon}</div>
-      <span className="font-medium">{text}</span>
-    </Link>);
+    return (
+        <Link
+            href={href}
+            className={"flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ".concat(active
+                    ? 'bg-primary text-primary-content'
+                    : 'hover:bg-base-200')}
+            legacyBehavior>
+            <div className="w-5 h-5">{icon}</div>
+            <span className="font-medium">{text}</span>
+        </Link>
+    );
 };
 var Sidebar = function (_a) {
     var currentLeagueId = _a.currentLeagueId;

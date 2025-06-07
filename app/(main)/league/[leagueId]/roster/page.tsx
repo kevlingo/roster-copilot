@@ -222,7 +222,6 @@ export default async function RosterPage({ params }: PageProps) {
           </Link>
         </div>
       </div>
-
       {/* Roster Slot Summary */}
       <div className="card bg-base-200">
         <div className="card-body">
@@ -242,7 +241,6 @@ export default async function RosterPage({ params }: PageProps) {
           </div>
         </div>
       </div>
-
       {/* Team Summary */}
       <div className="card bg-base-100 shadow">
         <div className="card-body">
@@ -270,7 +268,6 @@ export default async function RosterPage({ params }: PageProps) {
           </div>
         </div>
       </div>
-
       {/* Players by Position */}
       {Object.keys(playersByPosition).length > 0 ? (
         <div className="space-y-6">
@@ -350,16 +347,15 @@ export default async function RosterPage({ params }: PageProps) {
         </div>
       ) : (
         /* Empty roster message */
-        <div className="card bg-base-100 shadow">
+        (<div className="card bg-base-100 shadow">
           <div className="card-body text-center">
             <h3 className="card-title justify-center mb-4">No Players on Roster</h3>
             <p className="text-base-content/70 mb-4">
               Your roster is empty. Add players through the draft or waiver wire.
             </p>
           </div>
-        </div>
+        </div>)
       )}
-
       {/* Player Profile Modal */}
       <PlayerProfileModal
         isOpen={isModalOpen}
