@@ -5,7 +5,7 @@ This document consolidates key operational aspects for the Roster Copilot Proof-
 ### Coding Standards
 
 These standards are mandatory for all code developed for the Roster Copilot Proof-of-Concept.
-* **Primary Runtimes & Languages:** TypeScript (~5.x), Node.js (~20.x or ~22.x LTS), Next.js (~14.x). (Refer to Definitive Tech Stack for exact versions)
+* **Primary Runtimes & Languages:** TypeScript 5.5.3, Node.js (~20.x or ~22.x LTS), Next.js 15.3.3, React 19.1.0. (Framework modernization completed 2025-06-07)
 * **Style Guide & Linter:** ESLint (with `eslint-config-next`) and Prettier (default settings). Adherence expected.
 * **Naming Conventions:**
     * Variables & Functions/Methods: `camelCase`.
@@ -14,7 +14,7 @@ These standards are mandatory for all code developed for the Roster Copilot Proo
     * File Names: React Component files: `PascalCase.tsx`. Non-component TypeScript files: `kebab-case.ts` or `PascalCase.ts` for classes/services. Next.js `app` router uses special names like `page.tsx`, `layout.tsx`, `route.ts`. Script files (e.g. in `scripts/`) can be `kebab-case.ts` or `snake_case.py` if Python.
 * **Theming:**
     * Application shall support Light and Dark UI themes.
-    * A recognized Tailwind CSS theming solution (e.g., DaisyUI's built-in theming capabilities or `next-themes`) will be utilized.
+    * Tailwind CSS 4.1.8 with DaisyUI 5.0.43 theming solution using CSS-based configuration will be utilized.
     * Styles must be theme-aware (e.g., Tailwind `dark:` variants).
     * Visual design specs will include palettes for both themes.
 * **File Structure:** Adherence to the `## Project Structure` section defined in this document and the `Frontend-Architecture.md` is mandatory.
@@ -31,7 +31,7 @@ These standards are mandatory for all code developed for the Roster Copilot Proo
 
 ### Overall Testing Strategy (Proof-of-Concept)
 
-* **Primary Testing Tools:** Jest (with React Testing Library); Playwright. (Refer to Definitive Tech Stack for exact versions)
+* **Primary Testing Tools:** Jest 29.7.0 (with React Testing Library 16.3.0 - React 19 compatible); Playwright 1.52.0.
 * **Unit Tests:**
   - **Scope:** Test individual React components, utility functions, critical AI Copilot Service logic units, core DAL functions, individual service methods.
   - **Location:** Co-located with source files (e.g., `*.test.ts` or `*.spec.ts` next to `*.ts` file) or in a `__tests__` subdirectory.
@@ -40,14 +40,14 @@ These standards are mandatory for all code developed for the Roster Copilot Proo
 * **Integration Tests (PoC Scope):**
   - **Scope:** Test the interaction between several components or services. E.g., API route handler to service layer to DAL (using a test SQLite instance or in-memory version if feasible for DAL tests). Test "AI Copilot Service" orchestrating calls to DAL and Gemini mock.
   - **Location:** Likely in a separate `test/integration` directory.
-  - **Environment:** May use Testcontainers for managing test databases if complexity grows beyond simple SQLite file testing, or dedicated test SQLite files. Mock external APIs (Gemini, Resend).
+  - **Environment:** May use Testcontainers for managing test databases if complexity grows beyond simple better-sqlite3 file testing, or dedicated test database files. Mock external APIs (Gemini, Resend).
 * **End-to-End (E2E) Tests (PoC Scope):**
   - **Scope:** Playwright for 1-2 critical "happy path" demo flows (e.g., User Onboarding + Archetype selection, Draft Pick with AI Co-Pilot advice, Viewing Weekly Digest).
   - **Tools:** Playwright.
   - **AI Agent Responsibility:** AI Agent may be tasked with generating E2E test stubs or scripts based on user stories. Focus on critical happy paths.
 * **Test Coverage (PoC Target):** Sufficient coverage for reliable core MVP features and demo flows. Quality and critical path coverage prioritized over percentage. Aim for high coverage on new business logic in services and utilities.
-* **Mocking/Stubbing Strategy (General):** Mock Gemini AI and Resend APIs in unit/component/integration tests. E2E tests run against the PoC application using static/synthetic PoC dataset in SQLite.
-* **Test Data Management (PoC):** Small, representative subsets of static/synthetic data. SQLite seeded for specific test scenarios (e.g., via `seed-db.ts` script from Story 1.0.2).
+* **Mocking/Stubbing Strategy (General):** Mock Gemini AI and Resend APIs in unit/component/integration tests. E2E tests run against the PoC application using static/synthetic PoC dataset in better-sqlite3.
+* **Test Data Management (PoC):** Small, representative subsets of static/synthetic data. better-sqlite3 seeded for specific test scenarios (e.g., via `seed-db.ts` script from Story 1.0.2).
 * **Manual Testing:** Thorough manual testing of all demonstrated features and flows.
 * **Development Methodology Note (TDD):** Pragmatic approach. TDD for select critical backend logic (e.g., in AI Copilot Service). Test-after for most UI/features to prioritize working PoC demo.
 
@@ -58,8 +58,8 @@ These standards are mandatory for all code developed for the Roster Copilot Proo
 * **Specific Handling Patterns (PoC):**
     * **External API Calls (Google Gemini AI, Resend):** "AI Copilot Service" and "Notification Service" will use `try/catch`, log detailed errors, and return simplified user-friendly error messages or signals to UI. No complex retries beyond SDK defaults or simple retry logic for PoC.
     * **Internal Errors / Business Logic Exceptions (Backend):** Caught by general error handler middleware (Story 1.0.3), results in generic HTTP 500 (or other appropriate status) to frontend, details logged server-side.
-    * **Data Access Layer (DAL) / SQLite Errors (PoC):** DAL logs specific errors, propagates generic error up to be caught by service layer or error handler middleware.
-    * **Transaction Management (PoC):** Minimal; discrete DAL operations treated atomically. SQLite default transaction behavior per statement.
+    * **Data Access Layer (DAL) / better-sqlite3 Errors (PoC):** DAL logs specific errors, propagates generic error up to be caught by service layer or error handler middleware.
+    * **Transaction Management (PoC):** Minimal; discrete DAL operations treated atomically. better-sqlite3 default transaction behavior per statement.
 
 ### Security Best Practices (Proof-of-Concept)
 

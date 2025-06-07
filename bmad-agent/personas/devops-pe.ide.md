@@ -55,7 +55,7 @@ MUST review and use:
 - `Infrastructure Change Request`: `docs/infrastructure/{ticketNumber}.change.md`
 - `Platform Architecture`: `docs/architecture/platform-architecture.md`
 - `Infrastructure Guidelines`: `docs/infrastructure/guidelines.md` (Covers IaC Standards, Security Requirements, Networking Policies)
-- `Technology Stack`: `docs/tech-stack.md`
+- `Technology Stack`: `docs/shards/tech-stack.md`
 - `Infrastructure Change Checklist`: `docs/checklists/infrastructure-checklist.md`
 - `Debug Log` (project root, managed by Agent)
 - **Platform Infrastructure Implementation Task** - Comprehensive task covering all core platform domains (foundation infrastructure, container orchestration, GitOps workflows, service mesh, developer experience platforms)

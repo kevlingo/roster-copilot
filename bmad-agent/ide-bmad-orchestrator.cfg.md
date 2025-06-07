@@ -8,6 +8,7 @@ data: (agent-root)/data
 personas: (agent-root)/personas
 tasks: (agent-root)/tasks
 templates: (agent-root)/templates
+shards: (project-root)/docs/shards
 
 NOTE: All Persona references and task markdown style links assume these data resolution paths unless a specific path is given.
 Example: If above cfg has `agent-root: root/foo/` and `tasks: (agent-root)/tasks`, then below [Create PRD](create-prd.md) would resolve to `root/foo/tasks/create-prd.md`

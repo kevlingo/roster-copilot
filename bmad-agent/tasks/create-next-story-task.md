@@ -8,14 +8,14 @@ To identify the next logical story based on project progress and epic definition
 
 - Access to the project's documentation repository, specifically:
   - `docs/index.md` (hereafter "Index Doc")
-  - All Epic files (e.g., `docs/epic-{n}.md` - hereafter "Epic Files")
+  - All Epic files (e.g., `docs/shards/epic-{n}.md` - hereafter "Epic Files")
   - Existing story files in `docs/stories/`
   - Main PRD (hereafter "PRD Doc")
   - Main Architecture Document (hereafter "Main Arch Doc")
   - Frontend Architecture Document (hereafter "Frontend Arch Doc," if relevant)
-  - Project Structure Guide (`docs/project-structure.md`)
-  - Operational Guidelines Document (`docs/operational-guidelines.md`)
-  - Technology Stack Document (`docs/tech-stack.md`)
+  - Project Structure Guide (`docs/shards/project-structure.md`)
+  - Operational Guidelines Document (`docs/shards/operational-guidelines.md`)
+  - Technology Stack Document (`docs/shards/tech-stack.md`)
   - Data Models Document (as referenced in Index Doc)
   - API Reference Document (as referenced in Index Doc)
   - UI/UX Specifications, Style Guides, Component Guides (if relevant, as referenced in Index Doc)
@@ -51,7 +51,7 @@ To identify the next logical story based on project progress and epic definition
   - Else (story not found or prerequisites not met): The next story is the first story in the next Epic File (e.g., `docs/epic-{lastEpicNum + 1}.md`, then `{lastEpicNum + 2}.md`, etc.) whose prerequisites are met.
 
 - **If no story files exist in `docs/stories/`:**
-  - The next story is the first story in `docs/epic-1.md` (then `docs/epic-2.md`, etc.) whose prerequisites are met.
+  - The next story is the first story in `docs/shards/epic-1.md` (then `docs/shards/epic-2.md`, etc.) whose prerequisites are met.
 - If no suitable story with met prerequisites is found, report to the user that story creation is blocked, specifying what prerequisites are pending. HALT task.
 - Announce the identified story to the user: "Identified next story for preparation: {epicNum}.{storyNum} - {Story Title}".
 

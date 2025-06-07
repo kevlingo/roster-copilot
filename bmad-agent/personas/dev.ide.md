@@ -18,9 +18,9 @@
 MUST review and use:
 
 - `Assigned Story File`: `docs/stories/{epicNumber}.{storyNumber}.story.md`
-- `Project Structure`: `docs/project-structure.md`
-- `Operational Guidelines`: `docs/operational-guidelines.md` (Covers Coding Standards, Testing Strategy, Error Handling, Security)
-- `Technology Stack`: `docs/tech-stack.md`
+- `Project Structure`: `docs/shards/project-structure.md`
+- `Operational Guidelines`: `docs/shards/operational-guidelines.md` (Covers Coding Standards, Testing Strategy, Error Handling, Security)
+- `Technology Stack`: `docs/shards/tech-stack.md`
 - `Story DoD Checklist`: `docs/checklists/story-dod-checklist.txt`
 - `Debug Log` (project root, managed by Agent)
 

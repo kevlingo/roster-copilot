@@ -48,12 +48,12 @@ This document details the technical architecture specifically for the frontend o
 The frontend architecture for the Roster Copilot Proof-of-Concept (PoC) will prioritize rapid development, a modern user experience ("pop"), responsiveness, and clear integration with the Next.js backend API and the AI Copilot's features. It will adhere to the following philosophies and patterns:
 
   * **Framework & Core Libraries:**
-      * **Next.js (with React):** As defined in the System Architecture, Next.js (latest stable, e.g., \~14.x or \~15.x as of May 2025) will be used as the primary framework, leveraging React (latest stable, e.g., \~18.x) for building the user interface.
-      * **TypeScript:** Will be used for all frontend code to ensure type safety and improve developer experience, aligning with the overall project language choice.
+      * **Next.js (with React):** As defined in the System Architecture, Next.js 15.3.3 (latest stable) will be used as the primary framework, leveraging React 19.1.0 (latest) for building the user interface with strict server/client component separation.
+      * **TypeScript:** TypeScript 5.5.3 (stable) will be used for all frontend code to ensure type safety and improve developer experience, aligning with the overall project language choice.
   * **Component Architecture:**
       * A **Component-Based Architecture** will be strictly followed, utilizing reusable React functional components with Hooks.
       * We will leverage **DaisyUI components** (built on Tailwind CSS) for common UI elements (buttons, forms, modals, cards, etc.) to accelerate development and ensure a consistent base style.
-      * **Tailwind CSS utility classes** will be used for custom styling and fine-tuning the appearance of DaisyUI components or creating bespoke layout elements to achieve the desired "pop" and unique Roster Copilot feel.
+      * **Tailwind CSS 4.1.8 utility classes** will be used for custom styling and fine-tuning the appearance of DaisyUI 5.0.43 components or creating bespoke layout elements to achieve the desired "pop" and unique Roster Copilot feel. Uses CSS-based configuration instead of JavaScript config.
       * Consideration will be given to a simple, practical organization of components (e.g., shared/core components, feature-specific components) as outlined later in the "Detailed Frontend Directory Structure."
   * **State Management Strategy (PoC Scope):**
       * For the PoC, frontend state management will be kept as simple as possible.
@@ -66,7 +66,7 @@ The frontend architecture for the Roster Copilot Proof-of-Concept (PoC) will pri
       * Data fetched from APIs will be managed via component state or context as described above.
   * **Styling Approach:**
       * **Tailwind CSS:** Primary utility-first CSS framework for all styling.
-      * **DaisyUI:** Used as a component library providing pre-styled Tailwind CSS components to ensure visual consistency and speed up development. Themes (light/dark) will be managed using DaisyUI's theming capabilities or a compatible Tailwind plugin like `next-themes`.
+      * **DaisyUI 5.0.43:** Used as a component library providing pre-styled Tailwind CSS components to ensure visual consistency and speed up development. Themes (light/dark) will be managed using DaisyUI's theming capabilities with CSS custom properties or a compatible Tailwind plugin like `next-themes`.
       * **Global Styles (`app/globals.css`):** Will contain Tailwind base directives, any global style overrides, and potentially base font configurations.
   * **Key Design Patterns (Frontend):**
       * **Functional Components with Hooks:** Standard React pattern.
@@ -219,7 +219,7 @@ The state management strategy for the Roster Copilot PoC prioritizes simplicity,
 
 ## Frontend Testing Strategy (Proof-of-Concept)
 
-  * **Primary Frontend Testing Tools:** Jest (with React Testing Library); Playwright.
+  * **Primary Frontend Testing Tools:** Jest 29.7.0 (with React Testing Library 16.3.0 - React 19 compatible); Playwright 1.52.0.
   * **Unit & Component Tests (Frontend Focus):** Test individual React components (core UI, AI Copilot panel, Draft Room components), custom hooks. Use RTL to simulate events, assert rendering. Mock Next.js API calls. Co-locate test files.
   * **Integration Tests (Frontend Focus - PoC Scope):** Limited. Covered by component tests rendering trees or E2E tests. Focus on components consuming shared state correctly.
   * **End-to-End (E2E) Tests (Frontend Focus - PoC Scope):** Playwright for 1-2 critical "happy path" user flows (e.g., Onboarding, Digest Interaction). Validate full interaction against mocked backend or PoC backend with static data.

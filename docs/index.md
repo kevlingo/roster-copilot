@@ -9,10 +9,10 @@ This index provides a central catalog of key project documents for Roster Copilo
 
 ## Epics (from PRD)
 
-*   [**Epic 1: Core Platform Foundation & League Engagement MVP**](./epic-1.md) - Details the foundational non-AI functionalities.
-*   [**Epic 2: AI Copilot Onboarding & Personalization Foundation MVP**](./epic-2.md) - Covers the AI onboarding and user preference profile system.
-*   [**Epic 3: AI-Powered Draft Assistance MVP (Draft Day Co-Pilot)**](./epic-3.md) - Describes AI-driven guidance for the live draft.
-*   [**Epic 4: AI-Driven In-Season Strategic Guidance MVP**](./epic-4.md) - Outlines AI-powered strategic advice for in-season management.
+*   [**Epic 1: Core Platform Foundation & League Engagement MVP**](./shards/epic-1.md) - Details the foundational non-AI functionalities.
+*   [**Epic 2: AI Copilot Onboarding & Personalization Foundation MVP**](./shards/epic-2.md) - Covers the AI onboarding and user preference profile system.
+*   [**Epic 3: AI-Powered Draft Assistance MVP (Draft Day Co-Pilot)**](./shards/epic-3.md) - Describes AI-driven guidance for the live draft.
+*   [**Epic 4: AI-Driven In-Season Strategic Guidance MVP**](./shards/epic-4.md) - Outlines AI-powered strategic advice for in-season management.
 
 ## Architecture & Design
 
@@ -23,26 +23,26 @@ This index provides a central catalog of key project documents for Roster Copilo
 
 ### Sharded Architecture Documents
 
-*   [**API Reference**](./api-reference.md) - Details on external and internal APIs.
-*   [**Component View**](./component-view.md) - Describes system components and adopted design patterns.
-*   [**Data Models**](./data-models.md) - Defines core application entities, API payloads, and database schemas.
-*   [**Environment Variables**](./environment-vars.md) - Documentation for key environment variables.
-*   [**Infrastructure and Deployment Overview**](./infra-deployment.md) - Overview of the PoC infrastructure and deployment strategy.
-*   [**Key Reference Documents**](./key-references.md) - Lists key documents that informed the architecture.
-*   [**Operational Guidelines**](./operational-guidelines.md) - Consolidated guidelines for coding, testing, error handling, and security.
-*   [**Project Structure**](./project-structure.md) - Outlines the project's directory and file structure.
-*   [**Sequence Diagrams**](./sequence-diagrams.md) - Illustrates core system workflows.
-*   [**Technology Stack**](./tech-stack.md) - Lists the definitive technology selections for the project.
+*   [**API Reference**](./shards/api-reference.md) - Details on external and internal APIs.
+*   [**Component View**](./shards/component-view.md) - Describes system components and adopted design patterns.
+*   [**Data Models**](./shards/data-models.md) - Defines core application entities, API payloads, and database schemas.
+*   [**Environment Variables**](./shards/environment-vars.md) - Documentation for key environment variables.
+*   [**Infrastructure and Deployment Overview**](./shards/infra-deployment.md) - Overview of the PoC infrastructure and deployment strategy.
+*   [**Key Reference Documents**](./shards/key-references.md) - Lists key documents that informed the architecture.
+*   [**Operational Guidelines**](./shards/operational-guidelines.md) - Consolidated guidelines for coding, testing, error handling, and security.
+*   [**Project Structure**](./shards/project-structure.md) - Outlines the project's directory and file structure.
+*   [**Sequence Diagrams**](./shards/sequence-diagrams.md) - Illustrates core system workflows.
+*   [**Technology Stack**](./shards/tech-stack.md) - Lists the definitive technology selections for the project.
 
 #### Frontend Specific Granules
-*   [**Frontend API Interaction**](./front-end-api-interaction.md) - How the frontend interacts with backend APIs.
-*   [**Frontend Component Guide**](./front-end-component-guide.md) - Details on component breakdown, naming, and specification template.
-*   [**Frontend Coding Standards**](./front-end-coding-standards.md) - Coding standards specific to frontend development.
-*   [**Frontend Project Structure**](./front-end-project-structure.md) - Detailed frontend directory and file structure.
-*   [**Frontend Routing Strategy**](./front-end-routing-strategy.md) - Defines the frontend routing mechanisms and conventions.
-*   [**Frontend State Management**](./front-end-state-management.md) - In-depth look at the frontend state management strategy.
-*   [**Frontend Style Guide**](./front-end-style-guide.md) - Core styling philosophy and approach for the frontend.
-*   [**Frontend Testing Strategy**](./front-end-testing-strategy.md) - Specifics of the frontend testing approach.
+*   [**Frontend API Interaction**](./shards/front-end-api-interaction.md) - How the frontend interacts with backend APIs.
+*   [**Frontend Component Guide**](./shards/front-end-component-guide.md) - Details on component breakdown, naming, and specification template.
+*   [**Frontend Coding Standards**](./shards/front-end-coding-standards.md) - Coding standards specific to frontend development.
+*   [**Frontend Project Structure**](./shards/front-end-project-structure.md) - Detailed frontend directory and file structure.
+*   [**Frontend Routing Strategy**](./shards/front-end-routing-strategy.md) - Defines the frontend routing mechanisms and conventions.
+*   [**Frontend State Management**](./shards/front-end-state-management.md) - In-depth look at the frontend state management strategy.
+*   [**Frontend Style Guide**](./shards/front-end-style-guide.md) - Core styling philosophy and approach for the frontend.
+*   [**Frontend Testing Strategy**](./shards/front-end-testing-strategy.md) - Specifics of the frontend testing approach.
 
 ## Development & Operational
 
