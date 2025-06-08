@@ -30,3 +30,4 @@ data/*
 # Test outputs
 test-results
 playwright-report
+codebase.md
