@@ -42,22 +42,32 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
   restoreAuth: () => {
     // Restore authentication state from sessionStorage on app initialization
+    console.log('[AuthStore] Attempting to restore auth from sessionStorage');
+
     if (typeof window !== 'undefined') {
       const token = sessionStorage.getItem('auth_token');
       const userStr = sessionStorage.getItem('auth_user');
+
+      console.log('[AuthStore] Found in sessionStorage:', { hasToken: !!token, hasUser: !!userStr });
 
       if (token && userStr) {
         try {
           const user = JSON.parse(userStr) as UserProfile;
           set({ user, token, isAuthenticated: true });
-          console.log('Auth state restored from sessionStorage');
+          console.log('[AuthStore] Auth state restored from sessionStorage successfully');
         } catch (error) {
-          console.error('Failed to restore auth state:', error);
+          console.error('[AuthStore] Failed to restore auth state:', error);
           // Clear invalid data
           sessionStorage.removeItem('auth_token');
           sessionStorage.removeItem('auth_user');
+          set({ user: null, token: null, isAuthenticated: false });
         }
+      } else {
+        console.log('[AuthStore] No valid auth data found in sessionStorage');
+        set({ user: null, token: null, isAuthenticated: false });
       }
+    } else {
+      console.log('[AuthStore] Window not available, cannot restore auth');
     }
   },
 }));

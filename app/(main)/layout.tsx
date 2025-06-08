@@ -17,7 +17,7 @@ export default function MainLayout({
   const router = useRouter();
   const { showSuccess } = useAINotification();
   const { logout: logoutFromStore, user } = useAuthStore();
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
 
   // Current league ID (would come from state management in a real app)
   const currentLeagueId = 'league-123';
@@ -34,18 +34,20 @@ export default function MainLayout({
   useEffect(() => {
     // Check for saved preference or system preference
     const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
 
     if (savedTheme) {
       setTheme(savedTheme as 'light' | 'dark');
       document.documentElement.setAttribute('data-theme', savedTheme);
-    } else if (prefersDark) {
+    } else if (prefersLight) {
+      setTheme('light');
+      document.documentElement.setAttribute('data-theme', 'light');
+      localStorage.setItem('theme', 'light');
+    } else {
+      // Default to dark mode
       setTheme('dark');
       document.documentElement.setAttribute('data-theme', 'dark');
       localStorage.setItem('theme', 'dark');
-    } else {
-      // Default to light mode if no preference is set
-      localStorage.setItem('theme', 'light');
     }
   }, []);
   

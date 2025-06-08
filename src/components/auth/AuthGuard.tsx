@@ -17,13 +17,36 @@ export default function AuthGuard({ children, fallback }: AuthGuardProps) {
   const router = useRouter();
   const { isAuthenticated, token, restoreAuth } = useAuthStore();
   const [isLoading, setIsLoading] = useState(true);
+  const [hasRestoredAuth, setHasRestoredAuth] = useState(false);
 
   useEffect(() => {
     // First, try to restore authentication state from sessionStorage
+    console.log('[AuthGuard] Attempting to restore auth from sessionStorage');
     restoreAuth();
+    setHasRestoredAuth(true);
   }, [restoreAuth]);
 
+  // Add a timeout to prevent infinite loading
   useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (isLoading) {
+        console.log('[AuthGuard] Timeout reached, forcing redirect to login');
+        router.push('/login');
+      }
+    }, 5000); // 5 second timeout
+
+    return () => clearTimeout(timeout);
+  }, [isLoading, router]);
+
+  useEffect(() => {
+    // Only check authentication after we've attempted to restore it
+    if (!hasRestoredAuth) {
+      console.log('[AuthGuard] Waiting for auth restoration...');
+      return;
+    }
+
+    console.log('[AuthGuard] Checking authentication status:', { isAuthenticated, hasToken: !!token });
+
     // Check authentication status after potential restoration
     if (!isAuthenticated || !token) {
       console.log('[AuthGuard] User not authenticated, redirecting to login');
@@ -38,8 +61,9 @@ export default function AuthGuard({ children, fallback }: AuthGuardProps) {
     }
 
     // User is authenticated, allow access
+    console.log('[AuthGuard] User authenticated, allowing access');
     setIsLoading(false);
-  }, [isAuthenticated, token, router]);
+  }, [isAuthenticated, token, router, hasRestoredAuth]);
 
   // Show loading state while checking authentication
   if (isLoading) {
