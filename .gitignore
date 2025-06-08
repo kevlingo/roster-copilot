@@ -24,4 +24,9 @@ dist-ssr
 *.sln
 *.sw?
 .env
-data/roster_copilot_test.db
+data/*
+!data/static-nfl-data/
+
+# Test outputs
+test-results
+playwright-report
