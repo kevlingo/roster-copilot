@@ -1,0 +1,114 @@
+[
+  {
+    "gameId": "670c3185-62f6-470e-9a02-5c78b7de897d",
+    "weekNumber": 1,
+    "homeTeamAbbreviation": "RAM",
+    "awayTeamAbbreviation": "VIK",
+    "gameDateTime_ISO": "2025-06-30T00:45:00.000Z",
+    "matchupContextNotes": [
+      "Patruus alii animus arguo villa eaque tametsi cubicularis vulticulus.",
+      "Dedico facilis at optio."
+    ],
+    "homeScore": 18,
+    "awayScore": 9,
+    "gameStatus": "Final"
+  },
+  {
+    "gameId": "1a3d095a-f3de-44c9-8357-b65902cc6d70",
+    "weekNumber": 1,
+    "homeTeamAbbreviation": "LIO",
+    "awayTeamAbbreviation": "EAG",
+    "gameDateTime_ISO": "2025-06-06T17:45:00.000Z",
+    "matchupContextNotes": [
+      "Angelus cribro voveo.",
+      "Iste aspicio accendo cognatus cras laudantium."
+    ],
+    "homeScore": 9,
+    "awayScore": 44,
+    "gameStatus": "Scheduled"
+  },
+  {
+    "gameId": "cc96dd63-8b25-4fc9-a86f-61d9598e8921",
+    "weekNumber": 1,
+    "homeTeamAbbreviation": "PAC",
+    "awayTeamAbbreviation": "COM",
+    "gameDateTime_ISO": "2025-06-21T21:45:00.000Z",
+    "matchupContextNotes": [
+      "Armarium trado depono creator.",
+      "Suscipit perspiciatis impedit curia tempora."
+    ],
+    "homeScore": 43,
+    "awayScore": 9,
+    "gameStatus": "Final"
+  },
+  {
+    "gameId": "b2e97eb1-3d8e-4d41-89d7-ad688b515768",
+    "weekNumber": 1,
+    "homeTeamAbbreviation": "BEA",
+    "awayTeamAbbreviation": "COW",
+    "gameDateTime_ISO": "2025-07-06T22:00:00.000Z",
+    "matchupContextNotes": [
+      "Volo termes candidus umerus usque demonstro adaugeo.",
+      "Aeger canonicus cohibeo absens curso sollicito talio."
+    ],
+    "homeScore": 11,
+    "awayScore": 2,
+    "gameStatus": "Scheduled"
+  },
+  {
+    "gameId": "3537a6e2-1bb5-469d-bf6a-a0412abe49b3",
+    "weekNumber": 2,
+    "homeTeamAbbreviation": "BEA",
+    "awayTeamAbbreviation": "49E",
+    "gameDateTime_ISO": "2025-06-21T00:15:00.000Z",
+    "matchupContextNotes": [
+      "Socius stultus earum articulus celer caries demonstro.",
+      "Tui sunt testimonium ut."
+    ],
+    "homeScore": 14,
+    "awayScore": 12,
+    "gameStatus": "Final"
+  },
+  {
+    "gameId": "c932424c-d600-4815-b549-b70a096f11a1",
+    "weekNumber": 2,
+    "homeTeamAbbreviation": "VIK",
+    "awayTeamAbbreviation": "COW",
+    "gameDateTime_ISO": "2025-07-07T00:45:00.000Z",
+    "matchupContextNotes": [
+      "Defessus abscido complectus adeo veniam viriliter adfectus.",
+      "Velut tutis audentia."
+    ],
+    "homeScore": 21,
+    "awayScore": 43,
+    "gameStatus": "InProgress"
+  },
+  {
+    "gameId": "08105160-22c0-42db-b3a2-68e1b36a95c1",
+    "weekNumber": 2,
+    "homeTeamAbbreviation": "LIO",
+    "awayTeamAbbreviation": "COM",
+    "gameDateTime_ISO": "2025-06-19T17:30:00.000Z",
+    "matchupContextNotes": [
+      "Inventore adamo tempore creptio suscipio centum officia corrigo adsuesco addo.",
+      "Ara delego torrens verbum."
+    ],
+    "homeScore": 40,
+    "awayScore": 33,
+    "gameStatus": "Final"
+  },
+  {
+    "gameId": "6f620181-84c2-43bb-82d3-b4010f64dff3",
+    "weekNumber": 2,
+    "homeTeamAbbreviation": "PAC",
+    "awayTeamAbbreviation": "RAM",
+    "gameDateTime_ISO": "2025-07-03T17:15:00.000Z",
+    "matchupContextNotes": [
+      "Consequatur videlicet in sumptus conculco fuga amor.",
+      "Quas vulpes tutamen torqueo articulus."
+    ],
+    "homeScore": 33,
+    "awayScore": 32,
+    "gameStatus": "Final"
+  }
+]
