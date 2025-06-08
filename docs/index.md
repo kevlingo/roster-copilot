@@ -19,7 +19,7 @@ This index provides a central catalog of key project documents for Roster Copilo
 *   [**System Architecture**](./Architecture.md) - Describes the overall system architecture for Roster Copilot.
 *   [**Frontend Architecture**](./Frontend-Architecture.md) - Details the architecture specific to the frontend application.
 *   [**AI Chat Interface Design - Frontend Architecture**](./AI_Chat_Interface_Design_Frontend_Architecture.md) - Specific frontend architecture for the AI Chat interface.
-*   [**UI/UX Specification**](./UIUX_Spec.md) - Defines the user interface and user experience specifications.
+*   [**User Flows**](./shards/user-flows.md) - Detailed user interaction flows for AI Copilot features.
 
 ### Sharded Architecture Documents
 

@@ -71,6 +71,14 @@
 
 ## User Interaction and Design Goals
 
+**Target User Personas:**
+
+* **The Eager Learner:** For users completely new to fantasy football or those still learning the ropes. They might feel overwhelmed by too much data or complex jargon. They value clear guidance, simple explanations, an intuitive interface, and features that help them learn the game and make confident decisions without a steep learning curve. Their goal is to feel competent, have fun, and steadily improve.
+
+* **The Calculated Strategist:** An experienced player who enjoys planning, analyzing, and optimizing their team for the long haul or for specific weekly advantages. They appreciate efficiency, access to relevant data, tools that offer a verifiable strategic edge, and personalized insights that respect their existing knowledge. They want control and robust information to inform their decisions.
+
+* **The Bold Playmaker:** Often an experienced player, but distinctly characterized by a willingness to take risks for big rewards and to make unconventional moves. They value features that help identify high-upside players, contrarian opportunities, or support for aggressive strategies. They want an AI Copilot that can intelligently support or provide a sounding board for their bold decisions.
+
 **Overall Vision & Experience:**
 The Roster Copilot user experience must be modern, clean, intuitive, and visually engaging ("pop"). The primary goal is to make interacting with a sophisticated AI Copilot feel effortless, supportive, and even delightful. For newcomers, the experience should be welcoming, jargon-free where possible, and build confidence quickly. For experienced users, it should feel like a powerful, intelligent tool that respects their time and enhances their strategic capabilities. The application must be fully responsive, providing a seamless experience on both desktop and mobile web.
 
@@ -198,6 +206,7 @@ This section lists features and capabilities identified as valuable but not incl
 | :------------------------------------------ | :--------- | :------ | :------------------------------------------------ | :---------- |
 | Initial PRD Draft for Hackathon PoC Created | 2025-05-30 | 0.1     | First complete draft based on user collaboration. | John (PM)   |
 | Archetype Consolidation Update              | 2025-05-31 | 0.2     | Consolidated "New to All of This!" into "Eager Learner". Archetype list updated in Functional Requirements. | Sarah (PO)  |
+| User Personas Integration                   | 2025-06-07 | 0.3     | Added detailed user personas from UIUX-spec migration to User Interaction section. | Sarah (PO)  |
 
 ----- END PRD START CHECKLIST OUTPUT ------
 

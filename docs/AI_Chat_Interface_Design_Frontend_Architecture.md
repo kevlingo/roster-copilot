@@ -370,7 +370,46 @@ src/
 │   └── chat.ts (MessageObject interface, etc.)
 ```
 
-### 3.7. Future Considerations
+### 3.7. AI Copilot Panel Specifications (Roster Copilot Context)
+
+#### Desktop Panel Behavior
+*   **Default State:** Panel defaults to open on desktop for immediate AI assistance access
+*   **User Control:** User can collapse/hide panel; state is persisted across sessions using localStorage
+*   **Auto-Reopen:** Panel auto-reopens for critical alerts (player injuries, urgent waiver recommendations)
+*   **Visual Cues:** Visual indicators (badge, subtle animation) for non-critical new information when collapsed
+*   **Persistence:** Panel visibility state maintained across page navigation and browser sessions
+
+#### Mobile Access Pattern
+*   **Access Method:** Via clearly labeled AI Copilot icon triggering an overlay interface
+*   **Overlay Design:** Bottom half of screen overlay, allowing interaction with top half of underlying page
+*   **Touch Interactions:** Optimized for mobile touch patterns with appropriate tap targets
+*   **Gesture Support:** Swipe down to dismiss overlay, tap outside to close
+
+#### Contextual Awareness & Verbosity
+*   **Screen Context:** Panel content and AI proactivity influenced by user's current screen context
+    *   Draft room: Focus on draft recommendations and player analysis
+    *   Roster management: Emphasize lineup optimization and player performance
+    *   League dashboard: Highlight weekly strategy and upcoming matchups
+*   **User Profile Adaptation:** Behavior adapted based on user archetype/profile
+    *   "Eager Learner": More detailed explanations and educational content
+    *   "Calculated Strategist": Data-focused insights and analytical depth
+    *   "Bold Playmaker": Risk/reward analysis and contrarian opportunities
+*   **Guidance Level:** Dynamic verbosity based on user experience and preferences
+
+#### Unified Message Center
+*   **Chat History:** Panel serves as unified "chat history" style stream for all AI interactions
+*   **Content Types:** Messages, alerts, digest summaries, and contextual prompts
+*   **Management:** Clear history/dismiss options with confirmation dialogs
+*   **Categorization:** Visual distinction between different message types (alerts vs. advice vs. explanations)
+*   **Search/Filter:** Ability to search through chat history for specific advice or topics
+
+#### Onboarding Integration
+*   **Tour Inclusion:** Onboarding process includes interactive tour of AI Copilot panel functionality
+*   **Functionality Demo:** Introduction to panel/icon features, interaction patterns, and customization options
+*   **Progressive Disclosure:** Gradual introduction of advanced features as user becomes more comfortable
+*   **Help System:** Contextual help and tooltips for panel features and AI capabilities
+
+### 3.8. Future Considerations
 
 *   **Message Streaming:** For more interactive AI responses, consider streaming tokens instead of waiting for the full reply.
 *   **Markdown/Rich Text Support:** Allow AI to send formatted messages.
