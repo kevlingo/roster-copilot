@@ -122,6 +122,15 @@ graph TD
     style ExtEmail fill:#e6e6e6,stroke:#333,stroke-width:2px,color:#000
     style DB fill:#fff5cc,stroke:#333,stroke-width:2px,color:#000
 ```
+## AI Interaction Pattern
+
+To ensure a genuine, adaptive, and scalable user experience, all components responsible for conversational AI (such as the Roster Copilot onboarding and in-season advice features) **must** be powered by the designated AI service provider (Gemini API).
+
+**Key Principles:**
+
+1.  **No Mocked Conversations:** The frontend or backend application logic must **not** simulate or hard-code conversational flows. User input should be routed to the AI service for processing and response generation.
+2.  **API-Driven:** The frontend will communicate with a dedicated Next.js API route. This route is responsible for securely calling the external Gemini API, handling any necessary data transformation, and returning the response to the frontend.
+3.  **Decoupled Logic:** The UI components should be "dumb" regarding the conversation's content; they are only responsible for rendering the user interface (e.g., chat bubbles) based on the data received from the API. This pattern ensures that conversational abilities can be enhanced and modified via the AI prompt and service, without requiring frontend code changes.
 
 ## Project Structure
 
